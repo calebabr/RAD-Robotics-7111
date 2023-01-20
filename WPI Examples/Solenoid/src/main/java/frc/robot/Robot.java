@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
-
+import edu.wpi.first.wpilibj.XboxController;
 /**
  * This is a sample program showing the use of the solenoid classes during operator control. Three
  * buttons from a joystick will be used to control two solenoids: One button to control the position
@@ -23,6 +23,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
  */
 public class Robot extends TimedRobot {
   private final Joystick m_stick = new Joystick(0);
+  private final XboxController m_xbox = new XboxController(1);
 
   // Solenoid corresponds to a single solenoid.
   private final Solenoid m_solenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
@@ -42,7 +43,7 @@ public class Robot extends TimedRobot {
      * the button is pressed; Set takes a boolean for whether
      * to use the default (false) channel or the other (true).
      */
-    m_solenoid.set(m_stick.getRawButton(kSolenoidButton));
+    m_solenoid.set(m_xbox.getAButton());
 
     /*
      * In order to set the double solenoid, if just one button
