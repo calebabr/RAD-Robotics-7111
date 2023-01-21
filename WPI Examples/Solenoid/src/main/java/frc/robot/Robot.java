@@ -51,9 +51,9 @@ public class Robot extends TimedRobot {
      * is pressed, set the solenoid to correspond to that button.
      * If both are pressed, set the solenoid will be set to Forwards.
      */
-    if (m_stick.getRawButton(kDoubleSolenoidForward)) {
+    if (m_xbox.getBButton()) {
       m_doubleSolenoid.set(DoubleSolenoid.Value.kForward);
-    } else if (m_stick.getRawButton(kDoubleSolenoidReverse)) {
+    } else if (m_xbox.getXButton()) {
       m_doubleSolenoid.set(DoubleSolenoid.Value.kReverse);
     }
   }
