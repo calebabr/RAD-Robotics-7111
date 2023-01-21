@@ -2,6 +2,9 @@
 // Open Source Software; you can modify and/or share it under the terms of
 // the WPILib BSD license file in the root directory of this project.
 
+// Test Template for Robot Java Code
+// Don't forget to add all imports for 3rd party libraries
+
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
