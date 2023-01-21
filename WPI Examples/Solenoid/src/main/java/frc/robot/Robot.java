@@ -44,6 +44,7 @@ public class Robot extends TimedRobot {
      * to use the default (false) channel or the other (true).
      */
     m_solenoid.set(m_xbox.getAButton());
+    // test 123
 
     /*
      * In order to set the double solenoid, if just one button
