@@ -4,12 +4,12 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
-import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.Compressor;
+
 /**
  * This is a sample program showing the use of the solenoid classes during operator control. Three
  * buttons from a joystick will be used to control two solenoids: One button to control the position
@@ -25,36 +25,20 @@ public class Robot extends TimedRobot {
   private final Joystick m_stick = new Joystick(0);
   private final XboxController m_xbox = new XboxController(1);
 
-  // Solenoid corresponds to a single solenoid.
-  private final Solenoid m_solenoid = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
-
-  // DoubleSolenoid corresponds to a double solenoid.
-  private final DoubleSolenoid m_doubleSolenoid =
-      new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2);
+  private final Compressor m_compressor = new Compressor(PneumaticsModuleType.CTREPCM);
 
   private static final int kSolenoidButton = 1;
   private static final int kDoubleSolenoidForward = 2;
   private static final int kDoubleSolenoidReverse = 3;
+  private int randNum = 9;
+
+   /** This function is called once when teleop is enabled. */
+  @Override
+  public void teleopInit() {
+    m_compressor.enableAnalog(0, 1000);
+  }
 
   @Override
   public void teleopPeriodic() {
-    /*
-     * The output of GetRawButton is true/false depending on whether
-     * the button is pressed; Set takes a boolean for whether
-     * to use the default (false) channel or the other (true).
-     */
-    m_solenoid.set(m_xbox.getAButton());
-    // test 123
-
-    /*
-     * In order to set the double solenoid, if just one button
-     * is pressed, set the solenoid to correspond to that button.
-     * If both are pressed, set the solenoid will be set to Forwards.
-     */
-    if (m_xbox.getBButton()) {
-      m_doubleSolenoid.set(DoubleSolenoid.Value.kForward);
-    } else if (m_xbox.getXButton()) {
-      m_doubleSolenoid.set(DoubleSolenoid.Value.kReverse);
-    }
   }
 }
