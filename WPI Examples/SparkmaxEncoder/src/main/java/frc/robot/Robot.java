@@ -16,6 +16,12 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 // import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.networktables.GenericEntry;
+
+
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -27,9 +33,16 @@ public class Robot extends TimedRobot {
   private final CANSparkMax m_testSpark = new CANSparkMax(1, MotorType.kBrushless);
   private final RelativeEncoder m_testEncoder = m_testSpark.getEncoder();
   private final XboxController m_xbox = new XboxController(2);
-  private final PIDController m_pid = new PIDController(0.001, 0, 0);
+  private final PIDController m_pid = new PIDController(0.005, 0.00005, 0);
   private double currPos = 0;
   private double speed;
+  private GenericEntry kP;
+  private GenericEntry kI;
+  private GenericEntry kD;
+
+  double p;
+  double i;
+  double d;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -78,6 +91,11 @@ public class Robot extends TimedRobot {
     m_pid.reset();
     m_testEncoder.setPosition(0);
     m_pid.setSetpoint(75);
+
+    kP = Shuffleboard.getTab("SmartDashboard").add("kP", 0.005).withWidget("Text View").getEntry();
+    kI = Shuffleboard.getTab("SmartDashboard").add("kI", 0.00005).withWidget("Text View").getEntry();
+    kD = Shuffleboard.getTab("SmartDashboard").add("kD", 0).withWidget("Text View").getEntry();
+
   }
 
   /** This function is called periodically during operator control. */
@@ -86,6 +104,9 @@ public class Robot extends TimedRobot {
     // SmartDashboard
     currPos = m_testEncoder.getPosition();
     speed = m_pid.calculate(currPos, 75);
+    m_pid.setP(kP.getDouble(0.005));
+    m_pid.setI(kI.getDouble(0.0005));
+    m_pid.setD(kD.getDouble(0));
 
     // Test 1: Motor will turn by xbox control. Observe smartDashboard if encoder values change and display
     // on dashboard.
