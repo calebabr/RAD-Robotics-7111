@@ -117,7 +117,7 @@ public class Robot extends TimedRobot {
       m_testSpark.set(0);
     }
     if (m_xbox.getYButton()){
-      currPos = 0;
+      m_testEncoder.setPosition(0);
       m_pid.setSetpoint(75);
     }
     SmartDashboard.putNumber("E Pos", currPos);
