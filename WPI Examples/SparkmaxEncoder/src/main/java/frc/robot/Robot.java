@@ -27,7 +27,7 @@ public class Robot extends TimedRobot {
   private final CANSparkMax m_testSpark = new CANSparkMax(1, MotorType.kBrushless);
   private final RelativeEncoder m_testEncoder = m_testSpark.getEncoder();
   private final XboxController m_xbox = new XboxController(2);
-  private final PIDController m_pid = new PIDController(0.02, 0.09, 0.2);
+  private final PIDController m_pid = new PIDController(0.00002, 0.0001, 0.002);
   private double currPos;
   private double speed;
 
@@ -77,11 +77,12 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     m_pid.reset();
     m_testEncoder.setPosition(0);
+    m_pid.setSetpoint(75);
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {
+  public void teleopPeriodic(){
     // SmartDashboard
     SmartDashboard.putNumber("E Pos", m_testEncoder.getPosition());
 
@@ -97,7 +98,7 @@ public class Robot extends TimedRobot {
     // Test 2: Control motor by set point and WPI PID Loop
     if (m_xbox.getBButton()){
       currPos = m_testEncoder.getPosition();
-      m_pid.setSetpoint(150);
+
       speed = m_pid.calculate(currPos);
       m_testSpark.set(speed);
     }
