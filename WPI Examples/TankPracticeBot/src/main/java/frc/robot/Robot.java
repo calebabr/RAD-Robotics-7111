@@ -39,8 +39,8 @@ public class Robot extends TimedRobot {
     m_frontRight.setInverted(true);
     m_backRight.setInverted(true);
     
-    m_leftStick = new Joystick(0);
-    m_rightStick = new Joystick(1);
+    m_rightStick = new Joystick(0);
+    m_leftStick = new Joystick(1);
   }
 
   @Override
@@ -50,6 +50,6 @@ public class Robot extends TimedRobot {
     m_frontLeft.set(ControlMode.PercentOutput, leftSpeed);
     m_backLeft.set(ControlMode.PercentOutput, leftSpeed);
     m_frontRight.set(ControlMode.PercentOutput, rightSpeed);
-    m_backLeft.set(ControlMode.PercentOutput, rightSpeed);
+    m_backRight.set(ControlMode.PercentOutput, rightSpeed);
     }
 }
