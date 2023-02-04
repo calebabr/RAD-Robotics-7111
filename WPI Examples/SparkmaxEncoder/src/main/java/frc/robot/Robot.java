@@ -27,7 +27,7 @@ public class Robot extends TimedRobot {
   private final CANSparkMax m_testSpark = new CANSparkMax(1, MotorType.kBrushless);
   private final RelativeEncoder m_testEncoder = m_testSpark.getEncoder();
   private final XboxController m_xbox = new XboxController(2);
-  private final PIDController m_pid = new PIDController(0.00002, 0.0001, 0.002);
+  private final PIDController m_pid = new PIDController(0.00002, 0.0001, 0.00002);
   private double currPos;
   private double speed;
 
@@ -99,7 +99,7 @@ public class Robot extends TimedRobot {
     if (m_xbox.getBButton()){
       currPos = m_testEncoder.getPosition();
 
-      speed = m_pid.calculate(currPos);
+      speed = m_pid.calculate(currPos, 75);
       m_testSpark.set(speed);
     }
   }
