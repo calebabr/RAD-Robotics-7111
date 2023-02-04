@@ -84,21 +84,20 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic(){
     // SmartDashboard
-    SmartDashboard.putNumber("E Pos", m_testEncoder.getPosition());
+    currPos = m_testEncoder.getPosition();
+    speed = m_pid.calculate(currPos, 75);
 
     // Test 1: Motor will turn by xbox control. Observe smartDashboard if encoder values change and display
     // on dashboard.
-    if (m_xbox.getAButton()){
-      m_testSpark.set(0.2);
-    }
-    else if (m_xbox.getBButton()){     // Test 2: Control motor by set point and WPI PID Loop
-      currPos = m_testEncoder.getPosition();
-      speed = m_pid.calculate(currPos, 75);
+    if (m_xbox.getBButtonPressed()){     // Test 2: Control motor by set point and WPI PID Loop
       m_testSpark.set(speed);
     }
     else{
       m_testSpark.set(0);
     }
+    SmartDashboard.putNumber("E Pos", currPos);
+    SmartDashboard.putNumber("Speed", speed);
+
   }
 
   /** This function is called once when the robot is disabled. */
