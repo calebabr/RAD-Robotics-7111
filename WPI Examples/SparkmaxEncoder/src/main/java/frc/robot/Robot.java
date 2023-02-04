@@ -27,7 +27,7 @@ public class Robot extends TimedRobot {
   private final CANSparkMax m_testSpark = new CANSparkMax(1, MotorType.kBrushless);
   private final RelativeEncoder m_testEncoder = m_testSpark.getEncoder();
   private final XboxController m_xbox = new XboxController(2);
-  private final PIDController m_pid = new PIDController(0.00002, 0.000001, 0.004);
+  private final PIDController m_pid = new PIDController(0.001, 0, 0);
   private double currPos = 0;
   private double speed;
 
@@ -89,7 +89,7 @@ public class Robot extends TimedRobot {
 
     // Test 1: Motor will turn by xbox control. Observe smartDashboard if encoder values change and display
     // on dashboard.
-    if (m_xbox.getBButtonPressed()){     // Test 2: Control motor by set point and WPI PID Loop
+    if (m_xbox.getBButton()){     // Test 2: Control motor by set point and WPI PID Loop
       m_testSpark.set(speed);
     }
     else{
