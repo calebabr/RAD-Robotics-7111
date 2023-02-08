@@ -55,6 +55,9 @@ public class Robot extends TimedRobot {
     ahrs = new AHRS(Port.kMXP);
     ahrs.reset();
 
+    m_pid.setSetpoint(0);
+    m_pid.setTolerance(10);
+
     m_frontRight.setInverted(true);
     m_backRight.setInverted(true);
     
@@ -66,7 +69,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     ahrsAngle = ahrs.getPitch();
     if (m_xbox.getAButton()){
-      speed = remap_range(ahrsAngle, -180, 180, -1, 1); // change this to PID Controller
+      speed = m_pid.calculate(ahrsAngle); //remap_range(ahrsAngle, -180, 180, -1, 1); // change this to PID Controller
       leftSpeed = speed;
       rightSpeed = speed;
     }
