@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.networktables.GenericEntry;
+import org.photonvision.PhotonCamera;
 
 
 
@@ -34,12 +35,12 @@ public class Robot extends TimedRobot {
   private final RelativeEncoder m_testEncoder = m_testSpark.getEncoder();
   private final XboxController m_xbox = new XboxController(2);
   private final PIDController m_pid = new PIDController(0.005, 0.00005, 0);
+  private final PhotonCamera camera = new PhotonCamera("clockcam");
   private double currPos = 0;
   private double speed;
   private GenericEntry kP;
   private GenericEntry kI;
   private GenericEntry kD;
-
   double p;
   double i;
   double d;
@@ -102,6 +103,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic(){
     // SmartDashboard
+    double rotationSpeed;
     currPos = m_testEncoder.getPosition();
     speed = m_pid.calculate(currPos, 75);
     m_pid.setP(kP.getDouble(0.005));
@@ -120,8 +122,27 @@ public class Robot extends TimedRobot {
       m_testEncoder.setPosition(0);
       m_pid.setSetpoint(75);
     }
+    int icl = 0;
+    if (m_xbox.getAButton()) {
+      // Vision-alignment mode
+      // Query the latest result from PhotonVision
+      var result = camera.getLatestResult();
+      icl = 1;
+      if (result.hasTargets()) {
+          // Calculate angular turn power
+          // -1.0 required to ensure positive PID controller effort _increases_ yaw
+          icl = 2;
+          rotationSpeed = -m_pid.calculate(result.getBestTarget().getYaw(), 0);
+          m_testSpark.set(rotationSpeed);
+      } else {
+          // If we have no targets, stay still.
+          rotationSpeed = 0;
+          m_testSpark.set(rotationSpeed);
+      }
+  }
     SmartDashboard.putNumber("E Pos", currPos);
     SmartDashboard.putNumber("Speed", speed);
+    SmartDashboard.putNumber("InCodeLength", icl);
 
   }
 
