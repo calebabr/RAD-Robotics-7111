@@ -117,9 +117,9 @@ public class Robot extends TimedRobot {
       rightSpeed = speed;
     }
     else{*/
-      leftSpeed = m_leftStick.getY();
-      rightSpeed = m_rightStick.getY();
-      turnSpeed = m_leftStick.getX();
+    leftSpeed = m_leftStick.getY();
+    rightSpeed = m_rightStick.getY();
+    turnSpeed = m_leftStick.getX();
      /*}
       
     */
@@ -130,12 +130,15 @@ public class Robot extends TimedRobot {
       ChangedDriving = false;
     }
     if (m_xbox.getBButton()){
-        if (ahrsAngle < range && ahrsAngle > -range)
+        if (ahrsAngle < range && ahrsAngle > -range){
           speed = 0;
-        else
+        }
+      
+        else{
           speed = pid.calculate(ahrsAngle, 0);
           leftSpeed = speed;
           rightSpeed = speed;
+        }   
     }
     /*if (m_xbox.getXButton()) {
       if (sol1.get() == true || sol2.get() == true) {
