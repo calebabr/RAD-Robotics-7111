@@ -117,9 +117,7 @@ public class Robot extends TimedRobot {
       rightSpeed = speed;
     }
     else{*/
-    leftSpeed = m_leftStick.getY();
-    rightSpeed = m_rightStick.getY();
-    turnSpeed = m_leftStick.getX();
+
      /*}
       
     */
@@ -189,7 +187,10 @@ public class Robot extends TimedRobot {
     }
 
     SmartDashboard.putNumber("AHRS Angle", ahrsAngle);
-
+    leftSpeed = m_leftStick.getY();
+    rightSpeed = m_rightStick.getY();
+    turnSpeed = m_leftStick.getX();
+    
     }
     public double remap_range(double val, double old_min, double old_max, double new_min, double new_max){ // Basically just math to convert a value from an old range to 
       // new range (slope, line formula)
