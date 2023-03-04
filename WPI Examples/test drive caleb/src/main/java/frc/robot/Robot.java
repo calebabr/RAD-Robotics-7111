@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.math.filter.SlewRateLimiter;
 
 
 /**
@@ -21,8 +22,8 @@ public class Robot extends TimedRobot {
   private Joystick m_leftStick;
   private Joystick m_rightStick;
 
-  private double ySpeed;
-  private double rightSpeed;
+  private double xSpeed;
+  private double rotateSpeed;
   private double leftSpeed;
 
   private final MotorController m_frontLeftMotor = new PWMSparkMax(0);
@@ -33,6 +34,9 @@ public class Robot extends TimedRobot {
   private final MotorControllerGroup left = new MotorControllerGroup(m_backLeftMotor, m_frontLeftMotor);
   private final MotorControllerGroup right = new MotorControllerGroup(m_backRightMotor, m_frontRightMotor);
 
+ private final SlewRateLimiter leftFilter = new SlewRateLimiter(0.5);
+ private final SlewRateLimiter rightFilter = new SlewRateLimiter(0.5);
+
   @Override
   public void robotInit() {
     // We need to invert one side of the drivetrain so that positive voltages
@@ -40,20 +44,20 @@ public class Robot extends TimedRobot {
     // gearbox is constructed, you might have to invert the left side instead.
     m_frontRightMotor.setInverted(true);
 
-    m_myRobot = new DifferentialDrive(m_frontLeftMotor, m_frontRightMotor);
+    m_myRobot = new DifferentialDrive(left, right);
     m_leftStick = new Joystick(0);
     m_rightStick = new Joystick(1);
 
-    ySpeed = 0;
-    rightSpeed = 0;
+    xSpeed = 0;
+    rotateSpeed = 0;
     leftSpeed = 0;
   }
 
   @Override
   public void teleopPeriodic() {
-    m_myRobot.tankDrive(-m_leftStick.getY(), -m_rightStick.getY());
-    ySpeed = m_leftStick.getY();
-    rightSpeed = ySpeed;
-    leftSpeed = ySpeed;
+    xSpeed = leftFilter.calculate(m_leftStick.getY());
+    rotateSpeed = rightFilter.calculate(m_rightStick.getX());
+    m_myRobot.arcadeDrive(xSpeed, rotateSpeed);
+
   }
 }
