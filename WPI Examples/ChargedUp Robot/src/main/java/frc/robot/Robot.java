@@ -29,7 +29,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 
-
 /**
  * This is a demo program showing the use of the DifferentialDrive class, specifically it contains
  * the code necessary to operate a robot with tank drive.
