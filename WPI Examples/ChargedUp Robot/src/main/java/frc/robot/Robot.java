@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
@@ -49,12 +50,12 @@ public class Robot extends TimedRobot {
   private float gyro_dead_range = 1; // tinker!
   private static final int kEncoderPortA = 0;
   private static final int kEncoderPortB = 1;
-  private final VictorSPX arm_motor = new VictorSPX(1);
-  private final VictorSPX arm_motor2 = new VictorSPX(2);
-  private double arm1speed;
-  private double arm2speed;
-  private double ArmmaxValue = 5.0; // tinker!
-  private double ArmminValue = 6.0; // tinker!
+  private final VictorSPX rotateMotor = new VictorSPX(1);
+  private final CANSparkMax extendMotor = new CANSparkMax(5, MotorType.kBrushless);
+  private double extendSpeed;
+  private double rotateSpeed;
+  private double rotateMaxValue = 5.0; // tinker!
+  private double rotateMinValue = 6.0; // tinker!
   
   private RelativeEncoder arm_encoder;
 
@@ -88,6 +89,8 @@ public class Robot extends TimedRobot {
   private Joystick rightStick;
   private SlewRateLimiter rightJLimiter; // tinker?
   private SlewRateLimiter leftJLimiter;
+  private SlewRateLimiter armLimiter;
+
   double rotationSpeed;
   private float limelightdistancetotarget; // tinker deadzone
 
@@ -124,6 +127,8 @@ public class Robot extends TimedRobot {
     leftStick = new Joystick(1);
     leftJLimiter = new SlewRateLimiter(0.5); // needs to be tested
     rightJLimiter = new SlewRateLimiter(0.5);
+    armLimiter = new SlewRateLimiter(0.5);
+
     robotDrive = new DifferentialDrive(left, right);
   }
   @Override
@@ -220,13 +225,15 @@ public class Robot extends TimedRobot {
     // end solenoid code.
 
     // Start arm code
-    arm1speed = m_xbox.getLeftY();
-    arm2speed = m_xbox.getRightY();
-    if (arm_encoder.getPosition() <= ArmmaxValue && arm_encoder.getPosition() >= ArmminValue) // tinker with this encoder!
-    {
-      arm_motor.set(VictorSPXControlMode.PercentOutput, arm1speed);
-    }
-    arm_motor2.set(VictorSPXControlMode.PercentOutput, arm2speed);
+    rotateSpeed = armLimiter.calculate(m_xbox.getLeftY());
+    extendSpeed = armLimiter.calculate(m_xbox.getRightY());
+    // if (arm_encoder.getPosition() <= rotateMaxValue && arm_encoder.getPosition() >= rotateMinValue) // tinker with this encoder!
+    // { 
+      rotateMotor.set(VictorSPXControlMode.PercentOutput, rotateSpeed);
+    // }
+    // commented for now because we do not have encoders on our victor spx motors
+    
+    extendMotor.set(extendSpeed);
 
     // End arm code
     
