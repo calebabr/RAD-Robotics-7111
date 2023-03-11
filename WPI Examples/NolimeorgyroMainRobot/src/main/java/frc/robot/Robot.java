@@ -172,6 +172,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     ySpeed = leftJLimiter.calculate(leftStick.getY());
     rSpeed = rightJLimiter.calculate(rightStick.getX());
+    
     // Start Solenoid code, for grabber.
     if (m_xbox.getYButtonPressed()) {
       // this is cone grab mode, press again to end.
@@ -183,6 +184,8 @@ public class Robot extends TimedRobot {
       sol1.set(DoubleSolenoid.Value.kReverse);
       sol2.set(DoubleSolenoid.Value.kReverse);
     }
+
+    // Claw Motors
     if (m_xbox.getRightBumper()){ // suck in game piece
       clawRight.set(VictorSPXControlMode.PercentOutput, 0.5); 
       clawLeft.set(VictorSPXControlMode.PercentOutput, 0.5);
