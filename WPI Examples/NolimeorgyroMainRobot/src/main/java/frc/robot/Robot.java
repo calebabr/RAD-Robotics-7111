@@ -150,6 +150,8 @@ public class Robot extends TimedRobot {
 
     motorFrontRight.setInverted(true);
     motorBackRight.setInverted(true);
+    motorFrontLeft.setInverted(true);
+    motorBackLeft.setInverted(true);
     
     rightStick = new Joystick(0);
     leftStick = new Joystick(1);
