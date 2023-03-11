@@ -209,7 +209,7 @@ public class Robot extends TimedRobot {
       rotateMotor.set(TalonFXControlMode.PercentOutput, rotateSpeed);
     // }
     // commented for now because we do not have encoders on our victor spx motors
-    
+    SmartDashboard.putNumber("Extend Motor", extendSpeed);
     extendMotor.set(extendSpeed);
 
     // End arm code
