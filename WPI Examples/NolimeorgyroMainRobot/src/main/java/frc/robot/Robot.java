@@ -205,7 +205,7 @@ public class Robot extends TimedRobot {
     // }
     // commented for now because we do not have encoders on our victor spx motors
     
-    extendMotor.set(Math.pow(extendSpeed, 3));
+    extendMotor.set(extendSpeed);
 
     // End arm code
     
