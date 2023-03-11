@@ -156,7 +156,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     ySpeed = leftJLimiter.calculate(leftStick.getY());
-    rSpeed = rightJLimiter.calculate(rightStick.getX());
+    rSpeed = rightJLimiter.calculate(rightStick.getY());
     // Start Solenoid code, for grabber.
     if (m_xbox.getYButton()) {
       // this is cone grab mode, press again to end.
@@ -192,7 +192,7 @@ public class Robot extends TimedRobot {
   
     // Setting the desired speed to the motors.
 
-    robotDrive.arcadeDrive(ySpeed, rSpeed);
+    robotDrive.tankDrive(ySpeed, rSpeed);
 
     }
     public double remap_range(double val, double old_min, double old_max, double new_min, double new_max){ // Basically just math to convert a value from an old range to 
