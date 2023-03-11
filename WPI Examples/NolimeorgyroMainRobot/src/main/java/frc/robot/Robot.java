@@ -72,8 +72,8 @@ public class Robot extends TimedRobot {
   private final CANSparkMax motorFrontRight = new CANSparkMax(3, CANSparkMaxLowLevel.MotorType.kBrushless);
   private final CANSparkMax motorBackRight= new CANSparkMax(4, CANSparkMaxLowLevel.MotorType.kBrushless);
   
-  private final VictorSPX clawLeft = new VictorSPX(8);
-  private final VictorSPX clawRight = new VictorSPX(7);
+  private final VictorSPX clawRight = new VictorSPX(8);
+  private final VictorSPX clawLeft = new VictorSPX(7);
   
   // Motor Controller 
   private final MotorControllerGroup left = new MotorControllerGroup(motorBackLeft, motorFrontLeft);
@@ -153,6 +153,8 @@ public class Robot extends TimedRobot {
     motorFrontLeft.setInverted(true);
     motorBackLeft.setInverted(true);
     
+    clawLeft.setInverted(true);
+    
     rightStick = new Joystick(0);
     leftStick = new Joystick(1);
     leftJLimiter = new SlewRateLimiter(0.5); // needs to be tested, tinker
@@ -183,17 +185,17 @@ public class Robot extends TimedRobot {
         sol4.set(false);
       }
     }
-    if (m_xbox.getRightBumper()){
+    if (m_xbox.getRightBumper()){ // suck in game piece
+      clawRight.set(VictorSPXControlMode.PercentOutput, 0.5); 
       clawLeft.set(VictorSPXControlMode.PercentOutput, 0.5);
-      // clawRight.set(VictorSPXControlMode.PercentOutput, 0.5);
     }
-    else if (m_xbox.getLeftBumper()){
+    else if (m_xbox.getLeftBumper()){ // spit out game piece
+      clawRight.set(VictorSPXControlMode.PercentOutput, -0.5); 
       clawLeft.set(VictorSPXControlMode.PercentOutput, -0.5);
-      // clawRight.set(VictorSPXControlMode.PercentOutput, -0.5);
     }
     else{
+      clawRight.set(VictorSPXControlMode.PercentOutput, 0);
       clawLeft.set(VictorSPXControlMode.PercentOutput, 0);
-      // clawRight.set(VictorSPXControlMode.PercentOutput, 0);
     }
 
     // end solenoid code.
