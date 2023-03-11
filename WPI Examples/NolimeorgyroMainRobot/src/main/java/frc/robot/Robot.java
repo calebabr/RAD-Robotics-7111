@@ -154,8 +154,8 @@ public class Robot extends TimedRobot {
 
     motorFrontRight.setInverted(true);
     motorBackRight.setInverted(true);
-    motorFrontLeft.setInverted(true);
-    motorBackLeft.setInverted(true);
+    motorFrontLeft.setInverted(false);
+    motorBackLeft.setInverted(false);
     
     clawLeft.setInverted(true);
     
