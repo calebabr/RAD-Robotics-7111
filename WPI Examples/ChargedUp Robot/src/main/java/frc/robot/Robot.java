@@ -60,10 +60,10 @@ public class Robot extends TimedRobot {
   private RelativeEncoder arm_encoder;
 
   // Motors controlling driving
-  private final CANSparkMax motorFrontLeft = new CANSparkMax(1, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private final CANSparkMax motorBackLeft = new CANSparkMax(2, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private final CANSparkMax motorFrontRight = new CANSparkMax(3, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private final CANSparkMax motorBackRight= new CANSparkMax(4, CANSparkMaxLowLevel.MotorType.kBrushless);
+  private final CANSparkMax motorFrontLeft = new CANSparkMax(2, CANSparkMaxLowLevel.MotorType.kBrushless);
+  private final CANSparkMax motorBackLeft = new CANSparkMax(1, CANSparkMaxLowLevel.MotorType.kBrushless);
+  private final CANSparkMax motorFrontRight = new CANSparkMax(4, CANSparkMaxLowLevel.MotorType.kBrushless);
+  private final CANSparkMax motorBackRight= new CANSparkMax(3, CANSparkMaxLowLevel.MotorType.kBrushless);
   
   // Motor Controller Groups
   private final MotorControllerGroup left = new MotorControllerGroup(motorBackLeft, motorFrontLeft);
