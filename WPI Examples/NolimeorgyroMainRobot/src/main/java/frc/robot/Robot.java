@@ -15,6 +15,8 @@ import javax.swing.plaf.RootPaneUI;
 
 import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
 //import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
@@ -57,7 +59,7 @@ public class Robot extends TimedRobot {
   private XboxController m_xbox = new XboxController(2);
   // private static final int kEncoderPortA = 0;
   // private static final int kEncoderPortB = 1;
-  private final VictorSPX rotateMotor = new VictorSPX(9);
+  private final TalonFX rotateMotor = new TalonFX(10);
   private final CANSparkMax extendMotor = new CANSparkMax(5, MotorType.kBrushless);
   private double extendSpeed;
   private double rotateSpeed;
@@ -169,7 +171,7 @@ public class Robot extends TimedRobot {
     ySpeed = leftJLimiter.calculate(leftStick.getY());
     rSpeed = rightJLimiter.calculate(rightStick.getY());
     // Start Solenoid code, for grabber.
-    if (m_xbox.getYButton()) {
+    if (m_xbox.getYButtonPressed()) {
       // this is cone grab mode, press again to end.
       // if you press when a solenoid is already active, it resets it.
       if (sol2.get() == true || sol3.get() == true) {
@@ -205,7 +207,7 @@ public class Robot extends TimedRobot {
     extendSpeed = extendLimiter.calculate(m_xbox.getRightY());
     // if (arm_encoder.getPosition() <= rotateMaxValue && arm_encoder.getPosition() >= rotateMinValue) // tinker with this encoder!
     // { 
-      rotateMotor.set(VictorSPXControlMode.PercentOutput, rotateSpeed);
+      rotateMotor.set(TalonFXControlMode.PercentOutput, rotateSpeed);
     // }
     // commented for now because we do not have encoders on our victor spx motors
     
