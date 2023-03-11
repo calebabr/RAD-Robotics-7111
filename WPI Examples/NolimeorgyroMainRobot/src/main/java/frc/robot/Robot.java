@@ -28,6 +28,8 @@ import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
+import edu.wpi.first.wpilibj.motorcontrol.Victor;
+
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
@@ -53,8 +55,8 @@ public class Robot extends TimedRobot {
   
   Thread m_visionThread;
   private XboxController m_xbox = new XboxController(2);
-  private static final int kEncoderPortA = 0;
-  private static final int kEncoderPortB = 1;
+  // private static final int kEncoderPortA = 0;
+  // private static final int kEncoderPortB = 1;
   private final VictorSPX rotateMotor = new VictorSPX(9);
   private final CANSparkMax extendMotor = new CANSparkMax(5, MotorType.kBrushless);
   private double extendSpeed;
@@ -69,6 +71,9 @@ public class Robot extends TimedRobot {
   private final CANSparkMax motorBackLeft = new CANSparkMax(2, CANSparkMaxLowLevel.MotorType.kBrushless);
   private final CANSparkMax motorFrontRight = new CANSparkMax(3, CANSparkMaxLowLevel.MotorType.kBrushless);
   private final CANSparkMax motorBackRight= new CANSparkMax(4, CANSparkMaxLowLevel.MotorType.kBrushless);
+  
+  private final VictorSPX clawLeft = new VictorSPX(8);
+  private final VictorSPX clawRight = new VictorSPX(7);
   
   // Motor Controller 
   private final MotorControllerGroup left = new MotorControllerGroup(motorBackLeft, motorFrontLeft);
@@ -91,7 +96,8 @@ public class Robot extends TimedRobot {
   private Joystick rightStick;
   private SlewRateLimiter rightJLimiter; // tinker?
   private SlewRateLimiter leftJLimiter;
-  private SlewRateLimiter armLimiter;
+  private SlewRateLimiter rotateLimiter;
+  private SlewRateLimiter extendLimiter;
   double rotationSpeed;
 
 
@@ -149,7 +155,8 @@ public class Robot extends TimedRobot {
     leftStick = new Joystick(1);
     leftJLimiter = new SlewRateLimiter(0.5); // needs to be tested, tinker
     rightJLimiter = new SlewRateLimiter(0.5);
-    armLimiter = new SlewRateLimiter(0.5);
+    rotateLimiter = new SlewRateLimiter(0.5);
+    extendLimiter = new SlewRateLimiter(0.5);
     robotDrive = new DifferentialDrive(left, right);
   }
 
@@ -161,36 +168,51 @@ public class Robot extends TimedRobot {
     if (m_xbox.getYButton()) {
       // this is cone grab mode, press again to end.
       // if you press when a solenoid is already active, it resets it.
-      if (sol1.get() == true || sol2.get() == true || sol3.get() == true || sol4.get() == true) {
-        sol1.set(false);
+      if (sol2.get() == true || sol3.get() == true) {
+        sol1.set(true);
         sol2.set(false);
         sol3.set(false);
-        sol4.set(false);
-      }
-      else {
-        sol1.set(true);
-        sol2.set(true);
-        sol3.set(true);
         sol4.set(true);
       }
+      else {
+        sol1.set(false);
+        sol2.set(true);
+        sol3.set(true);
+        sol4.set(false);
+      }
     }
+    if (m_xbox.getRightBumper()){
+      clawLeft.set(VictorSPXControlMode.PercentOutput, 0.5);
+      clawRight.set(VictorSPXControlMode.PercentOutput, 0.5);
+    }
+    if (m_xbox.getLeftBumper()){
+      clawLeft.set(VictorSPXControlMode.PercentOutput, -0.5);
+      clawRight.set(VictorSPXControlMode.PercentOutput, -0.5);
+    }
+    else{
+      clawLeft.set(VictorSPXControlMode.PercentOutput, 0);
+      clawRight.set(VictorSPXControlMode.PercentOutput, 0);
+    }
+
     // end solenoid code.
 
     // Start arm code
-    rotateSpeed = armLimiter.calculate(m_xbox.getLeftY());
-    extendSpeed = armLimiter.calculate(m_xbox.getRightY());
+    rotateSpeed = rotateLimiter.calculate(m_xbox.getLeftY());
+    extendSpeed = extendLimiter.calculate(m_xbox.getRightY());
     // if (arm_encoder.getPosition() <= rotateMaxValue && arm_encoder.getPosition() >= rotateMinValue) // tinker with this encoder!
     // { 
-      rotateMotor.set(VictorSPXControlMode.PercentOutput, rotateSpeed / 2);
+      rotateMotor.set(VictorSPXControlMode.PercentOutput, rotateSpeed);
     // }
     // commented for now because we do not have encoders on our victor spx motors
     
-    extendMotor.set(extendSpeed / 2);
+    extendMotor.set(Math.pow(extendSpeed, 3));
 
     // End arm code
     
   
     // Setting the desired speed to the motors.
+    SmartDashboard.putNumber("Left J", ySpeed);
+    SmartDashboard.putNumber("Right J", rSpeed);
 
     robotDrive.tankDrive(ySpeed, rSpeed);
 
