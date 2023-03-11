@@ -62,7 +62,7 @@ public class Robot extends TimedRobot {
   private double rotateMaxValue = 5.0; // tinker!
   private double rotateMinValue = 6.0; // tinker!
   
-  private RelativeEncoder arm_encoder;
+  // private RelativeEncoder arm_encoder;
 
   // Motors controlling 
   private final CANSparkMax motorFrontLeft = new CANSparkMax(1, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -97,7 +97,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    arm_encoder.setPosition(0);
+    // arm_encoder.setPosition(0);
   }
   @Override
   public void robotInit() {
