@@ -82,7 +82,7 @@ public class Robot extends TimedRobot {
   public static final Solenoid sol1 = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
   public static final Solenoid sol2 = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
   public static final Solenoid sol3 = new Solenoid(PneumaticsModuleType.CTREPCM, 2);
-  public static final Solenoid sol4 = new Solenoid(PneumaticsModuleType.CTREPCM,3);
+  public static final Solenoid sol4 = new Solenoid(PneumaticsModuleType.CTREPCM, 3);
 
   // 
   private double ySpeed = 0;
