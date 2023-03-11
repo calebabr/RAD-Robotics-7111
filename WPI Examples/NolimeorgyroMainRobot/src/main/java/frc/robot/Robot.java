@@ -11,6 +11,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;        
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
+
+import javax.lang.model.util.SimpleTypeVisitor14;
 import javax.swing.plaf.RootPaneUI;
 
 import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
@@ -31,6 +33,7 @@ import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.motorcontrol.Victor;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
 
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
@@ -86,10 +89,9 @@ public class Robot extends TimedRobot {
   
   // Cone/Cube Grabber 
   public static final Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
-  public static final Solenoid sol1 = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
-  public static final Solenoid sol2 = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
-  public static final Solenoid sol3 = new Solenoid(PneumaticsModuleType.CTREPCM, 2);
-  public static final Solenoid sol4 = new Solenoid(PneumaticsModuleType.CTREPCM, 3);
+  public static final DoubleSolenoid sol1 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 0);
+  public static final DoubleSolenoid sol2 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3);
+
 
   // 
   private double ySpeed = 0;
@@ -174,18 +176,12 @@ public class Robot extends TimedRobot {
     if (m_xbox.getYButtonPressed()) {
       // this is cone grab mode, press again to end.
       // if you press when a solenoid is already active, it resets it.
-      if (sol2.get() == true || sol3.get() == true) {
-        sol1.set(true);
-        sol2.set(false);
-        sol3.set(false);
-        sol4.set(true);
-      }
-      else {
-        sol1.set(false);
-        sol2.set(true);
-        sol3.set(true);
-        sol4.set(false);
-      }
+      sol1.set(DoubleSolenoid.Value.kForward);
+      sol2.set(DoubleSolenoid.Value.kForward);
+    }
+    else if (m_xbox.getXButtonPressed()){
+      sol1.set(DoubleSolenoid.Value.kReverse);
+      sol2.set(DoubleSolenoid.Value.kReverse);
     }
     if (m_xbox.getRightBumper()){ // suck in game piece
       clawRight.set(VictorSPXControlMode.PercentOutput, 0.5); 
