@@ -55,7 +55,7 @@ public class Robot extends TimedRobot {
   private XboxController m_xbox = new XboxController(2);
   private static final int kEncoderPortA = 0;
   private static final int kEncoderPortB = 1;
-  private final VictorSPX rotateMotor = new VictorSPX(1);
+  private final VictorSPX rotateMotor = new VictorSPX(9);
   private final CANSparkMax extendMotor = new CANSparkMax(5, MotorType.kBrushless);
   private double extendSpeed;
   private double rotateSpeed;
@@ -81,6 +81,8 @@ public class Robot extends TimedRobot {
   public static final Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
   public static final Solenoid sol1 = new Solenoid(PneumaticsModuleType.CTREPCM, 0);
   public static final Solenoid sol2 = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
+  public static final Solenoid sol3 = new Solenoid(PneumaticsModuleType.CTREPCM, 2);
+  public static final Solenoid sol4 = new Solenoid(PneumaticsModuleType.CTREPCM,3);
 
   // 
   private double ySpeed = 0;
@@ -159,13 +161,17 @@ public class Robot extends TimedRobot {
     if (m_xbox.getYButton()) {
       // this is cone grab mode, press again to end.
       // if you press when a solenoid is already active, it resets it.
-      if (sol1.get() == true || sol2.get() == true) {
+      if (sol1.get() == true || sol2.get() == true || sol3.get() == true || sol4.get() == true) {
         sol1.set(false);
         sol2.set(false);
+        sol3.set(false);
+        sol4.set(false);
       }
       else {
         sol1.set(true);
         sol2.set(true);
+        sol3.set(true);
+        sol4.set(true);
       }
     }
     // end solenoid code.
@@ -175,11 +181,11 @@ public class Robot extends TimedRobot {
     extendSpeed = armLimiter.calculate(m_xbox.getRightY());
     // if (arm_encoder.getPosition() <= rotateMaxValue && arm_encoder.getPosition() >= rotateMinValue) // tinker with this encoder!
     // { 
-      rotateMotor.set(VictorSPXControlMode.PercentOutput, rotateSpeed);
+      rotateMotor.set(VictorSPXControlMode.PercentOutput, rotateSpeed / 2);
     // }
     // commented for now because we do not have encoders on our victor spx motors
     
-    extendMotor.set(extendSpeed);
+    extendMotor.set(extendSpeed / 2);
 
     // End arm code
     
