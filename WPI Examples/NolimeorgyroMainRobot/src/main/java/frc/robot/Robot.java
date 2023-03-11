@@ -150,6 +150,8 @@ public class Robot extends TimedRobot {
 
     motorFrontRight.setInverted(true);
     motorBackRight.setInverted(true);
+    motorFrontLeft.setInverted(true);
+    motorBackLeft.setInverted(true);
     
     rightStick = new Joystick(0);
     leftStick = new Joystick(1);
@@ -205,7 +207,7 @@ public class Robot extends TimedRobot {
     // }
     // commented for now because we do not have encoders on our victor spx motors
     
-    extendMotor.set(Math.pow(extendSpeed, 3));
+    extendMotor.set(extendSpeed);
 
     // End arm code
     
