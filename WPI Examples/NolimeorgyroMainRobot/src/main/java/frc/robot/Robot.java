@@ -185,15 +185,15 @@ public class Robot extends TimedRobot {
     }
     if (m_xbox.getRightBumper()){
       clawLeft.set(VictorSPXControlMode.PercentOutput, 0.5);
-      clawRight.set(VictorSPXControlMode.PercentOutput, 0.5);
+      // clawRight.set(VictorSPXControlMode.PercentOutput, 0.5);
     }
-    if (m_xbox.getLeftBumper()){
+    else if (m_xbox.getLeftBumper()){
       clawLeft.set(VictorSPXControlMode.PercentOutput, -0.5);
-      clawRight.set(VictorSPXControlMode.PercentOutput, -0.5);
+      // clawRight.set(VictorSPXControlMode.PercentOutput, -0.5);
     }
     else{
       clawLeft.set(VictorSPXControlMode.PercentOutput, 0);
-      clawRight.set(VictorSPXControlMode.PercentOutput, 0);
+      // clawRight.set(VictorSPXControlMode.PercentOutput, 0);
     }
 
     // end solenoid code.
