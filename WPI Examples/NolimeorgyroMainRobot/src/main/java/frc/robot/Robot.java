@@ -20,7 +20,7 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
-//import com.kauailabs.navx.frc.AHRS;
+import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import org.photonvision.PhotonCamera;
@@ -69,6 +69,9 @@ public class Robot extends TimedRobot {
   private double rotateMaxValue = 5.0; // tinker!
   private double rotateMinValue = 6.0; // tinker!
   
+  private AHRS gyro;
+  private PIDController gyroPID;
+
   // private RelativeEncoder arm_encoder;
 
   // Motors controlling 
@@ -103,6 +106,7 @@ public class Robot extends TimedRobot {
   private SlewRateLimiter rotateLimiter;
   private SlewRateLimiter extendLimiter;
   double rotationSpeed;
+  double currPitch;
 
 
   @Override
@@ -111,7 +115,8 @@ public class Robot extends TimedRobot {
   }
   @Override
   public void robotInit() {
-    // We need to invert one side of the drivetrain so that positive voltages
+    gyroPID = new PIDController(0.5, 0, 0);
+        // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
     m_visionThread =
@@ -166,10 +171,14 @@ public class Robot extends TimedRobot {
     rotateLimiter = new SlewRateLimiter(0.5);
     extendLimiter = new SlewRateLimiter(0.5);
     robotDrive = new DifferentialDrive(left, right);
+
+    gyro = new AHRS(SPI.Port.kMXP);
   }
 
   @Override
   public void teleopPeriodic() {
+    currPitch = gyro.getPitch();
+
     ySpeed = leftJLimiter.calculate(leftStick.getY());
     rSpeed = rightJLimiter.calculate(rightStick.getX());
     
@@ -218,10 +227,16 @@ public class Robot extends TimedRobot {
     // Setting the desired speed to the motors.
     SmartDashboard.putNumber("Left J", ySpeed);
     SmartDashboard.putNumber("Right J", rSpeed);
-
-    robotDrive.arcadeDrive(ySpeed, rSpeed);
+    
+    if(m_xbox.getAButton()){
+      rSpeed = gyroPID.calculate(currPitch, 0);
+    }
+    else{
+      robotDrive.arcadeDrive(ySpeed, rSpeed);
 
     }
+
+  }
     public double remap_range(double val, double old_min, double old_max, double new_min, double new_max){ // Basically just math to convert a value from an old range to 
       // new range (slope, line formula)
     return (new_min + (val - old_min)*((new_max - new_min)/(old_max - old_min)));
