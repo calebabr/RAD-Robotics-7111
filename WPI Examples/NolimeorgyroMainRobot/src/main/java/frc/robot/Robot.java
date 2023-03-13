@@ -73,7 +73,7 @@ public class Robot extends TimedRobot {
   private double rotateMinValue = 6.0; // tinker!
   
   //private AHRS gyro;
-  private PIDController gyroPID;
+  // private PIDController gyroPID;
 
   // private RelativeEncoder arm_encoder;
 
@@ -183,9 +183,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    gyroPID.setP(gyro_kP.getDouble(0));
-    gyroPID.setI(gyro_kI.getDouble(0));
-    gyroPID.setD(gyro_kD.getDouble(0));
+    // gyroPID.setP(gyro_kP.getDouble(0));
+    // gyroPID.setI(gyro_kI.getDouble(0));
+    // gyroPID.setD(gyro_kD.getDouble(0));
     //currPitch = gyro.getPitch();
 
 
