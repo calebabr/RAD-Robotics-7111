@@ -8,6 +8,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 
+import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;        
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
@@ -57,7 +58,10 @@ import org.opencv.core.Point;
  * the code necessary to operate a robot with tank drive.
  */
 public class Robot extends TimedRobot {
-  
+
+  private GenericEntry gyro_kP;
+  private GenericEntry gyro_kI;
+  private GenericEntry gyro_kD;
   Thread m_visionThread;
   private XboxController m_xbox = new XboxController(2);
   // private static final int kEncoderPortA = 0;
@@ -111,6 +115,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    gyro_kP = Shuffleboard.getTab("SmartDashboard").add("kP", 0).withWidget("Text View").getEntry(); // tinker with this
+    gyro_kI = Shuffleboard.getTab("SmartDashboard").add("kI", 0).withWidget("Text View").getEntry(); // tinker with this
+    gyro_kD = Shuffleboard.getTab("SmartDashboard").add("kD", 0).withWidget("Text View").getEntry(); // tinker with this
     // arm_encoder.setPosition(0);
   }
   @Override
@@ -172,11 +179,14 @@ public class Robot extends TimedRobot {
     extendLimiter = new SlewRateLimiter(0.9);
     robotDrive = new DifferentialDrive(left, right);
 
-    //gyro = new AHRS(SPI.Port.kMXP);
+    gyro = new AHRS(SPI.Port.kMXP);
   }
 
   @Override
   public void teleopPeriodic() {
+    gyroPID.setP(gyro_kP.getDouble(0));
+    gyroPID.setI(gyro_kI.getDouble(0));
+    gyroPID.setD(gyro_kD.getDouble(0));
     //currPitch = gyro.getPitch();
 
 
