@@ -20,6 +20,7 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
+import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import org.photonvision.PhotonCamera;
@@ -178,8 +179,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     //currPitch = gyro.getPitch();
 
-    ySpeed = leftJLimiter.calculate(leftStick.getY());
-    rSpeed = rightJLimiter.calculate(rightStick.getX());
+
     
     // Start Solenoid code, for grabber.
     if (m_xbox.getYButtonPressed()) {
@@ -261,13 +261,13 @@ public class Robot extends TimedRobot {
     //SmartDashboard.putNumber("CurrPitch", currPitch);
     
     if(m_xbox.getStartButton()){
-      rSpeed = gyroPID.calculate(currPitch, 0);
+      ySpeed = gyroPID.calculate(currPitch, 0);
     }
     else{
-      robotDrive.arcadeDrive(ySpeed, rSpeed);
+      ySpeed = leftJLimiter.calculate(leftStick.getY());
     }
-    
-
+      rSpeed = rightJLimiter.calculate(rightStick.getX());
+      robotDrive.arcadeDrive(ySpeed, rSpeed);
   }
     public double remap_range(double val, double old_min, double old_max, double new_min, double new_max){ // Basically just math to convert a value from an old range to 
       // new range (slope, line formula)
