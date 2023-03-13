@@ -61,7 +61,7 @@ public class Robot extends TimedRobot {
   private XboxController m_xbox = new XboxController(2);
   // private static final int kEncoderPortA = 0;
   // private static final int kEncoderPortB = 1;
-  private final TalonFX rotateMotor = new TalonFX(10);
+  // private final TalonFX rotateMotor = new TalonFX(10);
   private final CANSparkMax extendMotor = new CANSparkMax(5, MotorType.kBrushless);
   private double extendSpeed;
   private double rotateSpeed;
@@ -210,10 +210,9 @@ public class Robot extends TimedRobot {
     // end solenoid code.
 
     // Start arm code
-    rotateSpeed = rotateLimiter.calculate(m_xbox.getLeftY());
+    // rotateSpeed = rotateLimiter.calculate(m_xbox.getLeftY());
     // if (arm_encoder.getPosition() <= rotateMaxValue && arm_encoder.getPosition() >= rotateMinValue) // tinker with this encoder!
     // { 
-      rotateMotor.set(TalonFXControlMode.PercentOutput, rotateSpeed);
     // }
     // commented for now because we do not have encoders on our victor spx motors
     SmartDashboard.putNumber("Extend Motor", extendSpeed);
@@ -226,16 +225,33 @@ public class Robot extends TimedRobot {
     // else{
       // extendMotor.set(0);
     // }
-    if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // deadzone 
-      extendSpeed = 0; 
+    /* 
+    if (m_xbox.getAButton()){
+      if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // deadzone 
+        rotateSpeed = 0; 
+      }
+      else if (m_xbox.getRightTriggerAxis() > 0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // retract or negative extend
+        rotateSpeed = rotateLimiter.calculate(m_xbox.getRightTriggerAxis()); // use right
+      }
+      else if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() > 0.04){ // extend
+        rotateSpeed = -rotateLimiter.calculate(m_xbox.getLeftTriggerAxis()); // use left
+      }
+      rotateMotor.set(TalonFXControlMode.PercentOutput, rotateSpeed);
     }
-    else if (m_xbox.getRightTriggerAxis() > 0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // retract or negative extend
-      extendSpeed = extendLimiter.calculate(m_xbox.getRightTriggerAxis()); // use right
+    */
+    if (m_xbox.getBButton()){
+      if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // deadzone 
+        extendSpeed = 0; 
+      }
+      else if (m_xbox.getRightTriggerAxis() > 0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // retract or negative extend
+        extendSpeed = extendLimiter.calculate(m_xbox.getRightTriggerAxis()); // use right
+      }
+      else if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() > 0.04){ // extend
+        extendSpeed = -extendLimiter.calculate(m_xbox.getLeftTriggerAxis()); // use left
+      }
+      extendMotor.set(extendSpeed);
     }
-    else if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() > 0.04){ // extend
-      extendSpeed = -extendLimiter.calculate(m_xbox.getLeftTriggerAxis()); // use left
-    }
-    extendMotor.set(extendSpeed);
+
     // End arm code
     
   
