@@ -20,7 +20,6 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
-import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import org.photonvision.PhotonCamera;
@@ -69,8 +68,8 @@ public class Robot extends TimedRobot {
   private double rotateMaxValue = 5.0; // tinker!
   private double rotateMinValue = 6.0; // tinker!
   
-  private AHRS gyro;
-  private PIDController gyroPID;
+  //private AHRS gyro;
+  //private PIDController gyroPID;
 
   // private RelativeEncoder arm_encoder;
 
@@ -115,7 +114,7 @@ public class Robot extends TimedRobot {
   }
   @Override
   public void robotInit() {
-    gyroPID = new PIDController(0.5, 0, 0);
+    //gyroPID = new PIDController(0.5, 0, 0);
         // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
@@ -166,18 +165,18 @@ public class Robot extends TimedRobot {
     
     rightStick = new Joystick(0);
     leftStick = new Joystick(1);
-    leftJLimiter = new SlewRateLimiter(0.5); // needs to be tested, tinker
-    rightJLimiter = new SlewRateLimiter(0.5);
-    rotateLimiter = new SlewRateLimiter(0.5);
-    extendLimiter = new SlewRateLimiter(0.5);
+    leftJLimiter = new SlewRateLimiter(0.8); // needs to be tested, tinker
+    rightJLimiter = new SlewRateLimiter(0.8);
+    rotateLimiter = new SlewRateLimiter(0.9);
+    extendLimiter = new SlewRateLimiter(0.9);
     robotDrive = new DifferentialDrive(left, right);
 
-    gyro = new AHRS(SPI.Port.kMXP);
+    //gyro = new AHRS(SPI.Port.kMXP);
   }
 
   @Override
   public void teleopPeriodic() {
-    currPitch = gyro.getPitch();
+    //currPitch = gyro.getPitch();
 
     ySpeed = leftJLimiter.calculate(leftStick.getY());
     rSpeed = rightJLimiter.calculate(rightStick.getX());
@@ -212,29 +211,46 @@ public class Robot extends TimedRobot {
 
     // Start arm code
     rotateSpeed = rotateLimiter.calculate(m_xbox.getLeftY());
-    extendSpeed = extendLimiter.calculate(m_xbox.getRightY());
     // if (arm_encoder.getPosition() <= rotateMaxValue && arm_encoder.getPosition() >= rotateMinValue) // tinker with this encoder!
     // { 
       rotateMotor.set(TalonFXControlMode.PercentOutput, rotateSpeed);
     // }
     // commented for now because we do not have encoders on our victor spx motors
     SmartDashboard.putNumber("Extend Motor", extendSpeed);
+    // if (m_xbox.getAButton()){
+      // extendMotor.set(0.5);
+    // }
+    // else if (m_xbox.getBButton()){
+      // extendMotor.set(-0.5);
+    // }
+    // else{
+      // extendMotor.set(0);
+    // }
+    if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // deadzone 
+      extendSpeed = 0; 
+    }
+    else if (m_xbox.getRightTriggerAxis() > 0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // retract or negative extend
+      extendSpeed = extendLimiter.calculate(m_xbox.getRightTriggerAxis());
+    }
+    else if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() > 0.04){ // extend
+      extendSpeed = -extendLimiter.calculate(m_xbox.getLeftTriggerAxis());
+    }
     extendMotor.set(extendSpeed);
-
     // End arm code
     
   
     // Setting the desired speed to the motors.
     SmartDashboard.putNumber("Left J", ySpeed);
     SmartDashboard.putNumber("Right J", rSpeed);
+    //SmartDashboard.putNumber("CurrPitch", currPitch);
     
-    if(m_xbox.getAButton()){
-      rSpeed = gyroPID.calculate(currPitch, 0);
-    }
-    else{
+    //if(m_xbox.getAButton()){
+      //rSpeed = gyroPID.calculate(currPitch, 0);
+    //}
+    //else{
       robotDrive.arcadeDrive(ySpeed, rSpeed);
 
-    }
+    //}
 
   }
     public double remap_range(double val, double old_min, double old_max, double new_min, double new_max){ // Basically just math to convert a value from an old range to 
