@@ -229,11 +229,11 @@ public class Robot extends TimedRobot {
     if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // deadzone 
       extendSpeed = 0; 
     }
-    else if (m_xbox.getRightTriggerAxis() < -0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // retract or negative extend
-      extendSpeed = extendLimiter.calculate(m_xbox.getRightTriggerAxis());
+    else if (m_xbox.getRightTriggerAxis() > 0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // retract or negative extend
+      extendSpeed = extendLimiter.calculate(m_xbox.getRightTriggerAxis()); // use right
     }
-    else if (m_xbox.getRightTriggerAxis() > -0.04 && m_xbox.getLeftTriggerAxis() > 0.04){ // extend
-      extendSpeed = -extendLimiter.calculate(m_xbox.getLeftTriggerAxis());
+    else if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() > 0.04){ // extend
+      extendSpeed = -extendLimiter.calculate(m_xbox.getLeftTriggerAxis()); // use left
     }
     extendMotor.set(extendSpeed);
     // End arm code
