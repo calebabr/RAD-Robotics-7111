@@ -163,8 +163,8 @@ public class Robot extends TimedRobot {
     
     clawLeft.setInverted(true);
     
-    rightStick = new Joystick(0);
-    leftStick = new Joystick(1);
+    rightStick = new Joystick(1);
+    leftStick = new Joystick(0);
     leftJLimiter = new SlewRateLimiter(0.8); // needs to be tested, tinker
     rightJLimiter = new SlewRateLimiter(0.8);
     rotateLimiter = new SlewRateLimiter(0.9);
