@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 
-//import com.kauailabs.navx.frc.AHRS;
+import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;        
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
@@ -72,7 +72,7 @@ public class Robot extends TimedRobot {
   private double rotateMaxValue = 5.0; // tinker!
   private double rotateMinValue = 6.0; // tinker!
   
-  //private AHRS gyro;
+  private AHRS gyro;
   private PIDController gyroPID;
 
   // private RelativeEncoder arm_encoder;
@@ -178,7 +178,7 @@ public class Robot extends TimedRobot {
     extendLimiter = new SlewRateLimiter(0.9);
     robotDrive = new DifferentialDrive(left, right);
 
-    //gyro = new AHRS(SPI.Port.kMXP);
+    gyro = new AHRS(SPI.Port.kMXP);
   }
 
   @Override
@@ -192,8 +192,6 @@ public class Robot extends TimedRobot {
     
     // Start Solenoid code, for grabber.
     if (m_xbox.getYButtonPressed()) {
-      // this is cone grab mode, press again to end.
-      // if you press when a solenoid is already active, it resets it.
       sol1.set(DoubleSolenoid.Value.kForward);
       // sol2.set(DoubleSolenoid.Value.kForward);
     }
@@ -267,15 +265,15 @@ public class Robot extends TimedRobot {
     // Setting the desired speed to the motors.
     SmartDashboard.putNumber("Left J", ySpeed);
     SmartDashboard.putNumber("Right J", rSpeed);
-    //SmartDashboard.putNumber("CurrPitch", currPitch);
-    /* 
+    SmartDashboard.putNumber("CurrPitch", currPitch);
+    
     if(m_xbox.getStartButton()){
       ySpeed = gyroPID.calculate(currPitch, 0);
     }
     else{
-      */
+    
       ySpeed = leftJLimiter.calculate(leftStick.getY());
-    //}
+    }
       rSpeed = rightJLimiter.calculate(rightStick.getX());
       robotDrive.arcadeDrive(ySpeed, rSpeed);
   }
