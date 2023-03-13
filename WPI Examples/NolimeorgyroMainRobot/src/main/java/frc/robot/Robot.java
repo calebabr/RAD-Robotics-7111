@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 
-import com.kauailabs.navx.frc.AHRS;
+//import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;        
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
@@ -21,7 +21,6 @@ import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
-import com.kauailabs.navx.frc.AHRS;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 //import org.photonvision.PhotonCamera;
@@ -66,14 +65,14 @@ public class Robot extends TimedRobot {
   private XboxController m_xbox = new XboxController(2);
   // private static final int kEncoderPortA = 0;
   // private static final int kEncoderPortB = 1;
-  // private final TalonFX rotateMotor = new TalonFX(10);
+  private final TalonFX rotateMotor = new TalonFX(10);
   private final CANSparkMax extendMotor = new CANSparkMax(5, MotorType.kBrushless);
   private double extendSpeed;
   private double rotateSpeed;
   private double rotateMaxValue = 5.0; // tinker!
   private double rotateMinValue = 6.0; // tinker!
   
-  private AHRS gyro;
+  //private AHRS gyro;
   private PIDController gyroPID;
 
   // private RelativeEncoder arm_encoder;
@@ -122,7 +121,7 @@ public class Robot extends TimedRobot {
   }
   @Override
   public void robotInit() {
-    gyroPID = new PIDController(0.5, 0, 0);
+    // gyroPID = new PIDController(0.5, 0, 0);
         // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
@@ -179,7 +178,7 @@ public class Robot extends TimedRobot {
     extendLimiter = new SlewRateLimiter(0.9);
     robotDrive = new DifferentialDrive(left, right);
 
-    gyro = new AHRS(SPI.Port.kMXP);
+    //gyro = new AHRS(SPI.Port.kMXP);
   }
 
   @Override
@@ -235,7 +234,7 @@ public class Robot extends TimedRobot {
     // else{
       // extendMotor.set(0);
     // }
-    /* 
+    
     if (m_xbox.getAButton()){
       if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // deadzone 
         rotateSpeed = 0; 
@@ -248,7 +247,7 @@ public class Robot extends TimedRobot {
       }
       rotateMotor.set(TalonFXControlMode.PercentOutput, rotateSpeed);
     }
-    */
+    
     if (m_xbox.getBButton()){
       if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // deadzone 
         extendSpeed = 0; 
@@ -269,13 +268,14 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Left J", ySpeed);
     SmartDashboard.putNumber("Right J", rSpeed);
     //SmartDashboard.putNumber("CurrPitch", currPitch);
-    
+    /* 
     if(m_xbox.getStartButton()){
       ySpeed = gyroPID.calculate(currPitch, 0);
     }
     else{
+      */
       ySpeed = leftJLimiter.calculate(leftStick.getY());
-    }
+    //}
       rSpeed = rightJLimiter.calculate(rightStick.getX());
       robotDrive.arcadeDrive(ySpeed, rSpeed);
   }
