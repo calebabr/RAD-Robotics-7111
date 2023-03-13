@@ -68,8 +68,8 @@ public class Robot extends TimedRobot {
   private double rotateMaxValue = 5.0; // tinker!
   private double rotateMinValue = 6.0; // tinker!
   
-  //private AHRS gyro;
-  //private PIDController gyroPID;
+  private AHRS gyro;
+  private PIDController gyroPID;
 
   // private RelativeEncoder arm_encoder;
 
@@ -114,7 +114,7 @@ public class Robot extends TimedRobot {
   }
   @Override
   public void robotInit() {
-    //gyroPID = new PIDController(0.5, 0, 0);
+    gyroPID = new PIDController(0.5, 0, 0);
         // We need to invert one side of the drivetrain so that positive voltages
     // result in both sides moving forward. Depending on how your robot's
     // gearbox is constructed, you might have to invert the left side instead.
@@ -260,13 +260,13 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Right J", rSpeed);
     //SmartDashboard.putNumber("CurrPitch", currPitch);
     
-    //if(m_xbox.getAButton()){
-      //rSpeed = gyroPID.calculate(currPitch, 0);
-    //}
-    //else{
+    if(m_xbox.getStartButton()){
+      rSpeed = gyroPID.calculate(currPitch, 0);
+    }
+    else{
       robotDrive.arcadeDrive(ySpeed, rSpeed);
-
-    //}
+    }
+    
 
   }
     public double remap_range(double val, double old_min, double old_max, double new_min, double new_max){ // Basically just math to convert a value from an old range to 
