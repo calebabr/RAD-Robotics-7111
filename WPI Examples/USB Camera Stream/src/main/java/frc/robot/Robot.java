@@ -6,6 +6,8 @@ package frc.robot;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 
 /**
  * Uses the CameraServer class to automatically capture video from a USB webcam and send it to the
@@ -13,6 +15,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
  * to the dashboard. Just add this to the robotInit() method in your program.
  */
 public class Robot extends TimedRobot {
+  public static final Compressor testCompress = new Compressor(PneumaticsModuleType.CTREPCM);
   @Override
   public void robotInit() {
     CameraServer.startAutomaticCapture();
