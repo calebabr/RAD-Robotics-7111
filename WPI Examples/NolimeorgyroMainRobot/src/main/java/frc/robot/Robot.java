@@ -67,7 +67,7 @@ public class Robot extends TimedRobot {
   private XboxController m_xbox = new XboxController(2);
   // private static final int kEncoderPortA = 0;
   // private static final int kEncoderPortB = 1;
-  private final TalonFX rotateMotor = new TalonFX(10);
+  private final CANSparkMax rotateMotor = new CANSparkMax(7, MotorType.kBrushless);
   private final CANSparkMax extendMotor = new CANSparkMax(5, MotorType.kBrushless);
   private double extendSpeed;
   private double rotateSpeed;
@@ -248,7 +248,7 @@ public class Robot extends TimedRobot {
       else if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() > 0.04){ // extend
         rotateSpeed = -rotateLimiter.calculate(m_xbox.getLeftTriggerAxis()); // use left
       }
-      rotateMotor.set(TalonFXControlMode.PercentOutput, rotateSpeed);
+      rotateMotor.set(rotateSpeed);
     }
     
     if (m_xbox.getBButton()){
