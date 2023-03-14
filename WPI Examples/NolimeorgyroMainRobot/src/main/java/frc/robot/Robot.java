@@ -8,8 +8,8 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 
-import com.kauailabs.navx.frc.AHRS;
-import com.kauailabs.navx.frc.AHRS.BoardAxis;
+// import com.kauailabs.navx.frc.AHRS;
+// import com.kauailabs.navx.frc.AHRS.BoardAxis;
 
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;        
@@ -75,7 +75,7 @@ public class Robot extends TimedRobot {
   private double rotateMinValue = 6.0; // tinker!
   
 
-  private AHRS gyro;
+  // private AHRS gyro;
   private PIDController gyroPID;
 
 
@@ -178,12 +178,12 @@ public class Robot extends TimedRobot {
     leftStick = new Joystick(1);
     leftJLimiter = new SlewRateLimiter(0.8); // needs to be tested, tinker
     rightJLimiter = new SlewRateLimiter(0.8);
-    rotateLimiter = new SlewRateLimiter(0.9);
+    rotateLimiter = new SlewRateLimiter(1.5);
     extendLimiter = new SlewRateLimiter(0.9);
     robotDrive = new DifferentialDrive(left, right);
 
-    gyro = new AHRS(SPI.Port.kMXP);
-    gyro.reset();
+    //gyro = new AHRS(SPI.Port.kMXP);
+    // gyro.reset();
   }
 
   @Override
@@ -191,7 +191,7 @@ public class Robot extends TimedRobot {
     // gyroPID.setP(gyro_kP.getDouble(0));
     // gyroPID.setI(gyro_kI.getDouble(0));
     // gyroPID.setD(gyro_kD.getDouble(0));
-    currAngle = gyro.getBoardYawAxis().board_axis.getValue();
+    // currAngle = gyro.getBoardYawAxis().board_axis.getValue();
 
 
     
@@ -242,11 +242,11 @@ public class Robot extends TimedRobot {
       if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // deadzone 
         rotateSpeed = 0; 
       }
-      else if (m_xbox.getRightTriggerAxis() > 0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // retract or negative extend
-        rotateSpeed = rotateLimiter.calculate(m_xbox.getRightTriggerAxis()); // use right
+      else if (m_xbox.getRightTriggerAxis() > 0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // rotate up
+        rotateSpeed = -rotateLimiter.calculate(m_xbox.getRightTriggerAxis()) * 0.25; // m_xbox.getRightTriggerAxis(), use right
       }
-      else if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() > 0.04){ // extend
-        rotateSpeed = -rotateLimiter.calculate(m_xbox.getLeftTriggerAxis()); // use left
+      else if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() > 0.04){ // rotate down
+        rotateSpeed = rotateLimiter.calculate(m_xbox.getLeftTriggerAxis()) * 0.5; // m_xbox.getLeftTriggerAxis(), use left
       }
       rotateMotor.set(rotateSpeed);
     }
@@ -272,14 +272,14 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Right J", rSpeed);
     SmartDashboard.putNumber("CurrPitch", currAngle);
     
-    if(leftStick.getTrigger()){
-      ySpeed = gyroPID.calculate(currAngle, 0);
-    }
-    else{
+    //if(leftStick.getTrigger()){
+      //ySpeed = gyroPID.calculate(currAngle, 0);
+    //}
+    //else{
       ySpeed = leftJLimiter.calculate(leftStick.getY());
-    }
-      rSpeed = rightJLimiter.calculate(rightStick.getX());
-      robotDrive.arcadeDrive(ySpeed, rSpeed);
+    // }
+      rSpeed = rightJLimiter.calculate(rightStick.getY());
+      robotDrive.tankDrive(rSpeed, ySpeed);
   }
     public double remap_range(double val, double old_min, double old_max, double new_min, double new_max){ // Basically just math to convert a value from an old range to 
       // new range (slope, line formula)
