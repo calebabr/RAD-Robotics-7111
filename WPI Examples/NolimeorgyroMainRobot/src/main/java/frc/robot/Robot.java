@@ -8,7 +8,9 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 
-//import com.kauailabs.navx.frc.AHRS;
+import com.kauailabs.navx.frc.AHRS;
+import com.kauailabs.navx.frc.AHRS.BoardAxis;
+
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;        
 import edu.wpi.first.wpilibj.motorcontrol.MotorController;
@@ -72,8 +74,10 @@ public class Robot extends TimedRobot {
   private double rotateMaxValue = 5.0; // tinker!
   private double rotateMinValue = 6.0; // tinker!
   
-  //private AHRS gyro;
-  // private PIDController gyroPID;
+
+  private AHRS gyro;
+  private PIDController gyroPID;
+
 
   // private RelativeEncoder arm_encoder;
 
@@ -109,7 +113,7 @@ public class Robot extends TimedRobot {
   private SlewRateLimiter rotateLimiter;
   private SlewRateLimiter extendLimiter;
   double rotationSpeed;
-  double currPitch;
+  int currAngle;
 
 
   @Override
@@ -170,15 +174,16 @@ public class Robot extends TimedRobot {
     
     clawLeft.setInverted(true);
     
-    rightStick = new Joystick(1);
-    leftStick = new Joystick(0);
+    rightStick = new Joystick(0);
+    leftStick = new Joystick(1);
     leftJLimiter = new SlewRateLimiter(0.8); // needs to be tested, tinker
     rightJLimiter = new SlewRateLimiter(0.8);
     rotateLimiter = new SlewRateLimiter(0.9);
     extendLimiter = new SlewRateLimiter(0.9);
     robotDrive = new DifferentialDrive(left, right);
 
-    //gyro = new AHRS(SPI.Port.kMXP);
+    gyro = new AHRS(SPI.Port.kMXP);
+    gyro.reset();
   }
 
   @Override
@@ -186,14 +191,12 @@ public class Robot extends TimedRobot {
     // gyroPID.setP(gyro_kP.getDouble(0));
     // gyroPID.setI(gyro_kI.getDouble(0));
     // gyroPID.setD(gyro_kD.getDouble(0));
-    //currPitch = gyro.getPitch();
+    currAngle = gyro.getBoardYawAxis().board_axis.getValue();
 
 
     
     // Start Solenoid code, for grabber.
     if (m_xbox.getYButtonPressed()) {
-      // this is cone grab mode, press again to end.
-      // if you press when a solenoid is already active, it resets it.
       sol1.set(DoubleSolenoid.Value.kForward);
       // sol2.set(DoubleSolenoid.Value.kForward);
     }
@@ -267,15 +270,14 @@ public class Robot extends TimedRobot {
     // Setting the desired speed to the motors.
     SmartDashboard.putNumber("Left J", ySpeed);
     SmartDashboard.putNumber("Right J", rSpeed);
-    //SmartDashboard.putNumber("CurrPitch", currPitch);
-    /* 
-    if(m_xbox.getStartButton()){
-      ySpeed = gyroPID.calculate(currPitch, 0);
+    SmartDashboard.putNumber("CurrPitch", currAngle);
+    
+    if(leftStick.getTrigger()){
+      ySpeed = gyroPID.calculate(currAngle, 0);
     }
     else{
-      */
       ySpeed = leftJLimiter.calculate(leftStick.getY());
-    //}
+    }
       rSpeed = rightJLimiter.calculate(rightStick.getX());
       robotDrive.arcadeDrive(ySpeed, rSpeed);
   }
