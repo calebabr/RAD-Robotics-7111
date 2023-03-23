@@ -187,13 +187,16 @@ public class Robot extends TimedRobot {
     rightStick = new Joystick(1);
     leftStick = new Joystick(0);
     leftJLimiter = new SlewRateLimiter(1); // needs to be tested, tinker
-    rightJLimiter = new SlewRateLimiter(1.25);
+    rightJLimiter = new SlewRateLimiter(0.95);
     rotateLimiter = new SlewRateLimiter(1.5);
     extendLimiter = new SlewRateLimiter(0.9);
     robotDrive = new DifferentialDrive(left, right);
 
     //gyro = new AHRS(SPI.Port.kMXP);
     // gyro.reset();
+
+    autoTime = new Timer();
+
   }
 
   @Override
@@ -207,7 +210,6 @@ public class Robot extends TimedRobot {
     m_leftAutoPID.setSetpoint(4.25);
     m_rightAutoPID.setSetpoint(-4.25);
 
-    autoTime = new Timer();
     
   }
 
@@ -216,20 +218,21 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
-
-    if (autoTime.get() < 3){
-      rightSpeed = 0.5;
-      leftSpeed = 0.5;
-    }
-    else{
+    autoTime.start();
+    if (autoTime.hasElapsed(3.5)){
       rightSpeed = 0;
       leftSpeed = 0;
+    }
+    else{
+      rightSpeed = 0.45;
+      leftSpeed = 0.45;
     }
     robotDrive.tankDrive(leftSpeed, rightSpeed);
   }
 
   @Override
   public void teleopInit() {
+    // autoTime.stop();
     gyro_kP = Shuffleboard.getTab("SmartDashboard").add("kP", 0).withWidget("Text View").getEntry(); // tinker with this
     gyro_kI = Shuffleboard.getTab("SmartDashboard").add("kI", 0).withWidget("Text View").getEntry(); // tinker with this
     gyro_kD = Shuffleboard.getTab("SmartDashboard").add("kD", 0).withWidget("Text View").getEntry(); // tinker with this
@@ -294,10 +297,10 @@ public class Robot extends TimedRobot {
         rotateSpeed = 0; 
       }
       else if (m_xbox.getRightTriggerAxis() > 0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // rotate up
-        rotateSpeed = -rotateLimiter.calculate(m_xbox.getRightTriggerAxis()) * 0.25; // m_xbox.getRightTriggerAxis(), use right
+        rotateSpeed = -rotateLimiter.calculate(m_xbox.getRightTriggerAxis()) * 0.2; // m_xbox.getRightTriggerAxis(), use right
       }
       else if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() > 0.04){ // rotate down
-        rotateSpeed = rotateLimiter.calculate(m_xbox.getLeftTriggerAxis()) * 0.5; // m_xbox.getLeftTriggerAxis(), use left
+        rotateSpeed = rotateLimiter.calculate(m_xbox.getLeftTriggerAxis()) * 0.4; // m_xbox.getLeftTriggerAxis(), use left
       }
       rotateMotor.set(rotateSpeed);
     }
@@ -307,10 +310,10 @@ public class Robot extends TimedRobot {
         extendSpeed = 0; 
       }
       else if (m_xbox.getRightTriggerAxis() > 0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // extend
-        extendSpeed = -extendLimiter.calculate(m_xbox.getRightTriggerAxis()); // use right
+        extendSpeed = extendLimiter.calculate(m_xbox.getRightTriggerAxis()); // use right
       }
       else if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() > 0.04){ // retract
-        extendSpeed = extendLimiter.calculate(m_xbox.getLeftTriggerAxis()); // use left
+        extendSpeed = -extendLimiter.calculate(m_xbox.getLeftTriggerAxis()); // use left
       }
       extendMotor.set(extendSpeed);
     }
@@ -327,11 +330,11 @@ public class Robot extends TimedRobot {
       //ySpeed = gyroPID.calculate(currAngle, 0);
     //}
     //else{
-      ySpeed = leftJLimiter.calculate(leftStick.getY()) * 0.8;
+      ySpeed = leftJLimiter.calculate(rightStick.getY()) * 0.85;
     // }
-      rSpeed = rightJLimiter.calculate(rightStick.getX()) * 0.6;
+      rSpeed = rightJLimiter.calculate(leftStick.getX()) * 0.70;
       robotDrive.arcadeDrive(ySpeed, rSpeed);
-  }
+  }////////////////////////////////////////////
     public double remap_range(double val, double old_min, double old_max, double new_min, double new_max){ // Basically just math to convert a value from an old range to 
       // new range (slope, line formula)
     return (new_min + (val - old_min)*((new_max - new_min)/(old_max - old_min)));

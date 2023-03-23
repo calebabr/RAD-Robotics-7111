@@ -34,7 +34,7 @@ public class Robot extends TimedRobot {
   private final CANSparkMax m_testSpark = new CANSparkMax(1, MotorType.kBrushless);
   private final RelativeEncoder m_testEncoder = m_testSpark.getEncoder();
   private final XboxController m_xbox = new XboxController(2);
-  private final PIDController m_pid = new PIDController(0.005, 0.00005, 0);
+    private final PIDController m_pid = new PIDController(0.005, 0.00005, 0);
   private final PhotonCamera camera = new PhotonCamera("clockcam");
   private double currPos = 0;
   private double speed;
