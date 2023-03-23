@@ -35,7 +35,6 @@ import edu.wpi.first.math.controller.PIDController;
  * the code necessary to operate a robot with tank drive.
  */
 public class Robot extends TimedRobot {
-  private final PIDController pid = new PIDController(0.1, 0, 0);
   private DifferentialDrive m_myRobot;
   private Joystick m_leftStick;
   private Joystick m_rightStick;
@@ -44,8 +43,7 @@ public class Robot extends TimedRobot {
   private GenericEntry kI;
   private GenericEntry kD;
   private GenericEntry MinMax;
-  private float range = 1;
-  private boolean ChangedDriving;
+  private float range = 20;
   private final VictorSPX m_frontLeft = new VictorSPX(1);
   private final VictorSPX m_backLeft = new VictorSPX(2);
   private final VictorSPX m_frontRight = new VictorSPX(3);
@@ -55,11 +53,10 @@ public class Robot extends TimedRobot {
   //public static final Solenoid sol2 = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
   //private final PhotonCamera m_camera = new PhotonCamera("clockcam");
 
-  private final PIDController m_pid = new PIDController(0.005, 0.00005, 0);
+  private final PIDController m_pid = new PIDController(0.01, 0.00005, 0.001);
 
   private double leftSpeed = 0;
   private double rightSpeed = 0;
-  private double turnSpeed = 0;
 
   private double speed = 0;
   
@@ -68,9 +65,9 @@ public class Robot extends TimedRobot {
   private float ahrsAngle;
   @Override
   public void teleopInit() {
-    kP = Shuffleboard.getTab("SmartDashboard").add("kP", 0.01).withWidget("Text View").getEntry();
-    kI = Shuffleboard.getTab("SmartDashboard").add("kI", 0.00005).withWidget("Text View").getEntry();
-    kD = Shuffleboard.getTab("SmartDashboard").add("kD", 0).withWidget("Text View").getEntry();
+    kP = Shuffleboard.getTab("SmartDashboard").add("kP Gyro", 0.01).withWidget("Text View").getEntry();
+    kI = Shuffleboard.getTab("SmartDashboard").add("kI Gyro", 0.00005).withWidget("Text View").getEntry();
+    kD = Shuffleboard.getTab("SmartDashboard").add("kD Gyro", 0.001).withWidget("Text View").getEntry();
     MinMax = Shuffleboard.getTab("SmartDashboard").add("Min to Max deadzone", 1).withWidget("Text View").getEntry();
   }
   @Override
@@ -95,7 +92,6 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     ahrsAngle = ahrs.getPitch();
     SmartDashboard.putNumber("AHRS Angle", ahrsAngle);
-    double rotationSpeed;
     m_pid.setP(kP.getDouble(0.005));
     m_pid.setI(kI.getDouble(0.0005));
     m_pid.setD(kD.getDouble(0));
@@ -121,75 +117,25 @@ public class Robot extends TimedRobot {
      /*}
       
     */
-    if (m_xbox.getXButton()) {
-      ChangedDriving = true;
-    }
-    if (m_xbox.getYButton()) {
-      ChangedDriving = false;
-    }
-    if (m_xbox.getBButton()){
-        if (ahrsAngle < range && ahrsAngle > -range){
-          speed = 0;
-        }
-      
-        else{
-          speed = pid.calculate(ahrsAngle, 0);
-          leftSpeed = speed;
-          rightSpeed = speed;
-        }   
-    }
-    /*if (m_xbox.getXButton()) {
-      if (sol1.get() == true || sol2.get() == true) {
-        sol1.set(false);
-        sol2.set(false);
-      }
-      else {
-        sol1.set(true);
-      }
-      }
-    if (m_xbox.getYButton()) {
-      if (sol1.get() == true || sol2.get() == true) {
-        sol1.set(false);
-        sol2.set(false);
-      }
-      else {
-        sol1.set(true);
-        sol2.set(true);
-      }
-    }*/
-    if (ChangedDriving == true){
-      if (turnSpeed == 0 || Math.abs(rightSpeed) > Math.abs(turnSpeed)) {
-        m_frontLeft.set(ControlMode.PercentOutput, rightSpeed / 1.1);
-        m_backLeft.set(ControlMode.PercentOutput, rightSpeed / 1.1);
-        m_frontRight.set(ControlMode.PercentOutput, rightSpeed / 1.1);
-        m_backRight.set(ControlMode.PercentOutput, rightSpeed / 1.1);
-      }
-      else {
-          if (turnSpeed < 0) {
-            m_frontRight.set(ControlMode.PercentOutput, -turnSpeed / 2);
-            m_backRight.set(ControlMode.PercentOutput, -turnSpeed / 2);
-            m_frontLeft.set(ControlMode.PercentOutput, turnSpeed / 2);
-            m_backLeft.set(ControlMode.PercentOutput, turnSpeed / 2);
-          }
-          if (turnSpeed > 0) {
-            m_frontLeft.set(ControlMode.PercentOutput, turnSpeed / 2);
-            m_backLeft.set(ControlMode.PercentOutput, turnSpeed / 2);
-            m_frontRight.set(ControlMode.PercentOutput, -turnSpeed / 2);
-            m_backRight.set(ControlMode.PercentOutput, -turnSpeed / 2);
-          }
-        }
-      }
-    else {
-      m_frontLeft.set(ControlMode.PercentOutput, leftSpeed / 1.3);
-      m_backLeft.set(ControlMode.PercentOutput, leftSpeed / 1.3);
-      m_frontRight.set(ControlMode.PercentOutput, rightSpeed / 1.3);
-      m_backRight.set(ControlMode.PercentOutput, rightSpeed / 1.3);
-    }
-
-    SmartDashboard.putNumber("AHRS Angle", ahrsAngle);
     leftSpeed = m_leftStick.getY();
     rightSpeed = m_rightStick.getY();
-    turnSpeed = m_leftStick.getX();
+    if (m_xbox.getBButton()){
+      if ( Math.abs(ahrsAngle) < range) {}
+      else {
+        speed = m_pid.calculate(ahrsAngle, 0);
+        leftSpeed = speed;
+        rightSpeed = speed;
+      }
+  }
+
+    m_frontLeft.set(ControlMode.PercentOutput, leftSpeed);
+    m_backLeft.set(ControlMode.PercentOutput, leftSpeed);
+    m_frontRight.set(ControlMode.PercentOutput, rightSpeed);
+    m_backRight.set(ControlMode.PercentOutput, rightSpeed);
+
+
+
+    SmartDashboard.putNumber("AHRS Angle", ahrsAngle);
     
     }
     public double remap_range(double val, double old_min, double old_max, double new_min, double new_max){ // Basically just math to convert a value from an old range to 
