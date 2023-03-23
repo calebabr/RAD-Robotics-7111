@@ -12,6 +12,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
+
 // import com.revrobotics.SparkMaxPIDController;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.math.controller.PIDController;
@@ -32,7 +34,6 @@ public class Robot extends TimedRobot {
   TalonFX motor = new TalonFX(0); // creates a new TalonFX with ID 0
   private final RelativeEncoder m_testEncoder = m_testSpark.getEncoder();
   private final XboxController m_xbox = new XboxController(2);
-  private final PIDController m_pid = new PIDController(0.005, 0.00005, 0);
   private double currPos = 0;
   private double speed;
   private GenericEntry kP;
@@ -101,8 +102,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic(){
     // SmartDashboard
     double rotationSpeed;
-    currPos = m_testEncoder.getPosition();
-    speed = m_pid.calculate(currPos, 75);
+    motor.set(TalonFXControlMode.Position, 75);
     m_pid.setP(kP.getDouble(0.005));
     m_pid.setI(kI.getDouble(0.0005));
     m_pid.setD(kD.getDouble(0));
