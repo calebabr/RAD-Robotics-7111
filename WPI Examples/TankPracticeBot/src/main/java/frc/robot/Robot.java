@@ -43,7 +43,7 @@ public class Robot extends TimedRobot {
   private GenericEntry kI;
   private GenericEntry kD;
   private GenericEntry MinMax;
-  private float range = 20;
+  private double range = 20;
   private final VictorSPX m_frontLeft = new VictorSPX(1);
   private final VictorSPX m_backLeft = new VictorSPX(2);
   private final VictorSPX m_frontRight = new VictorSPX(3);
@@ -62,13 +62,16 @@ public class Robot extends TimedRobot {
   
   private AHRS ahrs;
 
-  private float ahrsAngle;
+  private double ahrsAngle;
+  private float ahrsPitch;
+  private float ahrsYaw;
+  private float ahrsRoll;
   @Override
   public void teleopInit() {
     kP = Shuffleboard.getTab("SmartDashboard").add("kP Gyro", 0.01).withWidget("Text View").getEntry();
     kI = Shuffleboard.getTab("SmartDashboard").add("kI Gyro", 0.00005).withWidget("Text View").getEntry();
     kD = Shuffleboard.getTab("SmartDashboard").add("kD Gyro", 0.001).withWidget("Text View").getEntry();
-    MinMax = Shuffleboard.getTab("SmartDashboard").add("Min to Max deadzone", 1).withWidget("Text View").getEntry();
+    MinMax = Shuffleboard.getTab("SmartDashboard").add("Gyro Threshold", 20).withWidget("Text View").getEntry();
   }
   @Override
   public void robotInit() {
@@ -84,18 +87,24 @@ public class Robot extends TimedRobot {
     m_frontRight.setInverted(true);
     m_backRight.setInverted(true);
     
-    m_rightStick = new Joystick(0);
-    m_leftStick = new Joystick(1);
+    m_rightStick = new Joystick(1);
+    m_leftStick = new Joystick(0);
   }
 
   @Override
   public void teleopPeriodic() {
-    ahrsAngle = ahrs.getPitch();
+    ahrsPitch = ahrs.getPitch();
+    ahrsYaw = ahrs.getYaw();
+    ahrsRoll = ahrs.getRoll();
+    ahrsAngle = ahrs.getAngle();
+    SmartDashboard.putNumber("AHRS Pitch", ahrsPitch);
+    SmartDashboard.putNumber("AHRS Yaw", ahrsYaw);
+    SmartDashboard.putNumber("AHRS Roll", ahrsRoll);
     SmartDashboard.putNumber("AHRS Angle", ahrsAngle);
     m_pid.setP(kP.getDouble(0.005));
     m_pid.setI(kI.getDouble(0.0005));
     m_pid.setD(kD.getDouble(0));
-    m_pid.setD(MinMax.getDouble(5));
+    range = MinMax.getDouble(20);
     /*elif (m_xbox.getAButton()){
       var result = m_camera.getLatestResult();
       if (result.hasTargets()) {
@@ -117,8 +126,7 @@ public class Robot extends TimedRobot {
      /*}
       
     */
-    leftSpeed = m_leftStick.getY();
-    rightSpeed = m_rightStick.getY();
+    
     if (m_xbox.getBButton()){
       if ( Math.abs(ahrsAngle) < range) {}
       else {
@@ -126,6 +134,10 @@ public class Robot extends TimedRobot {
         leftSpeed = speed;
         rightSpeed = speed;
       }
+  }
+  else {
+    leftSpeed = m_leftStick.getY();
+    rightSpeed = m_rightStick.getY();
   }
 
     m_frontLeft.set(ControlMode.PercentOutput, leftSpeed);
