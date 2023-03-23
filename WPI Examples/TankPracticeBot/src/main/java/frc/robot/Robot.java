@@ -28,6 +28,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.networktables.GenericEntry;
 
+
 import edu.wpi.first.math.controller.PIDController;
 
 /**
@@ -43,7 +44,7 @@ public class Robot extends TimedRobot {
   private GenericEntry kI;
   private GenericEntry kD;
   private GenericEntry MinMax;
-  private double range = 20;
+  private double range = 4;
   private final VictorSPX m_frontLeft = new VictorSPX(1);
   private final VictorSPX m_backLeft = new VictorSPX(2);
   private final VictorSPX m_frontRight = new VictorSPX(3);
@@ -53,7 +54,7 @@ public class Robot extends TimedRobot {
   //public static final Solenoid sol2 = new Solenoid(PneumaticsModuleType.CTREPCM, 1);
   //private final PhotonCamera m_camera = new PhotonCamera("clockcam");
 
-  private final PIDController m_pid = new PIDController(0.01, 0.00005, 0.001);
+  private final PIDController m_pid = new PIDController(0.019, 0.0002, 0.001);
 
   private double leftSpeed = 0;
   private double rightSpeed = 0;
@@ -68,10 +69,10 @@ public class Robot extends TimedRobot {
   private float ahrsRoll;
   @Override
   public void teleopInit() {
-    kP = Shuffleboard.getTab("SmartDashboard").add("kP Gyro", 0.01).withWidget("Text View").getEntry();
-    kI = Shuffleboard.getTab("SmartDashboard").add("kI Gyro", 0.00005).withWidget("Text View").getEntry();
-    kD = Shuffleboard.getTab("SmartDashboard").add("kD Gyro", 0.001).withWidget("Text View").getEntry();
-    MinMax = Shuffleboard.getTab("SmartDashboard").add("Gyro Threshold", 20).withWidget("Text View").getEntry();
+    kP = Shuffleboard.getTab("SmartDashboard").add("kP", 0.019).withWidget("Text View").getEntry();
+    kI = Shuffleboard.getTab("SmartDashboard").add("kI", 0.0002).withWidget("Text View").getEntry();
+    kD = Shuffleboard.getTab("SmartDashboard").add("kD", 0.001).withWidget("Text View").getEntry();
+    MinMax = Shuffleboard.getTab("SmartDashboard").add("Threshold", 4).withWidget("Text View").getEntry();
   }
   @Override
   public void robotInit() {
@@ -82,7 +83,7 @@ public class Robot extends TimedRobot {
     ahrs.reset();
 
     m_pid.setSetpoint(0);
-    m_pid.setTolerance(10);
+    // m_pid.setTolerance(10);
 
     m_frontRight.setInverted(true);
     m_backRight.setInverted(true);
@@ -93,7 +94,9 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
+   
     ahrsPitch = ahrs.getPitch();
+    ahrsPitch += 1.9;
     ahrsYaw = ahrs.getYaw();
     ahrsRoll = ahrs.getRoll();
     ahrsAngle = ahrs.getAngle();
@@ -101,10 +104,10 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("AHRS Yaw", ahrsYaw);
     SmartDashboard.putNumber("AHRS Roll", ahrsRoll);
     SmartDashboard.putNumber("AHRS Angle", ahrsAngle);
-    m_pid.setP(kP.getDouble(0.005));
-    m_pid.setI(kI.getDouble(0.0005));
-    m_pid.setD(kD.getDouble(0));
-    range = MinMax.getDouble(20);
+    m_pid.setP(kP.getDouble(0.019));
+    m_pid.setI(kI.getDouble(0.0002));
+    m_pid.setD(kD.getDouble(0.001));
+    range = MinMax.getDouble(4);
     /*elif (m_xbox.getAButton()){
       var result = m_camera.getLatestResult();
       if (result.hasTargets()) {
@@ -128,16 +131,19 @@ public class Robot extends TimedRobot {
     */
     
     if (m_xbox.getBButton()){
-      if ( Math.abs(ahrsAngle) < range) {}
+      if ( Math.abs(ahrsPitch) < range) {
+        leftSpeed = 0;
+        rightSpeed = 0;
+      }
       else {
-        speed = m_pid.calculate(ahrsAngle, 0);
-        leftSpeed = speed;
-        rightSpeed = speed;
+        speed = m_pid.calculate(ahrsPitch, 0);
+        leftSpeed = -speed;
+        rightSpeed = -speed;
       }
   }
   else {
-    leftSpeed = m_leftStick.getY();
-    rightSpeed = m_rightStick.getY();
+    leftSpeed = m_rightStick.getY();
+    rightSpeed = m_leftStick.getY();
   }
 
     m_frontLeft.set(ControlMode.PercentOutput, leftSpeed);
@@ -147,7 +153,7 @@ public class Robot extends TimedRobot {
 
 
 
-    SmartDashboard.putNumber("AHRS Angle", ahrsAngle);
+    // SmartDashboard.putNumber("AHRS Angle", ahrsAngle);
     
     }
     public double remap_range(double val, double old_min, double old_max, double new_min, double new_max){ // Basically just math to convert a value from an old range to 
