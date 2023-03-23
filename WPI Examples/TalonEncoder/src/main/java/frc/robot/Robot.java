@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 // import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 
@@ -21,6 +22,7 @@ import edu.wpi.first.wpilibj.shuffleboard.BuiltInWidgets;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.networktables.GenericEntry;
+import edu.wpi.first.math.controller.PIDController;
 
 
 
@@ -32,8 +34,9 @@ import edu.wpi.first.networktables.GenericEntry;
  */
 public class Robot extends TimedRobot {
   TalonFX motor = new TalonFX(0); // creates a new TalonFX with ID 0
-  private final RelativeEncoder m_testEncoder = m_testSpark.getEncoder();
+  // private final RelativeEncoder m_testEncoder = m_testSpark.getEncoder();
   private final XboxController m_xbox = new XboxController(2);
+  private final PIDController m_pid = new PIDController(0,0,0);
   private double currPos = 0;
   private double speed;
   private GenericEntry kP;
@@ -87,38 +90,33 @@ public class Robot extends TimedRobot {
   /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    m_pid.reset();
-    m_testEncoder.setPosition(0);
-    m_pid.setSetpoint(75);
 
     kP = Shuffleboard.getTab("SmartDashboard").add("kP", 0.005).withWidget("Text View").getEntry();
     kI = Shuffleboard.getTab("SmartDashboard").add("kI", 0.00005).withWidget("Text View").getEntry();
     kD = Shuffleboard.getTab("SmartDashboard").add("kD", 0).withWidget("Text View").getEntry();
 
+    motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor,0,0);
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic(){
     // SmartDashboard
-    double rotationSpeed;
-    motor.set(TalonFXControlMode.Position, 75);
+    currPos = motor.getSelectedSensorPosition();
+    speed = m_pid.calculate(currPos, 100);
     m_pid.setP(kP.getDouble(0.005));
     m_pid.setI(kI.getDouble(0.0005));
     m_pid.setD(kD.getDouble(0));
 
     // Test 1: Motor will turn by xbox control. Observe smartDashboard if encoder values change and display
     // on dashboard.
-    if (m_xbox.getBButton()){     // Test 2: Control motor by set point and WPI PID Loop
-      motor.set(TalonFXControlMode.PercentOutput, speed); // runs the motor at wanted power
+    if (m_xbox.getBButton()){     
+      motor.set(TalonFXControlMode.PercentOutput, speed); 
     }
     else{
-      m_testSpark.set(0);
+      motor.set(TalonFXControlMode.PercentOutput, 0);
     }
-    if (m_xbox.getYButton()){
-      m_testEncoder.setPosition(0);
-      m_pid.setSetpoint(75);
-    }
+
   }
 
   /** This function is called once when the robot is disabled. */
