@@ -139,6 +139,7 @@ public class Robot extends TimedRobot {
     }
     else{
       motor.set(TalonFXControlMode.PercentOutput, 0);
+      sparkMotor.set(0);
     }
     if (m_xbox.getAButton()){
       motor.setSelectedSensorPosition(0);
