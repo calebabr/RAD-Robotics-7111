@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 // import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
@@ -23,6 +24,9 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.networktables.GenericEntry;
 import edu.wpi.first.math.controller.PIDController;
+import com.revrobotics.CANSparkMax;
+import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+
 
 
 
@@ -34,14 +38,21 @@ import edu.wpi.first.math.controller.PIDController;
  */
 public class Robot extends TimedRobot {
   TalonFX motor = new TalonFX(0); // creates a new TalonFX with ID 0
+  CANSparkMax sparkMotor = new CANSparkMax(6, MotorType.kBrushless);
   // private final RelativeEncoder m_testEncoder = m_testSpark.getEncoder();
   private final XboxController m_xbox = new XboxController(2);
-  private final PIDController m_pid = new PIDController(0,0,0);
-  private double currPos = 0;
-  private double speed;
-  private GenericEntry kP;
-  private GenericEntry kI;
-  private GenericEntry kD;
+  private final PIDController falconPID = new PIDController(0,0,0);
+  private final PIDController sparkPID = new PIDController(0,0,0);
+  private double currFalconPos = 0;
+  private double falconSpeed;
+  private double currSparkPos = 0;
+  private double sparkSpeed;
+  private GenericEntry falconkP;
+  private GenericEntry falconkI;
+  private GenericEntry falconkD;
+  private GenericEntry sparkkP;
+  private GenericEntry sparkkI;
+  private GenericEntry sparkkD;
   double p;
   double i;
   double d;
@@ -91,9 +102,12 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
 
-    kP = Shuffleboard.getTab("SmartDashboard").add("kP", 0.005).withWidget("Text View").getEntry();
-    kI = Shuffleboard.getTab("SmartDashboard").add("kI", 0.00005).withWidget("Text View").getEntry();
-    kD = Shuffleboard.getTab("SmartDashboard").add("kD", 0).withWidget("Text View").getEntry();
+    falconkP = Shuffleboard.getTab("SmartDashboard").add("falcon kP", 0.005).withWidget("Text View").getEntry();
+    falconkI = Shuffleboard.getTab("SmartDashboard").add("falcon kI", 0.00005).withWidget("Text View").getEntry();
+    falconkD = Shuffleboard.getTab("SmartDashboard").add("falcon kD", 0).withWidget("Text View").getEntry();
+    sparkkP = Shuffleboard.getTab("SmartDashboard").add("spark kP", 0.005).withWidget("Text View").getEntry();
+    sparkkI = Shuffleboard.getTab("SmartDashboard").add("spark kI", 0.00005).withWidget("Text View").getEntry();
+    sparkkD = Shuffleboard.getTab("SmartDashboard").add("spark kD", 0).withWidget("Text View").getEntry();
 
     motor.configSelectedFeedbackSensor(FeedbackDevice.IntegratedSensor,0,0);
   }
@@ -102,16 +116,26 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic(){
     // SmartDashboard
-    currPos = motor.getSelectedSensorPosition();
-    speed = m_pid.calculate(currPos, 100);
-    m_pid.setP(kP.getDouble(0.005));
-    m_pid.setI(kI.getDouble(0.0005));
-    m_pid.setD(kD.getDouble(0));
+    currFalconPos = motor.getSelectedSensorPosition();
+    falconSpeed = falconPID.calculate(currFalconPos, 100000);
+    currSparkPos = sparkMotor.getEncoder().getPosition();
+    sparkSpeed = sparkPID.calculate(currSparkPos, 500);
+    falconPID.setP(falconkP.getDouble(0.005));
+    falconPID.setI(falconkI.getDouble(0.0005));
+    falconPID.setD(falconkD.getDouble(0));
+    sparkPID.setP(sparkkP.getDouble(0.005));
+    sparkPID.setI(sparkkI.getDouble(0.0005));
+    sparkPID.setD(sparkkD.getDouble(0));
 
     // Test 1: Motor will turn by xbox control. Observe smartDashboard if encoder values change and display
     // on dashboard.
     if (m_xbox.getBButton()){     
-      motor.set(TalonFXControlMode.PercentOutput, speed); 
+      if (currFalconPos < 100000){
+        motor.set(ControlMode.PercentOutput, falconSpeed);
+      }
+      else if (currFalconPos > 100000 && currSparkPos < 500){
+        sparkMotor.set(sparkSpeed);
+      }
     }
     else{
       motor.set(TalonFXControlMode.PercentOutput, 0);
