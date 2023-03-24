@@ -11,13 +11,7 @@ import edu.wpi.first.wpilibj.TimedRobot;
 // import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
-<<<<<<< HEAD
-
-import javax.swing.text.StyleContext.SmallAttributeSet;
-
-=======
 import com.ctre.phoenix.motorcontrol.ControlMode;
->>>>>>> b832906b13520efc9b5da79719d63b74c9ce4aa2
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
@@ -43,12 +37,8 @@ import com.revrobotics.CANSparkMaxLowLevel.MotorType;
  * project.
  */
 public class Robot extends TimedRobot {
-<<<<<<< HEAD
-  TalonFX motor = new TalonFX(11); // creates a new TalonFX with ID 0
-=======
   TalonFX motor = new TalonFX(0); // creates a new TalonFX with ID 0
   CANSparkMax sparkMotor = new CANSparkMax(6, MotorType.kBrushless);
->>>>>>> b832906b13520efc9b5da79719d63b74c9ce4aa2
   // private final RelativeEncoder m_testEncoder = m_testSpark.getEncoder();
   private final XboxController m_xbox = new XboxController(2);
   private final PIDController falconPID = new PIDController(0,0,0);
@@ -126,14 +116,6 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic(){
     // SmartDashboard
-<<<<<<< HEAD
-    currPos = motor.getSelectedSensorPosition();
-    SmartDashboard.putNumber("currPos", currPos);
-    speed = m_pid.calculate(currPos, 1000);
-    m_pid.setP(kP.getDouble(0.005));
-    m_pid.setI(kI.getDouble(0.0005));
-    m_pid.setD(kD.getDouble(0));
-=======
     currFalconPos = motor.getSelectedSensorPosition();
     falconSpeed = falconPID.calculate(currFalconPos, 100000);
     currSparkPos = sparkMotor.getEncoder().getPosition();
@@ -144,7 +126,6 @@ public class Robot extends TimedRobot {
     sparkPID.setP(sparkkP.getDouble(0.005));
     sparkPID.setI(sparkkI.getDouble(0.0005));
     sparkPID.setD(sparkkD.getDouble(0));
->>>>>>> b832906b13520efc9b5da79719d63b74c9ce4aa2
 
     // Test 1: Motor will turn by xbox control. Observe smartDashboard if encoder values change and display
     // on dashboard.
