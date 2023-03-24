@@ -55,9 +55,10 @@ public class Robot extends TimedRobot {
   //private final PhotonCamera m_camera = new PhotonCamera("clockcam");
 
   private final PIDController m_pid = new PIDController(0.019, 0.0002, 0.001);
+  private final PIDController Yawpid = new PIDController(0.007, 0.00005, 0.0015);
 
-  private double leftSpeed = 0;
-  private double rightSpeed = 0;
+  private double forwardSpeed = 0;
+  private double turnSpeed = 0;
 
   private double speed = 0;
   
@@ -100,6 +101,7 @@ public class Robot extends TimedRobot {
     ahrsYaw = ahrs.getYaw();
     ahrsRoll = ahrs.getRoll();
     ahrsAngle = ahrs.getAngle();
+    ahrsAngle %= 360;
     SmartDashboard.putNumber("AHRS Pitch", ahrsPitch);
     SmartDashboard.putNumber("AHRS Yaw", ahrsYaw);
     SmartDashboard.putNumber("AHRS Roll", ahrsRoll);
@@ -131,25 +133,34 @@ public class Robot extends TimedRobot {
     */
     
     if (m_xbox.getBButton()){
+      if (Math.abs(ahrsYaw) < 165 && Math.abs(ahrsYaw) > 100) {
+        speed = Yawpid.calculate(ahrsYaw, 180);
+        turnSpeed = speed;
+      if (Math.abs(ahrsYaw) > 15 && Math.abs(ahrsYaw) < 90 ) {
+        speed = Yawpid.calculate(ahrsYaw, 0);
+        turnSpeed = speed;
+      }
+      }
       if ( Math.abs(ahrsPitch) < range) {
-        leftSpeed = 0;
-        rightSpeed = 0;
+        forwardSpeed = 0;
+
       }
       else {
         speed = m_pid.calculate(ahrsPitch, 0);
-        leftSpeed = -speed;
-        rightSpeed = -speed;
+        forwardSpeed = -speed;
+
       }
   }
   else {
-    leftSpeed = m_rightStick.getY();
-    rightSpeed = m_leftStick.getY();
+    forwardSpeed = m_rightStick.getY() * 0.8;
+    turnSpeed = m_leftStick.getX() * 0.5;
+  
   }
 
-    m_frontLeft.set(ControlMode.PercentOutput, leftSpeed);
-    m_backLeft.set(ControlMode.PercentOutput, leftSpeed);
-    m_frontRight.set(ControlMode.PercentOutput, rightSpeed);
-    m_backRight.set(ControlMode.PercentOutput, rightSpeed);
+    m_frontLeft.set(ControlMode.PercentOutput, forwardSpeed + turnSpeed);
+    m_backLeft.set(ControlMode.PercentOutput, forwardSpeed + turnSpeed);
+    m_frontRight.set(ControlMode.PercentOutput, forwardSpeed - turnSpeed);
+    m_backRight.set(ControlMode.PercentOutput, forwardSpeed - turnSpeed);
 
 
 
