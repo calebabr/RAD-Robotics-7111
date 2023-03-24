@@ -23,6 +23,7 @@ import javax.swing.plaf.RootPaneUI;
 import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
 import edu.wpi.first.wpilibj.SPI;
@@ -71,7 +72,7 @@ public class Robot extends TimedRobot {
   private XboxController m_xbox = new XboxController(2);
   // private static final int kEncoderPortA = 0;
   // private static final int kEncoderPortB = 1;
-  private final CANSparkMax rotateMotor = new CANSparkMax(7, MotorType.kBrushless);
+  private final TalonFX rotateMotor = new TalonFX(10);
   private final CANSparkMax extendMotor = new CANSparkMax(5, MotorType.kBrushless);
   private double extendSpeed;
   private double rotateSpeed;
@@ -302,7 +303,7 @@ public class Robot extends TimedRobot {
       else if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() > 0.04){ // rotate down
         rotateSpeed = rotateLimiter.calculate(m_xbox.getLeftTriggerAxis()) * 0.4; // m_xbox.getLeftTriggerAxis(), use left
       }
-      rotateMotor.set(rotateSpeed);
+      rotateMotor.set(ControlMode.PercentOutput, rotateSpeed);
     }
     
     if (m_xbox.getBButton()){
