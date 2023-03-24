@@ -11,6 +11,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 // import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+
+import javax.swing.text.StyleContext.SmallAttributeSet;
+
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
@@ -33,7 +36,7 @@ import edu.wpi.first.math.controller.PIDController;
  * project.
  */
 public class Robot extends TimedRobot {
-  TalonFX motor = new TalonFX(0); // creates a new TalonFX with ID 0
+  TalonFX motor = new TalonFX(11); // creates a new TalonFX with ID 0
   // private final RelativeEncoder m_testEncoder = m_testSpark.getEncoder();
   private final XboxController m_xbox = new XboxController(2);
   private final PIDController m_pid = new PIDController(0,0,0);
@@ -103,7 +106,8 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic(){
     // SmartDashboard
     currPos = motor.getSelectedSensorPosition();
-    speed = m_pid.calculate(currPos, 100);
+    SmartDashboard.putNumber("currPos", currPos);
+    speed = m_pid.calculate(currPos, 1000);
     m_pid.setP(kP.getDouble(0.005));
     m_pid.setI(kI.getDouble(0.0005));
     m_pid.setD(kD.getDouble(0));
@@ -115,6 +119,9 @@ public class Robot extends TimedRobot {
     }
     else{
       motor.set(TalonFXControlMode.PercentOutput, 0);
+    }
+    if (m_xbox.getAButton()){
+      motor.setSelectedSensorPosition(0);
     }
 
   }
