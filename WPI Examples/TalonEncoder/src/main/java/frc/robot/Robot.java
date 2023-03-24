@@ -134,7 +134,7 @@ public class Robot extends TimedRobot {
         motor.set(ControlMode.PercentOutput, falconSpeed);
       }
       else if (currFalconPos > 100000 && currSparkPos < 500){
-        sparkMotor.set(sparkSpeed);
+        sparkMotor.set(sparkSpeed); // yuh
       }
     }
     else{
