@@ -133,14 +133,14 @@ public class Robot extends TimedRobot {
     */
     
     if (m_xbox.getBButton()){
-      if (Math.abs(ahrsYaw) < 165 && Math.abs(ahrsYaw) > 100) {
-        speed = Yawpid.calculate(ahrsYaw, 180);
-        turnSpeed = speed;
-      if (Math.abs(ahrsYaw) > 15 && Math.abs(ahrsYaw) < 90 ) {
-        speed = Yawpid.calculate(ahrsYaw, 0);
-        turnSpeed = speed;
-      }
-      }
+      // if (Math.abs(ahrsYaw) < 165 && Math.abs(ahrsYaw) > 100) {
+      //   speed = Yawpid.calculate(ahrsYaw, 180);
+      //  turnSpeed = speed;
+      // if (Math.abs(ahrsYaw) > 15 && Math.abs(ahrsYaw) < 90 ) {
+      //   speed = Yawpid.calculate(ahrsYaw, 0);
+      //   turnSpeed = speed;
+      // }
+      //}
       if ( Math.abs(ahrsPitch) < range) {
         forwardSpeed = 0;
 

@@ -24,6 +24,7 @@ import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
 import edu.wpi.first.wpilibj.SPI;
@@ -68,6 +69,7 @@ public class Robot extends TimedRobot {
   private GenericEntry gyro_kP;
   private GenericEntry gyro_kI;
   private GenericEntry gyro_kD;
+  private GenericEntry rotateArm;
   Thread m_visionThread;
   private XboxController m_xbox = new XboxController(2);
   // private static final int kEncoderPortA = 0;
@@ -197,6 +199,7 @@ public class Robot extends TimedRobot {
     // gyro.reset();
 
     autoTime = new Timer();
+    rotateMotor.setNeutralMode(NeutralMode.Brake);
 
   }
 
@@ -237,6 +240,8 @@ public class Robot extends TimedRobot {
     gyro_kP = Shuffleboard.getTab("SmartDashboard").add("kP", 0).withWidget("Text View").getEntry(); // tinker with this
     gyro_kI = Shuffleboard.getTab("SmartDashboard").add("kI", 0).withWidget("Text View").getEntry(); // tinker with this
     gyro_kD = Shuffleboard.getTab("SmartDashboard").add("kD", 0).withWidget("Text View").getEntry(); // tinker with this
+    rotateArm = Shuffleboard.getTab("SmartDashboard").add("rotate", 0.1).withWidget("Text View").getEntry(); // tinker with this
+
     // arm_encoder.setPosition(0);
   }
  
@@ -261,11 +266,11 @@ public class Robot extends TimedRobot {
     }
 
     // Claw Motors
-    if (m_xbox.getRightBumper()){ // suck in game piece
+    if (m_xbox.getBButton()){ // suck in game piece
       clawRight.set(VictorSPXControlMode.PercentOutput, 0.5); 
       clawLeft.set(VictorSPXControlMode.PercentOutput, 0.5);
     }
-    else if (m_xbox.getLeftBumper()){ // spit out game piece
+    else if (m_xbox.getAButton()){ // spit out game piece
       clawRight.set(VictorSPXControlMode.PercentOutput, -0.5); 
       clawLeft.set(VictorSPXControlMode.PercentOutput, -0.5);
     }
@@ -293,31 +298,34 @@ public class Robot extends TimedRobot {
       // extendMotor.set(0);
     // }
     
-    if (m_xbox.getAButton()){
-      if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // deadzone 
+    // if (m_xbox.getAButton()){
+      if (m_xbox.getRightTriggerAxis() < 0.7 && m_xbox.getLeftTriggerAxis() < 0.07){ // deadzone 
         rotateSpeed = 0; 
       }
-      else if (m_xbox.getRightTriggerAxis() > 0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // rotate up
-        rotateSpeed = -rotateLimiter.calculate(m_xbox.getRightTriggerAxis()) * 0.2; // m_xbox.getRightTriggerAxis(), use right
+      else if (m_xbox.getRightTriggerAxis() > 0.07 && m_xbox.getLeftTriggerAxis() < 0.07){ // rotate down
+        rotateSpeed = 0.1 * rotateArm.getDouble(0.1); // m_xbox.getRightTriggerAxis(), use right
       }
-      else if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() > 0.04){ // rotate down
-        rotateSpeed = rotateLimiter.calculate(m_xbox.getLeftTriggerAxis()) * 0.4; // m_xbox.getLeftTriggerAxis(), use left
+      else if (m_xbox.getRightTriggerAxis() < 0.07 && m_xbox.getLeftTriggerAxis() > 0.07){ // rotate up
+        rotateSpeed = -0.1 * rotateArm.getDouble(0.1); // m_xbox.getLeftTriggerAxis(), use left
+      }
+      else{
+        rotateSpeed = 0;
       }
       rotateMotor.set(ControlMode.PercentOutput, rotateSpeed);
-    }
+    // }
     
-    if (m_xbox.getBButton()){
-      if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // deadzone 
-        extendSpeed = 0; 
+    // if (m_xbox.getBButton()){
+      if (m_xbox.getRightBumper()){ // extend
+        extendSpeed = 0.5; // use right
       }
-      else if (m_xbox.getRightTriggerAxis() > 0.04 && m_xbox.getLeftTriggerAxis() < 0.04){ // extend
-        extendSpeed = extendLimiter.calculate(m_xbox.getRightTriggerAxis()); // use right
+      else if (m_xbox.getLeftBumper()){ // retract
+        extendSpeed = -0.5; // use left
       }
-      else if (m_xbox.getRightTriggerAxis() < 0.04 && m_xbox.getLeftTriggerAxis() > 0.04){ // retract
-        extendSpeed = -extendLimiter.calculate(m_xbox.getLeftTriggerAxis()); // use left
+      else{
+        extendSpeed = 0;
       }
       extendMotor.set(extendSpeed);
-    }
+    // }
 
     // End arm code
     
