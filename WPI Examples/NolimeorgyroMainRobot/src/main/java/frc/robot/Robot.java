@@ -65,6 +65,8 @@ import org.opencv.core.Point;
 public class Robot extends TimedRobot {
 
   private Timer autoTime;
+  private int AutoState;
+  private double autospeed;
 
   private GenericEntry gyro_kP;
   private GenericEntry gyro_kI;
@@ -83,10 +85,15 @@ public class Robot extends TimedRobot {
   Timer clocka = new Timer();
   private final PIDController m_rightAutoPID = new PIDController(0.005, 0.00005, 0);
   private final PIDController m_leftAutoPID = new PIDController(0.005, 0.00005, 0);
+  private final PIDController ArmAutoPID = new PIDController(0,0,0);
 
 
   // private AHRS gyro;
   private PIDController gyroPID;
+
+  private float ahrsPitch;
+  private float ahrsYaw;
+  private double range = 4;
 
 
   // private RelativeEncoder arm_encoder;
@@ -213,6 +220,7 @@ public class Robot extends TimedRobot {
     frontRightEncoder.setPosition(0);
     m_leftAutoPID.setSetpoint(4.25);
     m_rightAutoPID.setSetpoint(-4.25);
+  
 
     
   }
@@ -222,17 +230,131 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
-    autoTime.start();
-    if (autoTime.hasElapsed(3.5)){
-      rightSpeed = 0;
-      leftSpeed = 0;
+    switch (AutoState) {
+      // Move the robot back
+      case 0:
+      autoTime.reset();
+      autoTime.start();
+      if (frontLeftEncoder.getPosition() < -4.30 && frontLeftEncoder.getPosition() > -4.20){
+        robotDrive.tankDrive(0,0);
+        AutoState += 1;
+
+      }
+      else{
+        autospeed = m_leftAutoPID.calculate(frontLeftEncoder.getPosition(), -4.25);
+        robotDrive.tankDrive(autospeed,autospeed);
+      }
+      break;
+      // Rotate the arm up and retract the arm a bit
+      case 1:
+      autoTime.reset();
+      autoTime.start();
+      if (autoTime.hasElapsed(1.5)){
+        rotateMotor.set(ControlMode.PercentOutput, 0);
+        extendMotor.set(0);
+        AutoState += 1;
+      }
+      else{
+
+        rotateMotor.set(ControlMode.PercentOutput, 0.5);
+        extendMotor.set(-0.3);
+      }
+      break;
+      // Extend the arm
+      case 2:
+      autoTime.reset();
+      autoTime.start();
+      if (autoTime.hasElapsed(1)){
+        extendMotor.set(0);
+        AutoState += 1;
+      }
+      else{
+        extendMotor.set(0.3);
+      }
+      break;
+      // Spit out the cube
+      case 3:
+      autoTime.reset();
+      autoTime.start();
+      if (autoTime.hasElapsed(0.5)){
+        clawRight.set(VictorSPXControlMode.PercentOutput,0); 
+        clawLeft.set(VictorSPXControlMode.PercentOutput,0);
+        AutoState += 1;
+      }
+      else{
+        clawRight.set(VictorSPXControlMode.PercentOutput, -0.5); 
+        clawLeft.set(VictorSPXControlMode.PercentOutput, -0.5);
+      }
+      break;
+      // Rotate the arm back down and retract arm.
+      case 4:
+      autoTime.reset();
+      autoTime.start();
+      if (autoTime.hasElapsed(1.5)){
+        rotateMotor.set(ControlMode.PercentOutput, 0);
+        extendMotor.set(0);
+        AutoState += 1;
+      }
+      else{
+        rotateMotor.set(ControlMode.PercentOutput, -0.5);
+        extendMotor.set(-0.3);
+      }
+      break;
+      // Move forward a bit again to get ready to get on the charge station
+      case 5:
+      frontLeftEncoder.setPosition(0);
+      if (frontLeftEncoder.getPosition() < 4.30 && frontLeftEncoder.getPosition() > 4.20){
+        robotDrive.tankDrive(0,0);
+        AutoState += 1;
+      }
+      else{
+        autospeed = m_leftAutoPID.calculate(frontLeftEncoder.getPosition(), 4.25);
+        robotDrive.tankDrive(autospeed,autospeed);
+      }
+      break;
+      // Push our way up the charge station
+      case 6:
+      frontLeftEncoder.setPosition(0);
+      if (frontLeftEncoder.getPosition() < -10.30 && frontLeftEncoder.getPosition() > -10.20) { //placeholder values
+
+        robotDrive.tankDrive(0,0);
+        AutoState += 1;
+      }
+      else {
+        autospeed = m_leftAutoPID.calculate(frontLeftEncoder.getPosition(), -10.25); //placeholder values
+        robotDrive.tankDrive(autospeed, autospeed);
+      }
+      break;
+      case 7:
+      frontLeftEncoder.setPosition(0);
+      if (frontLeftEncoder.getPosition() < 3.30 && frontLeftEncoder.getPosition() > 3.20) {
+        robotDrive.tankDrive(0,0);
+        AutoState += 1;
+      }
+      else {
+        autospeed = m_leftAutoPID.calculate(frontLeftEncoder.getPosition(), 3.25);
+        robotDrive.tankDrive(autospeed, autospeed);
+      }
+      case 8:
+      if ( Math.abs(ahrsPitch) < range) {
+        ySpeed = 0;
+        rSpeed = 0;
+
+      }
+      else {
+        autospeed = gyroPID.calculate(ahrsPitch, 0);
+        ySpeed = autospeed;
+        rSpeed = 0;
+
+      }
+      robotDrive.arcadeDrive(ySpeed, rSpeed);
+  
+      break;
     }
-    else{
-      rightSpeed = 0.45;
-      leftSpeed = 0.45;
-    }
-    robotDrive.tankDrive(leftSpeed, rightSpeed);
+
   }
+
+
 
   @Override
   public void teleopInit() {
