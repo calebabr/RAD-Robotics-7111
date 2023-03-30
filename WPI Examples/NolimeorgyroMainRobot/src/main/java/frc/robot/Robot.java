@@ -316,22 +316,22 @@ public class Robot extends TimedRobot {
       // Push our way up the charge station
       case 6:
       frontLeftEncoder.setPosition(0);
-      if (frontLeftEncoder.getPosition() < -9 && frontLeftEncoder.getPosition() > -13) { //placeholder values
-        if (ahrsPitch > -range) {
-          robotDrive.tankDrive(0.5,0.5);
-          autoPast = 1;
+      if (frontLeftEncoder.getPosition() < -9 && frontLeftEncoder.getPosition() > -13) { //placeholder values, last one should be right before white line.
+        if (ahrsPitch > -range) { // If the robot is going down 
+          robotDrive.tankDrive(0.5,0.5); // Sets the speed to half to move off the charge station
+          autoPast = 1; // Makes it able to go to the next auto stage.
         }
-        else {
-          if (autoPast == 1){
+        else { // If the robot is balanced
+          if (autoPast == 1){ // if it has been going down and is ready to continue
             robotDrive.tankDrive(0,0);
-            AutoState += 1;
+            AutoState += 1; // sets it to the next auto stage.
           }
           
         }
       }
       else {
         autospeed = m_leftAutoPID.calculate(frontLeftEncoder.getPosition(), -10.5); //placeholder values
-        robotDrive.tankDrive(autospeed, autospeed);
+        robotDrive.tankDrive(autospeed, autospeed); // Goes to the area to check if balanced.
       }
       break;
       case 7:
