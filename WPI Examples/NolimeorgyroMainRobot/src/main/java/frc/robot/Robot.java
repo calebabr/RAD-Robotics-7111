@@ -67,6 +67,7 @@ public class Robot extends TimedRobot {
   private Timer autoTime;
   private int AutoState;
   private double autospeed;
+  private double autoPast;
 
   private GenericEntry gyro_kP;
   private GenericEntry gyro_kI;
@@ -220,6 +221,7 @@ public class Robot extends TimedRobot {
     frontRightEncoder.setPosition(0);
     m_leftAutoPID.setSetpoint(4.25);
     m_rightAutoPID.setSetpoint(-4.25);
+    autoPast = 0;
   
 
     
@@ -233,8 +235,7 @@ public class Robot extends TimedRobot {
     switch (AutoState) {
       // Move the robot back
       case 0:
-      autoTime.reset();
-      autoTime.start();
+
       if (frontLeftEncoder.getPosition() < -4.30 && frontLeftEncoder.getPosition() > -4.20){
         robotDrive.tankDrive(0,0);
         AutoState += 1;
@@ -315,24 +316,32 @@ public class Robot extends TimedRobot {
       // Push our way up the charge station
       case 6:
       frontLeftEncoder.setPosition(0);
-      if (frontLeftEncoder.getPosition() < -10.30 && frontLeftEncoder.getPosition() > -10.20) { //placeholder values
-
-        robotDrive.tankDrive(0,0);
-        AutoState += 1;
+      if (frontLeftEncoder.getPosition() < -9 && frontLeftEncoder.getPosition() > -13) { //placeholder values
+        if (ahrsPitch > -range) {
+          robotDrive.tankDrive(0.5,0.5);
+          autoPast = 1;
+        }
+        else {
+          if (autoPast == 1){
+            robotDrive.tankDrive(0,0);
+            AutoState += 1;
+          }
+          
+        }
       }
       else {
-        autospeed = m_leftAutoPID.calculate(frontLeftEncoder.getPosition(), -10.25); //placeholder values
+        autospeed = m_leftAutoPID.calculate(frontLeftEncoder.getPosition(), -10.5); //placeholder values
         robotDrive.tankDrive(autospeed, autospeed);
       }
       break;
       case 7:
       frontLeftEncoder.setPosition(0);
-      if (frontLeftEncoder.getPosition() < 3.30 && frontLeftEncoder.getPosition() > 3.20) {
+      if (frontLeftEncoder.getPosition() < 4.30 && frontLeftEncoder.getPosition() > 4.20) {
         robotDrive.tankDrive(0,0);
         AutoState += 1;
       }
       else {
-        autospeed = m_leftAutoPID.calculate(frontLeftEncoder.getPosition(), 3.25);
+        autospeed = m_leftAutoPID.calculate(frontLeftEncoder.getPosition(), 4.25);
         robotDrive.tankDrive(autospeed, autospeed);
       }
       case 8:
