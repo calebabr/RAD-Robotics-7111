@@ -29,7 +29,9 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-//import org.photonvision.PhotonCamera;
+import org.photonvision.PhotonCamera;
+import org.photonvision.targeting.PhotonTrackedTarget;
+
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -143,6 +145,7 @@ public class Robot extends TimedRobot {
   double rotationSpeed;
   int currAngle;
 
+  PhotonCamera camera = new PhotonCamera("clockcam");
 
   @Override
   public void robotInit() {
@@ -222,10 +225,28 @@ public class Robot extends TimedRobot {
     m_leftAutoPID.setSetpoint(4.25);
     m_rightAutoPID.setSetpoint(-4.25);
     autoPast = 0;
+    var result = camera.getLatestResult();
+    PhotonTrackedTarget target = result.getBestTarget();
+    int targetID = target.getFiducialId();
+    
+    if(result.hasTargets()){
+      if(targetID == 1){ 
+        AutoState = 9; //temp state values
+      }
+      if(targetID == 2){
+        AutoState = 0;
+      }
+      if(targetID == 3){
+        AutoState = 9;
+      }
+    }
+    
+    
+  }
   
 
     
-  }
+
 
   /** This function is called periodically during autonomous. */
 
@@ -359,9 +380,71 @@ public class Robot extends TimedRobot {
       robotDrive.arcadeDrive(ySpeed, rSpeed);
   
       break;
+      
+      case 9:
+      if(backLeftEncoder.getPosition() >= -5.05 && backLeftEncoder.getPosition() <= -4.95){
+        AutoState += 1;
+        autospeed = 0;
+        
+      }else{
+        autospeed = m_leftAutoPID.calculate(backLeftEncoder.getPosition(), -5);
+        robotDrive.tankDrive(autospeed, autospeed);
+      }
+      break;
+      case 10:
+      if(rotateMotor.getSelectedSensorPosition() >= 1.95 && rotateMotor.getSelectedSensorPosition() < 2.05){
+        autoTime.reset();
+        AutoState += 1;
+        
+      }else{
+        rotateMotor.set(ControlMode.PercentOutput, 0.5);
+        extendMotor.set(-0.3);
+      }
+      break;
+      case 11:
+      autoTime.start();
+      if(autoTime.get() >= 1){
+        clawRight.set(VictorSPXControlMode.PercentOutput, 0); 
+        clawLeft.set(VictorSPXControlMode.PercentOutput, 0);
+        rotateMotor.set(ControlMode.PercentOutput, 0);
+        AutoState += 1;
+      }else{
+        clawLeft.set(VictorSPXControlMode.PercentOutput, -0.5);
+        clawRight.set(VictorSPXControlMode.PercentOutput, -0.5);
+        rotateMotor.set(ControlMode.PercentOutput, 0.05);
+      }
+      break;
+      case 12:
+      if(rotateMotor.getSelectedSensorPosition() <= 0.1){
+        rotateMotor.set(ControlMode.PercentOutput, 0);
+        AutoState += 1;
+      }else{
+        rotateMotor.set(ControlMode.PercentOutput, -0.5);
+      }
+      break;
+      case 13:
+      if(backLeftEncoder.getPosition() >= -11.05 && backLeftEncoder.getPosition() <= -10.95){
+        AutoState += 1;
+        autospeed = 0;
+        
+      }else{
+        autospeed = m_leftAutoPID.calculate(backLeftEncoder.getPosition(), -9);
+        robotDrive.tankDrive(autospeed, autospeed);
+        
+      }
+      break;
+      case 14:
+      if(backLeftEncoder.getPosition() >= -1.95 && backLeftEncoder.getPosition() <= -2.05){
+        autospeed = 0;
+      } else{
+        autospeed = m_leftAutoPID.calculate(backLeftEncoder.getPosition(), -2);
+        robotDrive.tankDrive(autospeed, -autospeed);
+      }
+      break;
     }
-
   }
+
+  
 
 
 
