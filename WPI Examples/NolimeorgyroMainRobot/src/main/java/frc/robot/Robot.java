@@ -365,6 +365,7 @@ public class Robot extends TimedRobot {
         autospeed = m_leftAutoPID.calculate(frontLeftEncoder.getPosition(), 4.25);
         robotDrive.tankDrive(autospeed, autospeed);
       }
+      break;
       case 8:
       if ( Math.abs(ahrsPitch) < range) {
         ySpeed = 0;
@@ -392,6 +393,7 @@ public class Robot extends TimedRobot {
       }
       break;
       case 10:
+      backLeftEncoder.setPosition(0);
       if(rotateMotor.getSelectedSensorPosition() >= 1.95 && rotateMotor.getSelectedSensorPosition() < 2.05){
         autoTime.reset();
         AutoState += 1;
@@ -434,6 +436,7 @@ public class Robot extends TimedRobot {
       }
       break;
       case 14:
+      backLeftEncoder.setPosition(0);
       if(backLeftEncoder.getPosition() >= -1.95 && backLeftEncoder.getPosition() <= -2.05){
         autospeed = 0;
       } else{
