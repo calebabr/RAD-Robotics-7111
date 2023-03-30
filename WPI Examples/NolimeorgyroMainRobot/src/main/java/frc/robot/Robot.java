@@ -126,7 +126,7 @@ public class Robot extends TimedRobot {
   // Cone/Cube Grabber 
   public static final Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
   public static final DoubleSolenoid sol1 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 0);
-  // public static final DoubleSolenoid sol2 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3);
+  public static final DoubleSolenoid sol2 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3);
 
 
   // 
@@ -391,9 +391,15 @@ public class Robot extends TimedRobot {
       sol1.set(DoubleSolenoid.Value.kForward);
       // sol2.set(DoubleSolenoid.Value.kForward);
     }
-    else if (m_xbox.getXButtonPressed()){
+    else{
       sol1.set(DoubleSolenoid.Value.kReverse);
       // sol2.set(DoubleSolenoid.Value.kReverse);
+    }
+    if (m_xbox.getXButtonPressed()){
+      sol2.set(DoubleSolenoid.Value.kForward);
+    }
+    else{
+      sol2.set(DoubleSolenoid.Value.kReverse);
     }
 
     // Claw Motors
