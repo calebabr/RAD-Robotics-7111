@@ -67,6 +67,7 @@ public class Robot extends TimedRobot {
   private Timer autoTime;
   private int AutoState;
   private double autospeed;
+  private double autoPast;
 
   private GenericEntry gyro_kP;
   private GenericEntry gyro_kI;
@@ -125,7 +126,7 @@ public class Robot extends TimedRobot {
   // Cone/Cube Grabber 
   public static final Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
   public static final DoubleSolenoid sol1 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 0);
-  // public static final DoubleSolenoid sol2 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3);
+  public static final DoubleSolenoid sol2 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3);
 
 
   // 
@@ -220,6 +221,7 @@ public class Robot extends TimedRobot {
     frontRightEncoder.setPosition(0);
     m_leftAutoPID.setSetpoint(4.25);
     m_rightAutoPID.setSetpoint(-4.25);
+    autoPast = 0;
   
 
     
@@ -233,8 +235,7 @@ public class Robot extends TimedRobot {
     switch (AutoState) {
       // Move the robot back
       case 0:
-      autoTime.reset();
-      autoTime.start();
+
       if (frontLeftEncoder.getPosition() < -4.30 && frontLeftEncoder.getPosition() > -4.20){
         robotDrive.tankDrive(0,0);
         AutoState += 1;
@@ -315,24 +316,32 @@ public class Robot extends TimedRobot {
       // Push our way up the charge station
       case 6:
       frontLeftEncoder.setPosition(0);
-      if (frontLeftEncoder.getPosition() < -10.30 && frontLeftEncoder.getPosition() > -10.20) { //placeholder values
-
-        robotDrive.tankDrive(0,0);
-        AutoState += 1;
+      if (frontLeftEncoder.getPosition() < -9 && frontLeftEncoder.getPosition() > -13) { //placeholder values, last one should be right before white line.
+        if (ahrsPitch > -range) { // If the robot is going down 
+          robotDrive.tankDrive(0.5,0.5); // Sets the speed to half to move off the charge station
+          autoPast = 1; // Makes it able to go to the next auto stage.
+        }
+        else { // If the robot is balanced
+          if (autoPast == 1){ // if it has been going down and is ready to continue
+            robotDrive.tankDrive(0,0);
+            AutoState += 1; // sets it to the next auto stage.
+          }
+          
+        }
       }
       else {
-        autospeed = m_leftAutoPID.calculate(frontLeftEncoder.getPosition(), -10.25); //placeholder values
-        robotDrive.tankDrive(autospeed, autospeed);
+        autospeed = m_leftAutoPID.calculate(frontLeftEncoder.getPosition(), -10.5); //placeholder values
+        robotDrive.tankDrive(autospeed, autospeed); // Goes to the area to check if balanced.
       }
       break;
       case 7:
       frontLeftEncoder.setPosition(0);
-      if (frontLeftEncoder.getPosition() < 3.30 && frontLeftEncoder.getPosition() > 3.20) {
+      if (frontLeftEncoder.getPosition() < 4.30 && frontLeftEncoder.getPosition() > 4.20) {
         robotDrive.tankDrive(0,0);
         AutoState += 1;
       }
       else {
-        autospeed = m_leftAutoPID.calculate(frontLeftEncoder.getPosition(), 3.25);
+        autospeed = m_leftAutoPID.calculate(frontLeftEncoder.getPosition(), 4.25);
         robotDrive.tankDrive(autospeed, autospeed);
       }
       case 8:
@@ -382,9 +391,15 @@ public class Robot extends TimedRobot {
       sol1.set(DoubleSolenoid.Value.kForward);
       // sol2.set(DoubleSolenoid.Value.kForward);
     }
-    else if (m_xbox.getXButtonPressed()){
+    else{
       sol1.set(DoubleSolenoid.Value.kReverse);
       // sol2.set(DoubleSolenoid.Value.kReverse);
+    }
+    if (m_xbox.getXButtonPressed()){
+      sol2.set(DoubleSolenoid.Value.kForward);
+    }
+    else{
+      sol2.set(DoubleSolenoid.Value.kReverse);
     }
 
     // Claw Motors
