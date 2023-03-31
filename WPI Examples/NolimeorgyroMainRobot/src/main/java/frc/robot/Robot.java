@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 
-// import com.kauailabs.navx.frc.AHRS;
+ import com.kauailabs.navx.frc.AHRS;
 // import com.kauailabs.navx.frc.AHRS.BoardAxis;
 
 import edu.wpi.first.wpilibj.SPI.Port;
@@ -91,11 +91,12 @@ public class Robot extends TimedRobot {
   private final PIDController ArmAutoPID = new PIDController(0,0,0);
 
 
-  // private AHRS gyro;
+  private AHRS gyro;
   private PIDController gyroPID;
 
-  private float ahrsPitch;
+  private float ahrsPitch = gyro.getPitch();
   private float ahrsYaw;
+  private float ahrsRoll = gyro.getRoll();
   private double range = 4;
 
 
@@ -254,6 +255,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     switch (AutoState) {
+      // start middle auto code
       // Move the robot back
       case 0:
 
@@ -339,7 +341,8 @@ public class Robot extends TimedRobot {
       frontLeftEncoder.setPosition(0);
       if (frontLeftEncoder.getPosition() < -9 && frontLeftEncoder.getPosition() > -13) { //placeholder values, last one should be right before white line.
         if (ahrsPitch > -range) { // If the robot is going down 
-          robotDrive.tankDrive(0.5,0.5); // Sets the speed to half to move off the charge station
+          
+          robotDrive.tankDrive(0.5 - ahrsRoll, 0.5 + ahrsRoll); // Sets the speed to half to move off the charge station
           autoPast = 1; // Makes it able to go to the next auto stage.
         }
         else { // If the robot is balanced
@@ -367,7 +370,7 @@ public class Robot extends TimedRobot {
       }
       break;
       case 8:
-      if ( Math.abs(ahrsPitch) < range) {
+      if ( Math.abs(ahrsPitch) < range) { 
         ySpeed = 0;
         rSpeed = 0;
 
@@ -375,15 +378,16 @@ public class Robot extends TimedRobot {
       else {
         autospeed = gyroPID.calculate(ahrsPitch, 0);
         ySpeed = autospeed;
-        rSpeed = 0;
+        rSpeed = -ahrsRoll;
 
       }
       robotDrive.arcadeDrive(ySpeed, rSpeed);
   
       break;
-      
+      // start outside auto code
       case 9:
-      if(backLeftEncoder.getPosition() >= -5.05 && backLeftEncoder.getPosition() <= -4.95){
+      if(backLeftEncoder.getPosition() >= -5.05 && backLeftEncoder.getPosition() <= -4.95){ // back up enough to use arm
+        robotDrive.tankDrive(0, 0);
         AutoState += 1;
         autospeed = 0;
         
@@ -394,7 +398,7 @@ public class Robot extends TimedRobot {
       break;
       case 10:
       backLeftEncoder.setPosition(0);
-      if(rotateMotor.getSelectedSensorPosition() >= 1.95 && rotateMotor.getSelectedSensorPosition() < 2.05){
+      if(rotateMotor.getSelectedSensorPosition() >= 1.95 && rotateMotor.getSelectedSensorPosition() < 2.05){ //arm goes out
         autoTime.reset();
         AutoState += 1;
         
@@ -405,7 +409,7 @@ public class Robot extends TimedRobot {
       break;
       case 11:
       autoTime.start();
-      if(autoTime.get() >= 1){
+      if(autoTime.get() >= 1){ // pushes out game piece
         clawRight.set(VictorSPXControlMode.PercentOutput, 0); 
         clawLeft.set(VictorSPXControlMode.PercentOutput, 0);
         rotateMotor.set(ControlMode.PercentOutput, 0);
@@ -417,15 +421,18 @@ public class Robot extends TimedRobot {
       }
       break;
       case 12:
-      if(rotateMotor.getSelectedSensorPosition() <= 0.1){
+      if(rotateMotor.getSelectedSensorPosition() <= 0.05){ // arm retracts
         rotateMotor.set(ControlMode.PercentOutput, 0);
+        backLeftEncoder.setPosition(0);
         AutoState += 1;
       }else{
         rotateMotor.set(ControlMode.PercentOutput, -0.5);
       }
       break;
       case 13:
-      if(backLeftEncoder.getPosition() >= -11.05 && backLeftEncoder.getPosition() <= -10.95){
+      if(backLeftEncoder.getPosition() >= -11.05 && backLeftEncoder.getPosition() <= -10.95){ // should stop in front of game piece
+        robotDrive.tankDrive(0, 0);
+        backLeftEncoder.setPosition(0);
         AutoState += 1;
         autospeed = 0;
         
@@ -436,8 +443,9 @@ public class Robot extends TimedRobot {
       }
       break;
       case 14:
-      backLeftEncoder.setPosition(0);
-      if(backLeftEncoder.getPosition() >= -1.95 && backLeftEncoder.getPosition() <= -2.05){
+      
+      if(backLeftEncoder.getPosition() >= -1.95 && backLeftEncoder.getPosition() <= -2.05){ // turns to face game piece
+        robotDrive.tankDrive(0, 0);
         autospeed = 0;
       } else{
         autospeed = m_leftAutoPID.calculate(backLeftEncoder.getPosition(), -2);
