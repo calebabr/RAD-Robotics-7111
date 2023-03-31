@@ -398,7 +398,7 @@ public class Robot extends TimedRobot {
       break;
       case 10:
       backLeftEncoder.setPosition(0);
-      if(rotateMotor.getSelectedSensorPosition() >= 1.95 && rotateMotor.getSelectedSensorPosition() < 2.05){ //arm goes out
+      if(rotateMotor.getSelectedSensorPosition() >= 1.95 && rotateMotor.getSelectedSensorPosition() < 2.05){ //arm goes out to score piece
         autoTime.reset();
         AutoState += 1;
         
@@ -413,6 +413,7 @@ public class Robot extends TimedRobot {
         clawRight.set(VictorSPXControlMode.PercentOutput, 0); 
         clawLeft.set(VictorSPXControlMode.PercentOutput, 0);
         rotateMotor.set(ControlMode.PercentOutput, 0);
+
         AutoState += 1;
       }else{
         clawLeft.set(VictorSPXControlMode.PercentOutput, -0.5);
@@ -421,12 +422,13 @@ public class Robot extends TimedRobot {
       }
       break;
       case 12:
-      if(rotateMotor.getSelectedSensorPosition() <= 0.05){ // arm retracts.
+      if(rotateMotor.getSelectedSensorPosition() <= 0.1){ // arm retracts
         rotateMotor.set(ControlMode.PercentOutput, 0);
         backLeftEncoder.setPosition(0);
         AutoState += 1;
       }else{
         rotateMotor.set(ControlMode.PercentOutput, -0.5);
+        extendMotor.set(0.3);
       }
       break;
       case 13:
