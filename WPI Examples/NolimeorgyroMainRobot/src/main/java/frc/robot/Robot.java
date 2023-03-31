@@ -391,15 +391,9 @@ public class Robot extends TimedRobot {
       sol1.set(DoubleSolenoid.Value.kForward);
       // sol2.set(DoubleSolenoid.Value.kForward);
     }
-    else{
+    else if (m_xbox.getXButtonPressed()){
       sol1.set(DoubleSolenoid.Value.kReverse);
       // sol2.set(DoubleSolenoid.Value.kReverse);
-    }
-    if (m_xbox.getXButtonPressed()){
-      sol2.set(DoubleSolenoid.Value.kForward);
-    }
-    else{
-      sol2.set(DoubleSolenoid.Value.kReverse);
     }
 
     // Claw Motors
@@ -437,15 +431,19 @@ public class Robot extends TimedRobot {
     
     // if (m_xbox.getAButton()){
       if (m_xbox.getRightTriggerAxis() < 0.7 && m_xbox.getLeftTriggerAxis() < 0.07){ // deadzone 
+        sol2.set(DoubleSolenoid.Value.kForward);
         rotateSpeed = 0; 
       }
       else if (m_xbox.getRightTriggerAxis() > 0.07 && m_xbox.getLeftTriggerAxis() < 0.07){ // rotate down
+        sol2.set(DoubleSolenoid.Value.kReverse);
         rotateSpeed = 0.1 * rotateArm.getDouble(0.1); // m_xbox.getRightTriggerAxis(), use right
       }
       else if (m_xbox.getRightTriggerAxis() < 0.07 && m_xbox.getLeftTriggerAxis() > 0.07){ // rotate up
+        sol2.set(DoubleSolenoid.Value.kReverse);
         rotateSpeed = -0.1 * rotateArm.getDouble(0.1); // m_xbox.getLeftTriggerAxis(), use left
       }
       else{
+        sol2.set(DoubleSolenoid.Value.kForward);
         rotateSpeed = 0;
       }
       rotateMotor.set(ControlMode.PercentOutput, rotateSpeed);
