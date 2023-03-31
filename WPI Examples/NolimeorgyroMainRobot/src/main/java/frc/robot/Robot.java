@@ -221,10 +221,8 @@ public class Robot extends TimedRobot {
     frontRightEncoder.setPosition(0);
     m_leftAutoPID.setSetpoint(4.25);
     m_rightAutoPID.setSetpoint(-4.25);
-    autoPast = 0;
-  
-
-    
+    autoPast = 0;  
+    AutoState = 0;
   }
 
   /** This function is called periodically during autonomous. */
@@ -233,10 +231,10 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {
     switch (AutoState) {
+
       // Move the robot back
       case 0:
-
-      if (frontLeftEncoder.getPosition() < -4.30 && frontLeftEncoder.getPosition() > -4.20){
+      if (frontLeftEncoder.getPosition() < -4.30 && frontLeftEncoder.getPosition() > -4.30){
         robotDrive.tankDrive(0,0);
         AutoState += 1;
 
@@ -246,6 +244,7 @@ public class Robot extends TimedRobot {
         robotDrive.tankDrive(autospeed,autospeed);
       }
       break;
+
       // Rotate the arm up and retract the arm a bit
       case 1:
       autoTime.reset();
@@ -256,11 +255,11 @@ public class Robot extends TimedRobot {
         AutoState += 1;
       }
       else{
-
         rotateMotor.set(ControlMode.PercentOutput, 0.5);
         extendMotor.set(-0.3);
       }
       break;
+
       // Extend the arm
       case 2:
       autoTime.reset();
@@ -273,6 +272,7 @@ public class Robot extends TimedRobot {
         extendMotor.set(0.3);
       }
       break;
+
       // Spit out the cube
       case 3:
       autoTime.reset();
@@ -287,6 +287,7 @@ public class Robot extends TimedRobot {
         clawLeft.set(VictorSPXControlMode.PercentOutput, -0.5);
       }
       break;
+
       // Rotate the arm back down and retract arm.
       case 4:
       autoTime.reset();
@@ -301,6 +302,7 @@ public class Robot extends TimedRobot {
         extendMotor.set(-0.3);
       }
       break;
+
       // Move forward a bit again to get ready to get on the charge station
       case 5:
       frontLeftEncoder.setPosition(0);
@@ -313,6 +315,7 @@ public class Robot extends TimedRobot {
         robotDrive.tankDrive(autospeed,autospeed);
       }
       break;
+
       // Push our way up the charge station
       case 6:
       frontLeftEncoder.setPosition(0);
@@ -334,6 +337,7 @@ public class Robot extends TimedRobot {
         robotDrive.tankDrive(autospeed, autospeed); // Goes to the area to check if balanced.
       }
       break;
+
       case 7:
       frontLeftEncoder.setPosition(0);
       if (frontLeftEncoder.getPosition() < 4.30 && frontLeftEncoder.getPosition() > 4.20) {
@@ -344,6 +348,8 @@ public class Robot extends TimedRobot {
         autospeed = m_leftAutoPID.calculate(frontLeftEncoder.getPosition(), 4.25);
         robotDrive.tankDrive(autospeed, autospeed);
       }
+      break;
+
       case 8:
       if ( Math.abs(ahrsPitch) < range) {
         ySpeed = 0;
