@@ -24,9 +24,11 @@ import edu.wpi.first.wpilibj.Solenoid;
  */
 public class Robot extends TimedRobot {
   private final Joystick m_stick = new Joystick(0);
-  private final XboxController m_xbox = new XboxController(1);
+  private final XboxController m_xbox = new XboxController(2);
 
   private final Compressor m_compressor = new Compressor(PneumaticsModuleType.CTREPCM);
+
+  // private final Compressor m_2compressor = new Compressor(0, PneumaticsModuleType.CTREPCM);
 
   private static final int kSolenoidButton = 1;
   private static final int kDoubleSolenoidForward = 2;
@@ -36,7 +38,7 @@ public class Robot extends TimedRobot {
    /** This function is called once when teleop is enabled. */
   @Override
   public void teleopInit() {
-    m_compressor.enableAnalog(0, 1000);
+    m_compressor.enableAnalog(0, 1000000);
   }
 
   @Override
