@@ -416,12 +416,12 @@ public class Robot extends TimedRobot {
         AutoState += 1;
       }else{
         clawLeft.set(VictorSPXControlMode.PercentOutput, -0.5);
-        clawRight.set(VictorSPXControlMode.PercentOutput, -0.5);
+        clawRight.set(VictorSPXControlMode.PercentOutput, -0.5);  
         rotateMotor.set(ControlMode.PercentOutput, 0.05);
       }
       break;
       case 12:
-      if(rotateMotor.getSelectedSensorPosition() <= 0.05){ // arm retracts
+      if(rotateMotor.getSelectedSensorPosition() <= 0.05){ // arm retracts.
         rotateMotor.set(ControlMode.PercentOutput, 0);
         backLeftEncoder.setPosition(0);
         AutoState += 1;
