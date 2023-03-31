@@ -87,6 +87,7 @@ public class Robot extends TimedRobot {
   private final PIDController m_rightAutoPID = new PIDController(0.005, 0.00005, 0);
   private final PIDController m_leftAutoPID = new PIDController(0.005, 0.00005, 0);
   private final PIDController ArmAutoPID = new PIDController(0,0,0);
+  private final PIDController extendAutoPID = new PIDController(0,0,0);
 
 
   // private AHRS gyro;
@@ -110,6 +111,7 @@ public class Robot extends TimedRobot {
   private final RelativeEncoder backRightEncoder = motorBackRight.getEncoder();
   private final RelativeEncoder frontRightEncoder = motorFrontRight.getEncoder();
 
+  private final RelativeEncoder extendEncoder = extendMotor.getEncoder();
 
 
 
@@ -142,6 +144,22 @@ public class Robot extends TimedRobot {
   private SlewRateLimiter extendLimiter;
   double rotationSpeed;
   int currAngle;
+
+  double currRotatePos = 0;
+  double startRotatePos = 0;
+
+  double currExtendPos = 0;
+  double startExtendPos = 0;
+
+  double currBRPos = 0;
+  double currFRPos = 0;
+  double currBLPos = 0;
+  double currFLPos = 0;
+
+  double startBRPos = 0;
+  double startFRPos = 0;
+  double startBLPos = 0;
+  double startFLPos = 0;
 
 
   @Override
@@ -223,6 +241,31 @@ public class Robot extends TimedRobot {
     m_rightAutoPID.setSetpoint(-4.25);
     autoPast = 0;  
     AutoState = 0;
+
+    currRotatePos = rotateMotor.getSelectedSensorPosition();
+
+    currExtendPos = extendEncoder.getPosition();
+
+    currBRPos = backRightEncoder.getPosition();
+    currFRPos = frontRightEncoder.getPosition();
+    currBLPos = backLeftEncoder.getPosition();
+    currFLPos = frontLeftEncoder.getPosition();
+
+    backRightEncoder.setPosition(0);
+    backLeftEncoder.setPosition(0);
+    frontRightEncoder.setPosition(0);
+    frontLeftEncoder.setPosition(0);
+
+    extendEncoder.setPosition(0);
+    rotateMotor.set(ControlMode.Position, 0);
+
+    startBRPos = backRightEncoder.getPosition();
+    startFRPos = frontRightEncoder.getPosition();
+    startBLPos = backLeftEncoder.getPosition();
+    startFLPos = frontLeftEncoder.getPosition();
+
+    startRotatePos = extendEncoder.getPosition();
+    startRotatePos = rotateMotor.getSelectedSensorPosition();
   }
 
   /** This function is called periodically during autonomous. */
@@ -230,23 +273,32 @@ public class Robot extends TimedRobot {
 
   @Override
   public void autonomousPeriodic() {
+    currRotatePos = rotateMotor.getSelectedSensorPosition();
+    currExtendPos = extendEncoder.getPosition();
+
+    currBRPos = backRightEncoder.getPosition();
+    currFRPos = frontRightEncoder.getPosition();
+    currBLPos = backLeftEncoder.getPosition();
+    currFLPos = frontLeftEncoder.getPosition();
+
     switch (AutoState) {
 
       // Move the robot back
       case 0:
-      if (frontLeftEncoder.getPosition() < -4.30 && frontLeftEncoder.getPosition() > -4.30){
-        robotDrive.tankDrive(0,0);
-        AutoState += 1;
-
-      }
-      else{
-        autospeed = m_leftAutoPID.calculate(frontLeftEncoder.getPosition(), -4.25);
+      if (currFLPos > - 5 && currFRPos > -5){
+        autospeed = m_leftAutoPID.calculate(currFLPos, -5);
         robotDrive.tankDrive(autospeed,autospeed);
       }
+      else{
+        robotDrive.tankDrive(0,0);
+        AutoState += 1;
+      }
+      SmartDashboard.putNumber("AutoCase", AutoState);
       break;
 
       // Rotate the arm up and retract the arm a bit
       case 1:
+      /**
       autoTime.reset();
       autoTime.start();
       if (autoTime.hasElapsed(1.5)){
@@ -258,10 +310,25 @@ public class Robot extends TimedRobot {
         rotateMotor.set(ControlMode.PercentOutput, 0.5);
         extendMotor.set(-0.3);
       }
+       */
+
+      
+      if (currRotatePos < 500){ // rotate up
+        rotateSpeed = ArmAutoPID.calculate(currRotatePos, 500);
+        sol2.set(DoubleSolenoid.Value.kReverse);
+
+      }
+      else{
+        rotateSpeed = 0;
+        sol2.set(DoubleSolenoid.Value.kForward);
+      }
+      rotateMotor.set(ControlMode.PercentOutput, rotateSpeed);
+      SmartDashboard.putNumber("AutoCase", AutoState);
       break;
 
       // Extend the arm
       case 2:
+      /**
       autoTime.reset();
       autoTime.start();
       if (autoTime.hasElapsed(1)){
@@ -271,6 +338,15 @@ public class Robot extends TimedRobot {
       else{
         extendMotor.set(0.3);
       }
+       */
+      if (currExtendPos < 100){ // extend forward
+        extendSpeed = extendAutoPID.calculate(currExtendPos, 100);
+      }
+      else{
+        extendSpeed = 0;
+      }
+      extendMotor.set(extendSpeed);
+      SmartDashboard.putNumber("AutoCase", AutoState);
       break;
 
       // Spit out the cube
@@ -286,10 +362,12 @@ public class Robot extends TimedRobot {
         clawRight.set(VictorSPXControlMode.PercentOutput, -0.5); 
         clawLeft.set(VictorSPXControlMode.PercentOutput, -0.5);
       }
+      SmartDashboard.putNumber("AutoCase", AutoState);
       break;
 
       // Rotate the arm back down and retract arm.
       case 4:
+      /*
       autoTime.reset();
       autoTime.start();
       if (autoTime.hasElapsed(1.5)){
@@ -301,25 +379,57 @@ public class Robot extends TimedRobot {
         rotateMotor.set(ControlMode.PercentOutput, -0.5);
         extendMotor.set(-0.3);
       }
+       */
+      if (currRotatePos > 0){ // rotate back
+        rotateSpeed = ArmAutoPID.calculate(currRotatePos, 0);
+        sol2.set(DoubleSolenoid.Value.kReverse);
+
+      }
+      else{
+        rotateSpeed = 0;
+        sol2.set(DoubleSolenoid.Value.kForward);
+      }
+      rotateMotor.set(ControlMode.PercentOutput, rotateSpeed);
+      SmartDashboard.putNumber("AutoCase", AutoState);
       break;
 
-      // Move forward a bit again to get ready to get on the charge station
       case 5:
+        if (currExtendPos > 0){ // extend back
+          extendSpeed = extendAutoPID.calculate(currExtendPos, 0);
+        }
+        else{
+          extendSpeed = 0;
+        }
+        extendMotor.set(extendSpeed);
+        SmartDashboard.putNumber("AutoCase", AutoState);
+      break;
+      // Move forward a bit again to get ready to get on the charge station
+
+      case 6: // back up onto charge
+      backRightEncoder.setPosition(0); // reset all drive
+      backLeftEncoder.setPosition(0);
+      frontRightEncoder.setPosition(0);
       frontLeftEncoder.setPosition(0);
-      if (frontLeftEncoder.getPosition() < 4.30 && frontLeftEncoder.getPosition() > 4.20){
+
+      if (currFLPos > - 5 && currFRPos > -5){
+        autospeed = m_leftAutoPID.calculate(currFLPos, -5);
+        robotDrive.tankDrive(autospeed,autospeed);
+      }
+      else{
         robotDrive.tankDrive(0,0);
         AutoState += 1;
       }
-      else{
-        autospeed = m_leftAutoPID.calculate(frontLeftEncoder.getPosition(), 4.25);
-        robotDrive.tankDrive(autospeed,autospeed);
-      }
+      SmartDashboard.putNumber("AutoCase", AutoState);
       break;
 
-      // Push our way up the charge station
-      case 6:
+      // go up and off charge
+      case 7:
+      backRightEncoder.setPosition(0); // reset all drive
+      backLeftEncoder.setPosition(0);
+      frontRightEncoder.setPosition(0);
       frontLeftEncoder.setPosition(0);
-      if (frontLeftEncoder.getPosition() < -9 && frontLeftEncoder.getPosition() > -13) { //placeholder values, last one should be right before white line.
+      /**
+       if (frontLeftEncoder.getPosition() < -9 && frontLeftEncoder.getPosition() > -13) { //placeholder values, last one should be right before white line.
         if (ahrsPitch > -range) { // If the robot is going down 
           robotDrive.tankDrive(0.5,0.5); // Sets the speed to half to move off the charge station
           autoPast = 1; // Makes it able to go to the next auto stage.
@@ -336,21 +446,36 @@ public class Robot extends TimedRobot {
         autospeed = m_leftAutoPID.calculate(frontLeftEncoder.getPosition(), -10.5); //placeholder values
         robotDrive.tankDrive(autospeed, autospeed); // Goes to the area to check if balanced.
       }
+       */
+      if (Math.abs(ahrsPitch) > range){
+        ySpeed = -0.25;
+        rSpeed = 0;
+      }
+      else{
+        ySpeed = 0;
+        rSpeed = 0;
+      }
+      robotDrive.arcadeDrive(ySpeed, rSpeed);
+      SmartDashboard.putNumber("AutoCase", AutoState);
       break;
 
-      case 7:
+      case 8: 
+      backRightEncoder.setPosition(0); // reset all drive
+      backLeftEncoder.setPosition(0);
+      frontRightEncoder.setPosition(0);
       frontLeftEncoder.setPosition(0);
-      if (frontLeftEncoder.getPosition() < 4.30 && frontLeftEncoder.getPosition() > 4.20) {
+      if (currFLPos > 5 && currFRPos  > 5){
+        autospeed = m_leftAutoPID.calculate(currFLPos, 5);
+        robotDrive.tankDrive(autospeed,autospeed);
+      }
+      else{
         robotDrive.tankDrive(0,0);
         AutoState += 1;
       }
-      else {
-        autospeed = m_leftAutoPID.calculate(frontLeftEncoder.getPosition(), 4.25);
-        robotDrive.tankDrive(autospeed, autospeed);
-      }
+      SmartDashboard.putNumber("AutoCase", AutoState);
       break;
 
-      case 8:
+      case 9:
       if ( Math.abs(ahrsPitch) < range) {
         ySpeed = 0;
         rSpeed = 0;
@@ -360,10 +485,9 @@ public class Robot extends TimedRobot {
         autospeed = gyroPID.calculate(ahrsPitch, 0);
         ySpeed = autospeed;
         rSpeed = 0;
-
       }
       robotDrive.arcadeDrive(ySpeed, rSpeed);
-  
+      SmartDashboard.putNumber("AutoCase", AutoState);
       break;
     }
 
