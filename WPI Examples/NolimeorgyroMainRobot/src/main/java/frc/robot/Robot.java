@@ -398,14 +398,14 @@ public class Robot extends TimedRobot {
       clawRight.set(VictorSPXControlMode.PercentOutput, 0);
       clawLeft.set(VictorSPXControlMode.PercentOutput, 0);
     }
-    if (m_xbox.getStartButtonPressed()){
-      if (Switch) {
+
+      if (m_xbox.getStartButtonPressed()){
         Switch = false;
       }
-      else {
+      else if (m_xbox.getBackButtonPressed()){
         Switch = true;
       }
-    }
+    
     // end solenoid code.
 
     // Start arm code
