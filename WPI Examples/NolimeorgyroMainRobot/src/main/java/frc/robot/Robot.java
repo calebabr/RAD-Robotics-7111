@@ -72,6 +72,7 @@ public class Robot extends TimedRobot {
   private GenericEntry gyro_kP;
   private GenericEntry gyro_kI;
   private GenericEntry gyro_kD;
+  private boolean Switch = false;
   private GenericEntry rotateArm;
   Thread m_visionThread;
   private XboxController m_xbox = new XboxController(2);
@@ -397,7 +398,14 @@ public class Robot extends TimedRobot {
       clawRight.set(VictorSPXControlMode.PercentOutput, 0);
       clawLeft.set(VictorSPXControlMode.PercentOutput, 0);
     }
-
+    if (m_xbox.getStartButtonPressed()){
+      if (Switch) {
+        Switch = false;
+      }
+      else {
+        Switch = true;
+      }
+    }
     // end solenoid code.
 
     // Start arm code
@@ -439,13 +447,21 @@ public class Robot extends TimedRobot {
     
     // if (m_xbox.getBButton()){
       if (m_xbox.getRightBumper()){ // extend
-        extendSpeed = 0.5; // use right
+        if (Switch) {
+          extendSpeed = -0.5; // use right
+        }
+        else {
+          extendSpeed = 0.5; // use right
+        }
+        
       }
       else if (m_xbox.getLeftBumper()){ // retract
-        extendSpeed = -0.5; // use left
-      }
-      else{
-        extendSpeed = 0;
+        if (Switch) {
+          extendSpeed = 0.5; // use left
+        }
+        else {
+          extendSpeed = -0.5; // use left
+        }
       }
       extendMotor.set(extendSpeed);
     // }
