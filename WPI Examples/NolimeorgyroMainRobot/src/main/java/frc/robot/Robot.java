@@ -490,7 +490,12 @@ public class Robot extends TimedRobot {
     //else{
       ySpeed = leftJLimiter.calculate(rightStick.getY()) * 0.85;
     // }
+    if (leftStick.getTrigger()){
+      rSpeed = rightJLimiter.calculate(leftStick.getX()) * 0.2;
+    }
+    else{
       rSpeed = rightJLimiter.calculate(leftStick.getX()) * 0.75;
+    }
       robotDrive.arcadeDrive(ySpeed, rSpeed);
   }////////////////////////////////////////////
     public double remap_range(double val, double old_min, double old_max, double new_min, double new_max){ // Basically just math to convert a value from an old range to 
