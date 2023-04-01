@@ -87,7 +87,7 @@ public class Robot extends TimedRobot {
   Timer clocka = new Timer();
   private final PIDController m_rightAutoPID = new PIDController(0.005, 0.00005, 0);
   private final PIDController m_leftAutoPID = new PIDController(0.005, 0.00005, 0);
-  private final PIDController ArmAutoPID = new PIDController(0,0,0);
+  private final PIDController ArmAutoPID = new PIDController(0.0001, 0.0001, 0.00001);
 
 
   // private AHRS gyro;
@@ -268,6 +268,11 @@ public class Robot extends TimedRobot {
     ySpeed = 0;
     rotateSpeed = 0;
     extendSpeed = 0;
+    robotDrive.feed();
+
+    ArmAutoPID.setP(0.000146);
+    ArmAutoPID.setI(0.000153);
+    ArmAutoPID.setD(0.0000001);
   }
 
   /** This function is called periodically during autonomous. */
@@ -287,69 +292,88 @@ public class Robot extends TimedRobot {
 
       // Rotate Arm Up
       case 0:
-      if (currRotatePos < startRotatePos + 53111.9){ // rotate up
-        rotateSpeed = ArmAutoPID.calculate(currRotatePos, startRotatePos + 53111.9);
-        sol2.set(DoubleSolenoid.Value.kReverse);
+      robotDrive.arcadeDrive(0, 0);
+      if (currRotatePos < startRotatePos + 53371.9){ // rotate up
+        rotateSpeed = 0.1 * ArmAutoPID.calculate(currRotatePos, startRotatePos + 53371.9);
+        sol2.set(DoubleSolenoid.Value.kForward);
 
       }
       else{
         rotateSpeed = 0;
-        sol2.set(DoubleSolenoid.Value.kForward);
-        // AutoState += 1;
+        sol2.set(DoubleSolenoid.Value.kReverse);
+        autoTime.reset();
+        autoTime.start();
+        AutoState = 1;
       }
       rotateMotor.set(ControlMode.PercentOutput, rotateSpeed);
       SmartDashboard.putNumber("AutoCase", AutoState);
+
       break;
-      
+        
       // Spin Claw
       case 1:
-      
-      autoTime.reset();
-      autoTime.start();
-      if (autoTime.hasElapsed(0.5)){
+      ySpeed = 0;   
+      if (autoTime.hasElapsed(3.6)){
         clawRight.set(VictorSPXControlMode.PercentOutput,0); 
         clawLeft.set(VictorSPXControlMode.PercentOutput,0);
-        AutoState += 1;
+        extendMotor.set(0);
+        ArmAutoPID.setPID(0.0001, 0.0001, 0.0000001);
+        AutoState = 2;
       }
-      else{
-        clawRight.set(VictorSPXControlMode.PercentOutput, -0.5); 
-        clawLeft.set(VictorSPXControlMode.PercentOutput, -0.5);
+      else if (autoTime.hasElapsed(2.1)){ // retract for 1.5
+        clawRight.set(VictorSPXControlMode.PercentOutput, 0); 
+        clawLeft.set(VictorSPXControlMode.PercentOutput, 0);
+        extendMotor.set(-0.5);
+      }
+      else if (autoTime.hasElapsed(1.5)){ // outtake for 0.6
+        extendMotor.set(0);
+        clawRight.set(VictorSPXControlMode.PercentOutput, 0.45); 
+        clawLeft.set(VictorSPXControlMode.PercentOutput, 0.45);
+      }
+      else{ // extend OUT  for 1.5
+        extendMotor.set(0.5);
       }
       SmartDashboard.putNumber("AutoCase", AutoState);
+      // ArmAutoPID.setP(0.0025);
       break;
-
+      
       // Rotate arm down
       case 2:
-      if (currRotatePos > startRotatePos){ // rotate up
-        rotateSpeed = ArmAutoPID.calculate(currRotatePos, startRotatePos);
-        sol2.set(DoubleSolenoid.Value.kReverse);
+      ySpeed = 0;
+      if (currRotatePos > startRotatePos + 100){ // rotate down
+        rotateSpeed = 0.1 * ArmAutoPID.calculate(currRotatePos, startRotatePos + 100);
+        sol2.set(DoubleSolenoid.Value.kForward);
 
       }
       else{
         rotateSpeed = 0;
-        sol2.set(DoubleSolenoid.Value.kForward);
-        AutoState += 1;
+        sol2.set(DoubleSolenoid.Value.kReverse);
+        autoTime.reset();
+        autoTime.start();
+        AutoState = 3;
       }
       rotateMotor.set(ControlMode.PercentOutput, rotateSpeed);
       break;
-
+      
       // Back up out of community
       case 3:
-
-      autoTime.reset();
-      autoTime.start();
-      if (autoTime.hasElapsed(1.5)){
+      if (autoTime.hasElapsed(5)){
         ySpeed = 0;
       }
       else{
-        ySpeed = -0.35;
+        ySpeed = 0.4;
       }      
       break;
-
+      
   }
+
   SmartDashboard.putNumber("AutoCase", AutoState);
+  SmartDashboard.putNumber("rotate curr pos", currRotatePos);
+  SmartDashboard.putNumber("rotate start pos", startRotatePos);
+  SmartDashboard.putNumber("rotate Speed", rotateSpeed);
   SmartDashboard.putNumber("y speed", ySpeed);
-  robotDrive.arcadeDrive(ySpeed, rSpeed);    
+
+  robotDrive.arcadeDrive(ySpeed, 0);
 }
 
 
@@ -376,7 +400,7 @@ public class Robot extends TimedRobot {
 
     
     // Start Solenoid code, for grabber.
-    if (m_xbox.getYButtonPressed()) {
+    if (m_xbox.getYButtonPressed()) { // grabber
       sol1.set(DoubleSolenoid.Value.kForward);
       // sol2.set(DoubleSolenoid.Value.kForward);
     }
@@ -386,11 +410,11 @@ public class Robot extends TimedRobot {
     }
 
     // Claw Motors
-    if (m_xbox.getBButton()){ // suck in game piece
+    if (m_xbox.getBButton()){ // push out game piece
       clawRight.set(VictorSPXControlMode.PercentOutput, 0.5); 
       clawLeft.set(VictorSPXControlMode.PercentOutput, 0.5);
     }
-    else if (m_xbox.getAButton()){ // spit out game piece
+    else if (m_xbox.getAButton()){ // take in game piece
       clawRight.set(VictorSPXControlMode.PercentOutput, -0.5); 
       clawLeft.set(VictorSPXControlMode.PercentOutput, -0.5);
     }
@@ -398,13 +422,6 @@ public class Robot extends TimedRobot {
       clawRight.set(VictorSPXControlMode.PercentOutput, 0);
       clawLeft.set(VictorSPXControlMode.PercentOutput, 0);
     }
-
-      if (m_xbox.getStartButtonPressed()){
-        Switch = false;
-      }
-      else if (m_xbox.getBackButtonPressed()){
-        Switch = true;
-      }
     
     // end solenoid code.
 
@@ -426,20 +443,20 @@ public class Robot extends TimedRobot {
     // }
     
     // if (m_xbox.getAButton()){
-      if (m_xbox.getRightTriggerAxis() < 0.7 && m_xbox.getLeftTriggerAxis() < 0.07){ // deadzone 
-        sol2.set(DoubleSolenoid.Value.kForward);
+      if (m_xbox.getRightTriggerAxis() < 0.07 && m_xbox.getLeftTriggerAxis() < 0.07){ // deadzone 
+        sol2.set(DoubleSolenoid.Value.kReverse);
         rotateSpeed = 0; 
       }
       else if (m_xbox.getRightTriggerAxis() > 0.07 && m_xbox.getLeftTriggerAxis() < 0.07){ // rotate down
-        sol2.set(DoubleSolenoid.Value.kReverse);
+        sol2.set(DoubleSolenoid.Value.kForward);
         rotateSpeed = 0.1 * rotateArm.getDouble(0.1); // m_xbox.getRightTriggerAxis(), use right
       }
       else if (m_xbox.getRightTriggerAxis() < 0.07 && m_xbox.getLeftTriggerAxis() > 0.07){ // rotate up
-        sol2.set(DoubleSolenoid.Value.kReverse);
-        rotateSpeed = -0.1 * rotateArm.getDouble(0.1); // m_xbox.getLeftTriggerAxis(), use left
+        sol2.set(DoubleSolenoid.Value.kForward);
+        rotateSpeed = -0.07 * rotateArm.getDouble(0.1); // m_xbox.getLeftTriggerAxis(), use left
       }
       else{
-        sol2.set(DoubleSolenoid.Value.kForward);
+        sol2.set(DoubleSolenoid.Value.kReverse);
         rotateSpeed = 0;
       }
       rotateMotor.set(ControlMode.PercentOutput, rotateSpeed);
@@ -447,21 +464,14 @@ public class Robot extends TimedRobot {
     
     // if (m_xbox.getBButton()){
       if (m_xbox.getRightBumper()){ // extend
-        if (Switch) {
-          extendSpeed = -0.5; // use right
-        }
-        else {
-          extendSpeed = 0.5; // use right
-        }
+        extendSpeed = 0.5;
         
       }
       else if (m_xbox.getLeftBumper()){ // retract
-        if (Switch) {
-          extendSpeed = 0.5; // use left
-        }
-        else {
-          extendSpeed = -0.5; // use left
-        }
+        extendSpeed = -0.5;
+      }
+      else{
+        extendSpeed = 0;
       }
       extendMotor.set(extendSpeed);
     // }
