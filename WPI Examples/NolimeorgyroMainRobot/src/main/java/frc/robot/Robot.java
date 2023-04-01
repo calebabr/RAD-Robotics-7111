@@ -422,7 +422,18 @@ public class Robot extends TimedRobot {
       clawRight.set(VictorSPXControlMode.PercentOutput, 0);
       clawLeft.set(VictorSPXControlMode.PercentOutput, 0);
     }
+<<<<<<< HEAD
     
+=======
+
+    if (m_xbox.getStartButtonPressed()){
+      Switch = false;
+    }
+    else if (m_xbox.getBackButtonPressed()){
+      Switch = true;
+    }
+                                        
+>>>>>>> 32b794a68a73ed8b0470dbc79d1a895313f86837
     // end solenoid code.
 
     // Start arm code
@@ -432,6 +443,7 @@ public class Robot extends TimedRobot {
     // }
     // commented for now because we do not have encoders on our victor spx motors
     SmartDashboard.putNumber("Extend Motor", extendSpeed);
+    SmartDashboard.putBoolean("Switch Extend", Switch);
     // if (m_xbox.getAButton()){
       // extendMotor.set(0.5);
     // }
@@ -464,6 +476,7 @@ public class Robot extends TimedRobot {
     
     // if (m_xbox.getBButton()){
       if (m_xbox.getRightBumper()){ // extend
+<<<<<<< HEAD
         extendSpeed = 0.5;
         
       }
@@ -472,6 +485,23 @@ public class Robot extends TimedRobot {
       }
       else{
         extendSpeed = 0;
+=======
+        if (Switch) {
+          extendSpeed = -0.5; // use right
+        }
+        else if (!Switch){
+          extendSpeed = 0.5; // use right
+        }
+        
+      }
+      else if (m_xbox.getLeftBumper()){ // retract
+        if (Switch) {
+          extendSpeed = 0.5; // use left
+        }
+        else if (!Switch){
+          extendSpeed = -0.5; // use left
+        }
+>>>>>>> 32b794a68a73ed8b0470dbc79d1a895313f86837
       }
       extendMotor.set(extendSpeed);
     // }
