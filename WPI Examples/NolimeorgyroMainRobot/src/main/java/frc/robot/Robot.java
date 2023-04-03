@@ -89,17 +89,6 @@ public class Robot extends TimedRobot {
   private final PIDController m_leftAutoPID = new PIDController(0.005, 0.00005, 0);
   private final PIDController ArmAutoPID = new PIDController(0.0001, 0.0001, 0.00001);
 
-
-  // private AHRS gyro;
-  private PIDController gyroPID;
-
-  private float ahrsPitch;
-  private float ahrsYaw;
-  private double range = 4;
-
-
-  // private RelativeEncoder arm_encoder;
-
   // Motors controlling 
   private final CANSparkMax motorFrontLeft = new CANSparkMax(1, CANSparkMaxLowLevel.MotorType.kBrushless);
   private final CANSparkMax motorBackLeft = new CANSparkMax(2, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -128,7 +117,6 @@ public class Robot extends TimedRobot {
   public static final Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
   public static final DoubleSolenoid sol1 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 0);
   public static final DoubleSolenoid sol2 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3);
-
 
   // 
   private double ySpeed = 0;
@@ -162,45 +150,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    // gyroPID = new PIDController(0.5, 0, 0);
-        // We need to invert one side of the drivetrain so that positive voltages
-    // result in both sides moving forward. Depending on how your robot's
-    // gearbox is constructed, you might have to invert the left side instead.
-    m_visionThread =
-        new Thread(
-            () -> {
-              // Get the UsbCamera from CameraServer
-              UsbCamera camera = CameraServer.startAutomaticCapture();
-              // Set the resolution
-              camera.setResolution(640, 480);
-
-              // Get a CvSink. This will capture Mats from the camera
-              CvSink cvSink = CameraServer.getVideo();
-              // Setup a CvSource. This will send images back to the Dashboard
-              CvSource outputStream = CameraServer.putVideo("Rectangle", 640, 480);
-
-              // Mats are very memory expensive. Lets reuse this Mat.
-              Mat mat = new Mat();
-
-              // This cannot be 'true'. The program will never exit if it is. This
-              // lets the robot stop this thread when restarting robot code or
-              // deploying.
-              while (!Thread.interrupted()) {
-                // Tell the CvSink to grab a frame from the camera and put it
-                // in the source mat.  If there is an error notify the output.
-                if (cvSink.grabFrame(mat) == 0) {
-                  // Send the output the error.
-                  outputStream.notifyError(cvSink.getError());
-                  // skip the rest of the current iteration
-                  continue;
-                }
-                // Put a rectangle on the image
-                Imgproc.rectangle(
-                    mat, new Point(100, 100), new Point(400, 400), new Scalar(255, 255, 255), 5);
-                // Give the output stream a new image to display
-                outputStream.putFrame(mat);
-              }
-            });
     m_visionThread.setDaemon(true);
     m_visionThread.start();
 
@@ -213,18 +162,14 @@ public class Robot extends TimedRobot {
     
     rightStick = new Joystick(1);
     leftStick = new Joystick(0);
-    leftJLimiter = new SlewRateLimiter(1); // needs to be tested, tinker
+    leftJLimiter = new SlewRateLimiter(1); 
     rightJLimiter = new SlewRateLimiter(0.95);
     rotateLimiter = new SlewRateLimiter(1.5);
     extendLimiter = new SlewRateLimiter(0.9);
     robotDrive = new DifferentialDrive(left, right);
 
-    //gyro = new AHRS(SPI.Port.kMXP);
-    // gyro.reset();
-
     autoTime = new Timer();
     rotateMotor.setNeutralMode(NeutralMode.Brake);
-
   }
 
   @Override
@@ -248,16 +193,7 @@ public class Robot extends TimedRobot {
     currFRPos = frontRightEncoder.getPosition();
     currBLPos = backLeftEncoder.getPosition();
     currFLPos = frontLeftEncoder.getPosition();
-    /** 
-    backRightEncoder.setPosition(0);
-    backLeftEncoder.setPosition(0);
-    frontRightEncoder.setPosition(0);
-    frontLeftEncoder.setPosition(0);
-
-    extendEncoder.setPosition(0);
-    rotateMotor.set(ControlMode.Position, 0);
-    */
-
+    
     startBRPos = backRightEncoder.getPosition();
     startFRPos = frontRightEncoder.getPosition();
     startBLPos = backLeftEncoder.getPosition();
@@ -402,8 +338,10 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     currRotatePos = rotateMotor.getSelectedSensorPosition();
     currExtendPos = extendEncoder.getPosition();
- 
-    // Start Solenoid code, for grabber.
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//  CLAW CODE
+    // Claw Solenoids using X and Y to open and close
     if (m_xbox.getYButtonPressed()) { // grabber
       sol1.set(DoubleSolenoid.Value.kForward);
       // sol2.set(DoubleSolenoid.Value.kForward);
@@ -413,12 +351,12 @@ public class Robot extends TimedRobot {
       // sol2.set(DoubleSolenoid.Value.kReverse);
     }
 
-    // Claw Motors
-    if (m_xbox.getBButton()){ // push out game piece
+    // Claw Motors using A and B to intake and outtake
+    if (m_xbox.getBButton()){ // outtake game piece
       clawRight.set(VictorSPXControlMode.PercentOutput, 0.5); 
       clawLeft.set(VictorSPXControlMode.PercentOutput, 0.5);
     }
-    else if (m_xbox.getAButton()){ // take in game piece
+    else if (m_xbox.getAButton()){ // intake game piece
       clawRight.set(VictorSPXControlMode.PercentOutput, -0.5); 
       clawLeft.set(VictorSPXControlMode.PercentOutput, -0.5);
     }
@@ -428,71 +366,53 @@ public class Robot extends TimedRobot {
     }
     
     // end solenoid code.
-
-    // Start arm code
-    // rotateSpeed = rotateLimiter.calculate(m_xbox.getLeftY());
-    // if (arm_encoder.getPosition() <= rotateMaxValue && arm_encoder.getPosition() >= rotateMinValue) // tinker with this encoder!
-    // { 
-    // }
-    // commented for now because we do not have encoders on our victor spx motors
-    SmartDashboard.putNumber("Extend Motor", extendSpeed);
-    SmartDashboard.putBoolean("Switch Extend", Switch);
-    // if (m_xbox.getAButton()){
-      // extendMotor.set(0.5);
-    // }
-    // else if (m_xbox.getBButton()){
-      // extendMotor.set(-0.5);
-    // }
-    // else{
-      // extendMotor.set(0);
-    // }
     
-    // if (m_xbox.getAButton()){
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//    ROTATION CODE
       if (m_xbox.getRightTriggerAxis() < 0.07 && m_xbox.getLeftTriggerAxis() < 0.07){ // deadzone 
         sol2.set(DoubleSolenoid.Value.kReverse);
         rotateSpeed = 0; 
       }
-      else if (m_xbox.getRightTriggerAxis() > 0.07 && m_xbox.getLeftTriggerAxis() < 0.07){ // rotate down
+      else if (m_xbox.getRightTriggerAxis() > 0.07 && m_xbox.getLeftTriggerAxis() < 0.07){ // rotate up
         sol2.set(DoubleSolenoid.Value.kForward);
-        rotateSpeed = 0.1 * rotateArm.getDouble(0.1); // m_xbox.getRightTriggerAxis(), use right
+        rotateSpeed = 0.1 * rotateArm.getDouble(0.1); 
       }
-      else if (m_xbox.getRightTriggerAxis() < 0.07 && m_xbox.getLeftTriggerAxis() > 0.07){ // rotate up
+      else if (m_xbox.getRightTriggerAxis() < 0.07 && m_xbox.getLeftTriggerAxis() > 0.07){ // rotate down
         sol2.set(DoubleSolenoid.Value.kForward);
-        rotateSpeed = -0.07 * rotateArm.getDouble(0.1); // m_xbox.getLeftTriggerAxis(), use left
+        rotateSpeed = -0.07 * rotateArm.getDouble(0.1); 
       }
-      else if (m_xbox.getPOV() == 0){
-          rotateSpeed = 0.1 * ArmAutoPID.calculate(currRotatePos, startRotatePos + 53371.9);
-          sol2.set(DoubleSolenoid.Value.kForward);
+      else if (m_xbox.getPOV() == 0){ // high preset using up on the d-pad
+        rotateSpeed = 0.1 * ArmAutoPID.calculate(currRotatePos, startRotatePos + 53371.9);
+        sol2.set(DoubleSolenoid.Value.kForward);
       }
-      else if (m_xbox.getPOV() == 90){
+      else if (m_xbox.getPOV() == 90){ // mid preset using right on the d-pad
         rotateSpeed = 0.1 * ArmAutoPID.calculate(currRotatePos, startRotatePos + 49000);
+        sol2.set(DoubleSolenoid.Value.kForward);
       }
-      else if (m_xbox.getPOV() == 180){
+      else if (m_xbox.getPOV() == 180){ // low or resting position using down on the d-pad
         rotateSpeed = 0.1 * ArmAutoPID.calculate(currRotatePos, startRotatePos + 100);
+        sol2.set(DoubleSolenoid.Value.kForward);
       }
       else{
         sol2.set(DoubleSolenoid.Value.kReverse);
         rotateSpeed = 0;
       }
       rotateMotor.set(ControlMode.PercentOutput, rotateSpeed);
-    // }
-    
-    // if (m_xbox.getBButton()){
-      if (m_xbox.getRightBumper()){ // extend
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//    EXTENSION CODE
+      if (m_xbox.getRightBumper()){ // extend using right bumper
         extendSpeed = 0.5;
         
       }
-      else if (m_xbox.getLeftBumper()){ // retract
+      else if (m_xbox.getLeftBumper()){ // retract using left bumper
         extendSpeed = -0.5;
       }
       else{
         extendSpeed = 0;
       }
-      extendMotor.set(extendSpeed);
-    // }
-
-    // End arm code
-    
+      extendMotor.set(extendSpeed); 
   
     // Setting the desired speed to the motors.
     SmartDashboard.putNumber("Left J", ySpeed);
