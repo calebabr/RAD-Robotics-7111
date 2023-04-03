@@ -263,7 +263,7 @@ public class Robot extends TimedRobot {
     startBLPos = backLeftEncoder.getPosition();
     startFLPos = frontLeftEncoder.getPosition();
 
-    startRotatePos = extendEncoder.getPosition();
+    startExtendPos = extendEncoder.getPosition();
     startRotatePos = rotateMotor.getSelectedSensorPosition();
     ySpeed = 0;
     rotateSpeed = 0;
@@ -361,7 +361,7 @@ public class Robot extends TimedRobot {
         ySpeed = 0;
       }
       else{
-        ySpeed = 0.4;
+        ySpeed = 0.5;
       }      
       break;
       
@@ -387,18 +387,22 @@ public class Robot extends TimedRobot {
     rotateArm = Shuffleboard.getTab("SmartDashboard").add("rotate", 0.1).withWidget("Text View").getEntry(); // tinker with this
 
     // arm_encoder.setPosition(0);
+    startExtendPos = extendEncoder.getPosition();
+    startRotatePos = rotateMotor.getSelectedSensorPosition();
+    
+    ArmAutoPID.setP(0.000146);
+    ArmAutoPID.setI(0.000153);
+    ArmAutoPID.setD(0.0000001);
+
+    rotateSpeed = 0;
   }
  
 
   @Override
   public void teleopPeriodic() {
-    // gyroPID.setP(gyro_kP.getDouble(0));
-    // gyroPID.setI(gyro_kI.getDouble(0));
-    // gyroPID.setD(gyro_kD.getDouble(0));
-    // currAngle = gyro.getBoardYawAxis().board_axis.getValue();
-
-
-    
+    currRotatePos = rotateMotor.getSelectedSensorPosition();
+    currExtendPos = extendEncoder.getPosition();
+ 
     // Start Solenoid code, for grabber.
     if (m_xbox.getYButtonPressed()) { // grabber
       sol1.set(DoubleSolenoid.Value.kForward);
@@ -422,18 +426,7 @@ public class Robot extends TimedRobot {
       clawRight.set(VictorSPXControlMode.PercentOutput, 0);
       clawLeft.set(VictorSPXControlMode.PercentOutput, 0);
     }
-<<<<<<< HEAD
     
-=======
-
-    if (m_xbox.getStartButtonPressed()){
-      Switch = false;
-    }
-    else if (m_xbox.getBackButtonPressed()){
-      Switch = true;
-    }
-                                        
->>>>>>> 32b794a68a73ed8b0470dbc79d1a895313f86837
     // end solenoid code.
 
     // Start arm code
@@ -467,6 +460,16 @@ public class Robot extends TimedRobot {
         sol2.set(DoubleSolenoid.Value.kForward);
         rotateSpeed = -0.07 * rotateArm.getDouble(0.1); // m_xbox.getLeftTriggerAxis(), use left
       }
+      else if (m_xbox.getPOV() == 0){
+          rotateSpeed = 0.1 * ArmAutoPID.calculate(currRotatePos, startRotatePos + 53371.9);
+          sol2.set(DoubleSolenoid.Value.kForward);
+      }
+      else if (m_xbox.getPOV() == 90){
+        rotateSpeed = 0.1 * ArmAutoPID.calculate(currRotatePos, startRotatePos + 49000);
+      }
+      else if (m_xbox.getPOV() == 180){
+        rotateSpeed = 0.1 * ArmAutoPID.calculate(currRotatePos, startRotatePos + 100);
+      }
       else{
         sol2.set(DoubleSolenoid.Value.kReverse);
         rotateSpeed = 0;
@@ -476,7 +479,6 @@ public class Robot extends TimedRobot {
     
     // if (m_xbox.getBButton()){
       if (m_xbox.getRightBumper()){ // extend
-<<<<<<< HEAD
         extendSpeed = 0.5;
         
       }
@@ -485,23 +487,6 @@ public class Robot extends TimedRobot {
       }
       else{
         extendSpeed = 0;
-=======
-        if (Switch) {
-          extendSpeed = -0.5; // use right
-        }
-        else if (!Switch){
-          extendSpeed = 0.5; // use right
-        }
-        
-      }
-      else if (m_xbox.getLeftBumper()){ // retract
-        if (Switch) {
-          extendSpeed = 0.5; // use left
-        }
-        else if (!Switch){
-          extendSpeed = -0.5; // use left
-        }
->>>>>>> 32b794a68a73ed8b0470dbc79d1a895313f86837
       }
       extendMotor.set(extendSpeed);
     // }
@@ -520,17 +505,13 @@ public class Robot extends TimedRobot {
     //else{
       ySpeed = leftJLimiter.calculate(rightStick.getY()) * 0.85;
     // }
-    if (leftStick.getTrigger()){
-      rSpeed = rightJLimiter.calculate(leftStick.getX()) * 0.2;
-    }
-    else{
       rSpeed = rightJLimiter.calculate(leftStick.getX()) * 0.75;
-    }
       robotDrive.arcadeDrive(ySpeed, rSpeed);
-  }////////////////////////////////////////////
+    }
+  
+    ////////////////////////////////////////////
     public double remap_range(double val, double old_min, double old_max, double new_min, double new_max){ // Basically just math to convert a value from an old range to 
       // new range (slope, line formula)
     return (new_min + (val - old_min)*((new_max - new_min)/(old_max - old_min)));
     }
-    
-}
+  }
