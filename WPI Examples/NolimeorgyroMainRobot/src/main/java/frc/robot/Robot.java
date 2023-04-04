@@ -418,7 +418,7 @@ public class Robot extends TimedRobot {
           sol2.set(DoubleSolenoid.Value.kReverse);  
         }
       }
-      else if (m_xbox.getPOV(0) == 270){
+      else if (m_xbox.getPOV(0) == 270){ // high cone using left on the d-pad
         if (currRotatePos < startRotatePos + 60000){
           rotateSpeed = 0.1 * ArmTelePID.calculate(currRotatePos, startRotatePos + 60000);
           sol2.set(DoubleSolenoid.Value.kForward);
