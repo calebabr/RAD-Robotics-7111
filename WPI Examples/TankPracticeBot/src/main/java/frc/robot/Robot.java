@@ -152,8 +152,13 @@ public class Robot extends TimedRobot {
       }
   }
   else {
-    forwardSpeed = m_rightStick.getY() * 0.8;
-    turnSpeed = m_leftStick.getX() * 0.5;
+    if (m_xbox.getPOV(0) == 90){
+      forwardSpeed = -0.5;
+    }
+    else{
+      forwardSpeed = m_xbox.getLeftY() * 0.8;
+    }
+    turnSpeed = m_xbox.getRightX() * 0.75;
   
   }
 
