@@ -224,7 +224,13 @@ public class Robot extends TimedRobot {
 
       // Rotate Arm Up
       case 0:
+      /** 
       robotDrive.arcadeDrive(0, 0);
+      if (currRotatePos < startRotatePos + 53371.9){ // rotate up to score mid
+        rotateSpeed = 0.1 * ArmAutoPID.calculate(currRotatePos, startRotatePos + 53371.9);
+        sol2.set(DoubleSolenoid.Value.kForward);
+      }
+      */
       if (currRotatePos < startRotatePos + 44000){ // rotate up to score mid
         rotateSpeed = 0.1 * ArmAutoPID.calculate(currRotatePos, startRotatePos + 44000);
         sol2.set(DoubleSolenoid.Value.kForward);
@@ -374,12 +380,6 @@ public class Robot extends TimedRobot {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //    ROTATION CODE
-/** 
-      if (m_xbox.getRightTriggerAxis() < 0.07 && m_xbox.getLeftTriggerAxis() < 0.07){ // deadzone 
-        sol2.set(DoubleSolenoid.Value.kReverse);
-        rotateSpeed = 0; 
-      }
-*/
       if (m_xbox.getRightTriggerAxis() > 0.07 && m_xbox.getLeftTriggerAxis() < 0.07){ // rotate up
         sol2.set(DoubleSolenoid.Value.kForward);
         rotateSpeed = 0.1 * rotateArm.getDouble(2); 
@@ -448,23 +448,24 @@ public class Robot extends TimedRobot {
       }
       extendMotor.set(extendSpeed); 
   
-    // Setting the desired speed to the motors.
-    SmartDashboard.putNumber("Left J", ySpeed);
-    SmartDashboard.putNumber("Right J", rSpeed);
-    SmartDashboard.putNumber("CurrPitch", currAngle);
-    SmartDashboard.putNumber("rotate curr pos", currRotatePos);
-    SmartDashboard.putNumber("rotate start pos", startRotatePos);
-    SmartDashboard.putNumber("xbox dpad", m_xbox.getPOV(0));
-    
-    //if(leftStick.getTrigger()){
-      //ySpeed = gyroPID.calculate(currAngle, 0);
-    //}
-    //else{
-      ySpeed = leftJLimiter.calculate(rightStick.getY()) * 0.85;
-    // }
-      rSpeed = rightJLimiter.calculate(leftStick.getX()) * 0.75;
-      robotDrive.arcadeDrive(ySpeed, rSpeed);
-    }
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // DRIVE CODE
+  ySpeed = leftJLimiter.calculate(rightStick.getY()) * 0.85;
+  rSpeed = rightJLimiter.calculate(leftStick.getX()) * 0.75;
+  robotDrive.arcadeDrive(ySpeed, rSpeed);
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // Dashboard Values
+  SmartDashboard.putNumber("Left J", ySpeed);
+  SmartDashboard.putNumber("Right J", rSpeed);
+  SmartDashboard.putNumber("CurrPitch", currAngle);
+  SmartDashboard.putNumber("rotate curr pos", currRotatePos);
+  SmartDashboard.putNumber("rotate start pos", startRotatePos);
+  SmartDashboard.putNumber("xbox dpad", m_xbox.getPOV(0));
+}
 
     // END ROBOT OPERATION CODE
     //////////////////////////////////////////////////////////////////////////////
