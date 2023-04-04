@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 
-// import com.kauailabs.navx.frc.AHRS;
+import com.kauailabs.navx.frc.AHRS;
 // import com.kauailabs.navx.frc.AHRS.BoardAxis;
 
 import edu.wpi.first.wpilibj.SPI.Port;
@@ -89,7 +89,7 @@ public class Robot extends TimedRobot {
   private final PIDController m_leftAutoPID = new PIDController(0.005, 0.00005, 0);
   private final PIDController ArmAutoPID = new PIDController(0.0001, 0.0001, 0.00001);
   private final PIDController ArmTelePID = new PIDController(0.0001, 0.0001, 0.00001);
-
+  private final PIDController balancePID = new PIDController(0.0019,  0.00002, 0.0001);
 
   // Motors controlling 
   private final CANSparkMax motorFrontLeft = new CANSparkMax(1, CANSparkMaxLowLevel.MotorType.kBrushless);
@@ -120,19 +120,24 @@ public class Robot extends TimedRobot {
   public static final DoubleSolenoid sol1 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 0);
   public static final DoubleSolenoid sol2 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3);
 
+  private AHRS ahrs;
+
   // 
   private double ySpeed = 0;
   private double leftSpeed = 0;
   private double rightSpeed = 0;
   private double rSpeed = 0;
+  private double ahrsPitch;
   private Joystick leftStick;
   private Joystick rightStick;
   private SlewRateLimiter rightJLimiter; // tinker?
   private SlewRateLimiter leftJLimiter;
   private SlewRateLimiter rotateLimiter;
   private SlewRateLimiter extendLimiter;
+
   double rotationSpeed;
   int currAngle;
+  double range = 4;
 
   double currRotatePos = 0;
   double startRotatePos = 0;
@@ -169,6 +174,14 @@ public class Robot extends TimedRobot {
 
     autoTime = new Timer();
     rotateMotor.setNeutralMode(NeutralMode.Brake);
+
+    ahrs = new AHRS(Port.kMXP);
+    ahrs.reset();
+  }
+
+  @Override
+  public void robotPeriodic(){
+    ahrsPitch = ahrs.getPitch();
   }
 
   @Override
@@ -286,7 +299,6 @@ public class Robot extends TimedRobot {
         clawLeft.set(VictorSPXControlMode.PercentOutput, 0.45);
       }
       SmartDashboard.putNumber("AutoCase", AutoState);
-      // ArmAutoPID.setP(0.0025);
       break;
       
       // Rotate arm down
@@ -451,7 +463,12 @@ public class Robot extends TimedRobot {
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
   // DRIVE CODE
-  ySpeed = leftJLimiter.calculate(rightStick.getY()) * 0.85;
+  if (rightStick.getTrigger()){ // if holding right stick trigger, balance
+    ySpeed = balancePID.calculate(ahrsPitch, range);
+  }
+  else{
+    ySpeed = leftJLimiter.calculate(rightStick.getY()) * 0.85;
+  }
   rSpeed = rightJLimiter.calculate(leftStick.getX()) * 0.75;
   robotDrive.arcadeDrive(ySpeed, rSpeed);
 
@@ -465,6 +482,7 @@ public class Robot extends TimedRobot {
   SmartDashboard.putNumber("rotate curr pos", currRotatePos);
   SmartDashboard.putNumber("rotate start pos", startRotatePos);
   SmartDashboard.putNumber("xbox dpad", m_xbox.getPOV(0));
+  SmartDashboard.putNumber("AHRS Pitch", ahrsPitch);
 }
 
     // END ROBOT OPERATION CODE
