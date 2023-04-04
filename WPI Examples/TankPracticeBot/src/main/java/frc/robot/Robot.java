@@ -68,7 +68,7 @@ public class Robot extends TimedRobot {
   private float ahrsPitch;
   private float ahrsYaw;
   private float ahrsRoll;
-  
+
   @Override
   public void teleopInit() {
     kP = Shuffleboard.getTab("SmartDashboard").add("kP", 0.019).withWidget("Text View").getEntry();
@@ -149,7 +149,6 @@ public class Robot extends TimedRobot {
       else {
         speed = m_pid.calculate(ahrsPitch, 0);
         forwardSpeed = -speed;
-
       }
   }
   else {
