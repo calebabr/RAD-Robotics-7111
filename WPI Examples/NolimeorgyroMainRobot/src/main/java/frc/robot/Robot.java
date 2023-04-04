@@ -69,21 +69,13 @@ public class Robot extends TimedRobot {
   private double autospeed;
   private double autoPast;
 
-  private GenericEntry gyro_kP;
-  private GenericEntry gyro_kI;
-  private GenericEntry gyro_kD;
-  private boolean Switch = false;
   private GenericEntry rotateArm;
-  Thread m_visionThread;
+  private GenericEntry balRange;
   private XboxController m_xbox = new XboxController(2);
-  // private static final int kEncoderPortA = 0;
-  // private static final int kEncoderPortB = 1;
   private final TalonFX rotateMotor = new TalonFX(10);
   private final CANSparkMax extendMotor = new CANSparkMax(5, MotorType.kBrushless);
   private double extendSpeed;
   private double rotateSpeed;
-  private double rotateMaxValue = 5.0; // tinker!
-  private double rotateMinValue = 6.0; // tinker!
   Timer clocka = new Timer();
   private final PIDController m_rightAutoPID = new PIDController(0.005, 0.00005, 0);
   private final PIDController m_leftAutoPID = new PIDController(0.005, 0.00005, 0);
@@ -345,6 +337,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     rotateArm = Shuffleboard.getTab("SmartDashboard").add("rotate", 2).withWidget("Text View").getEntry(); // tinker with this
+    balRange = Shuffleboard.getTab("SmartDashboard").add("balRange", 0).withWidget("Text View").getEntry(); // tinker with this
 
     // arm_encoder.setPosition(0);
     startExtendPos = extendEncoder.getPosition();
@@ -463,8 +456,9 @@ public class Robot extends TimedRobot {
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
   // DRIVE CODE
-  if (rightStick.getTrigger()){ // if holding right stick trigger, balance
-    ySpeed = balancePID.calculate(ahrsPitch, range);
+  range = balRange.getDouble(0);
+  if (rightStick.getTrigger()){ // if holding right stick trigger, balance in teleop
+    ySpeed = balancePID.calculate(ahrsPitch, range); // PID controller, ahrsPitch is current, range is target
   }
   else{
     ySpeed = leftJLimiter.calculate(rightStick.getY()) * 0.85;
