@@ -8,8 +8,9 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 
-// import com.kauailabs.navx.frc.AHRS;
-// import com.kauailabs.navx.frc.AHRS.BoardAxis;
+// link to use: https://dev.studica.com/releases/2023/NavX.json
+import com.kauailabs.navx.frc.AHRS;
+import com.kauailabs.navx.frc.AHRS.BoardAxis;
 
 import edu.wpi.first.wpilibj.SPI.Port;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;        
@@ -49,14 +50,6 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.cscore.CvSink;
-import edu.wpi.first.cscore.CvSource;
-import edu.wpi.first.cscore.UsbCamera;
-import org.opencv.core.Mat;
-import org.opencv.core.Scalar;
-import org.opencv.imgproc.Imgproc;
-import org.opencv.core.Point;
 
 /**
  * This is a demo program showing the use of the DifferentialDrive class, specifically it contains
@@ -74,23 +67,28 @@ public class Robot extends TimedRobot {
   private GenericEntry armP;
   private GenericEntry armI;
   private GenericEntry armD;
+  private GenericEntry balP;
+  private GenericEntry balI;
+  private GenericEntry balD;
+
   private XboxController m_xbox = new XboxController(2);
-  private final TalonFX rotateMotor = new TalonFX(10);
-  private final CANSparkMax extendMotor = new CANSparkMax(5, MotorType.kBrushless);
-  private double extendSpeed;
-  private double rotateSpeed;
+  
   Timer clocka = new Timer();
+
   private final PIDController m_rightAutoPID = new PIDController(0.005, 0.00005, 0);
   private final PIDController m_leftAutoPID = new PIDController(0.005, 0.00005, 0);
   private final PIDController ArmAutoPID = new PIDController(0.0001, 0.0001, 0.00001);
   private final PIDController ArmTelePID = new PIDController(0.0001, 0.0001, 0.00001);
-  private final PIDController balancePID = new PIDController(0.0019,  0.00002, 0.0001);
+  private final PIDController balancePID = new PIDController(0.00019,  0.000002, 0.00001);
 
   // Motors controlling 
   private final CANSparkMax motorFrontLeft = new CANSparkMax(1, CANSparkMaxLowLevel.MotorType.kBrushless);
   private final CANSparkMax motorBackLeft = new CANSparkMax(2, CANSparkMaxLowLevel.MotorType.kBrushless);
   private final CANSparkMax motorFrontRight = new CANSparkMax(3, CANSparkMaxLowLevel.MotorType.kBrushless);
   private final CANSparkMax motorBackRight= new CANSparkMax(4, CANSparkMaxLowLevel.MotorType.kBrushless);
+
+  private final TalonFX rotateMotor = new TalonFX(10);
+  private final CANSparkMax extendMotor = new CANSparkMax(5, MotorType.kBrushless);
   
   private final RelativeEncoder backLeftEncoder = motorBackLeft.getEncoder();
   private final RelativeEncoder frontLeftEncoder = motorFrontLeft.getEncoder();
@@ -115,7 +113,7 @@ public class Robot extends TimedRobot {
   public static final DoubleSolenoid sol1 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 0);
   public static final DoubleSolenoid sol2 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3);
 
-  // private AHRS ahrs;
+  private AHRS ahrs;
 
   // 
   private double ySpeed = 0;
@@ -123,6 +121,8 @@ public class Robot extends TimedRobot {
   private double rightSpeed = 0;
   private double rSpeed = 0;
   private double ahrsPitch;
+  private double extendSpeed;
+  private double rotateSpeed;
   private Joystick leftStick;
   private Joystick rightStick;
   private SlewRateLimiter rightJLimiter; // tinker?
@@ -169,11 +169,26 @@ public class Robot extends TimedRobot {
 
     autoTime = new Timer();
     rotateMotor.setNeutralMode(NeutralMode.Brake);
+    ahrs = new AHRS(Port.kMXP);
+    ahrs.reset();
   }
 
   @Override
   public void robotPeriodic(){
-    // ahrsPitch = ahrs.getPitch();
+    ahrsPitch = ahrs.getPitch();
+
+    rotateArm = Shuffleboard.getTab("SmartDashboard").add("rotate", 2).withWidget("Text View").getEntry(); // tinker with this
+    balRange = Shuffleboard.getTab("SmartDashboard").add("balRange", 0).withWidget("Text View").getEntry(); // tinker with this
+
+    armP = Shuffleboard.getTab("SmartDashboard").add("arm P", 0.00008).withWidget("Text View").getEntry(); // tinker with this
+    armI = Shuffleboard.getTab("SmartDashboard").add("arm I", 0.0001).withWidget("Text View").getEntry(); // tinker with this
+    armD = Shuffleboard.getTab("SmartDashboard").add("arm D", 0.00000001).withWidget("Text View").getEntry(); // tinker with this
+    
+    balP = Shuffleboard.getTab("SmartDashboard").add("bal P", 0.00019).withWidget("Text View").getEntry(); // tinker with this
+    balI = Shuffleboard.getTab("SmartDashboard").add("bal I", 0.000002).withWidget("Text View").getEntry(); // tinker with this
+    balD = Shuffleboard.getTab("SmartDashboard").add("bal D", 0.00001).withWidget("Text View").getEntry(); // tinker with this
+    
+    range = balRange.getDouble(0);
   }
 
   @Override
@@ -311,6 +326,7 @@ public class Robot extends TimedRobot {
       rotateMotor.set(ControlMode.PercentOutput, rotateSpeed);
       break;
       
+      // /** 
       // Back up out of community
       case 3:
       if (autoTime.hasElapsed(3)){
@@ -320,7 +336,30 @@ public class Robot extends TimedRobot {
         ySpeed = 0.5;
       }      
       break;
-      
+      // */
+
+      // CODE TO DRIVE UP AND BALANCE
+      /** 
+      case 3: 
+      if (autoTime.hasElapsed(1.5)){
+        ySpeed = 0;
+        AutoState = 4;
+      }
+      else{
+        ySpeed = 0.4;
+      }
+      break;
+      */
+
+      // BALANCE
+      case 4: 
+      if (Math.abs(ahrsPitch) < 2){
+        ySpeed = 0;
+        AutoState = 5;
+      }
+      else{
+        ySpeed = balancePID.calculate(ahrsPitch, 0);
+      }
   }
 
   SmartDashboard.putNumber("AutoCase", AutoState);
@@ -336,18 +375,14 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    rotateArm = Shuffleboard.getTab("SmartDashboard").add("rotate", 2).withWidget("Text View").getEntry(); // tinker with this
-    balRange = Shuffleboard.getTab("SmartDashboard").add("balRange", 0).withWidget("Text View").getEntry(); // tinker with this
-
-    armP = Shuffleboard.getTab("SmartDashboard").add("arm P", 0.00008).withWidget("Text View").getEntry(); // tinker with this
-    armI = Shuffleboard.getTab("SmartDashboard").add("arm I", 0.0001).withWidget("Text View").getEntry(); // tinker with this
-    armD = Shuffleboard.getTab("SmartDashboard").add("arm D", 0.00000001).withWidget("Text View").getEntry(); // tinker with this
+    
 
     // arm_encoder.setPosition(0);
     startExtendPos = extendEncoder.getPosition();
     startRotatePos = rotateMotor.getSelectedSensorPosition();
     
     ArmTelePID.setPID(armP.getDouble(0.00008), armI.getDouble(0.0001), armD.getDouble(0.00000001));
+    balancePID.setPID(balP.getDouble(0.00019), balI.getDouble(0.000002),balD.getDouble(0.00001));
 
     rotateSpeed = 0;
   }
@@ -357,6 +392,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     currRotatePos = rotateMotor.getSelectedSensorPosition();
     currExtendPos = extendEncoder.getPosition();
+    balancePID.setPID(balP.getDouble(0.00019), balI.getDouble(0.000002),balD.getDouble(0.00001));
     ArmTelePID.setPID(armP.getDouble(0.00008), armI.getDouble(0.0001), armD.getDouble(0.00000001));
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -461,7 +497,6 @@ public class Robot extends TimedRobot {
 /////////////////////////////////////////////////////////////////////////////////////////////////
 
   // DRIVE CODE
-  range = balRange.getDouble(0);
   if (rightStick.getTrigger()){ // if holding right stick trigger, balance in teleop
     ySpeed = balancePID.calculate(ahrsPitch, range); // PID controller, ahrsPitch is current, range is target
   }
