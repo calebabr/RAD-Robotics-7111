@@ -8,7 +8,7 @@ import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
 
-import com.kauailabs.navx.frc.AHRS;
+// import com.kauailabs.navx.frc.AHRS;
 // import com.kauailabs.navx.frc.AHRS.BoardAxis;
 
 import edu.wpi.first.wpilibj.SPI.Port;
@@ -71,6 +71,9 @@ public class Robot extends TimedRobot {
 
   private GenericEntry rotateArm;
   private GenericEntry balRange;
+  private GenericEntry armP;
+  private GenericEntry armI;
+  private GenericEntry armD;
   private XboxController m_xbox = new XboxController(2);
   private final TalonFX rotateMotor = new TalonFX(10);
   private final CANSparkMax extendMotor = new CANSparkMax(5, MotorType.kBrushless);
@@ -112,7 +115,7 @@ public class Robot extends TimedRobot {
   public static final DoubleSolenoid sol1 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 0);
   public static final DoubleSolenoid sol2 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3);
 
-  private AHRS ahrs;
+  // private AHRS ahrs;
 
   // 
   private double ySpeed = 0;
@@ -166,14 +169,11 @@ public class Robot extends TimedRobot {
 
     autoTime = new Timer();
     rotateMotor.setNeutralMode(NeutralMode.Brake);
-
-    ahrs = new AHRS(Port.kMXP);
-    ahrs.reset();
   }
 
   @Override
   public void robotPeriodic(){
-    ahrsPitch = ahrs.getPitch();
+    // ahrsPitch = ahrs.getPitch();
   }
 
   @Override
@@ -339,11 +339,15 @@ public class Robot extends TimedRobot {
     rotateArm = Shuffleboard.getTab("SmartDashboard").add("rotate", 2).withWidget("Text View").getEntry(); // tinker with this
     balRange = Shuffleboard.getTab("SmartDashboard").add("balRange", 0).withWidget("Text View").getEntry(); // tinker with this
 
+    armP = Shuffleboard.getTab("SmartDashboard").add("arm P", 0.00008).withWidget("Text View").getEntry(); // tinker with this
+    armI = Shuffleboard.getTab("SmartDashboard").add("arm I", 0.0001).withWidget("Text View").getEntry(); // tinker with this
+    armD = Shuffleboard.getTab("SmartDashboard").add("arm D", 0.00000001).withWidget("Text View").getEntry(); // tinker with this
+
     // arm_encoder.setPosition(0);
     startExtendPos = extendEncoder.getPosition();
     startRotatePos = rotateMotor.getSelectedSensorPosition();
     
-    ArmTelePID.setPID(0.0001, 0.0001, 0.0000001);
+    ArmTelePID.setPID(armP.getDouble(0.00008), armI.getDouble(0.0001), armD.getDouble(0.00000001));
 
     rotateSpeed = 0;
   }
@@ -353,6 +357,7 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     currRotatePos = rotateMotor.getSelectedSensorPosition();
     currExtendPos = extendEncoder.getPosition();
+    ArmTelePID.setPID(armP.getDouble(0.00008), armI.getDouble(0.0001), armD.getDouble(0.00000001));
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //  CLAW CODE
