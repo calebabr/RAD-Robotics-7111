@@ -270,7 +270,7 @@ public class Robot extends TimedRobot {
 
       break;
         
-      // Spin Claw
+      // Spin Claw  
       case 1:
       ySpeed = 0;   
       // HIGH SCORE: 
@@ -387,7 +387,7 @@ public class Robot extends TimedRobot {
     startExtendPos = extendEncoder.getPosition();
     startRotatePos = rotateMotor.getSelectedSensorPosition();
     
-    ArmTelePID.setPID(0.00008, 0.0001, 0.00000001);
+    ArmTelePID.setPID(0.00008, 0.0001, 0.00000001); // tinker this PID if arm is too fast or oscillating 
     // balancePID.setPID(balP.getDouble(0.00019), balI.getDouble(0.000002),balD.getDouble(0.00001));
 
     rotateSpeed = 0;
@@ -399,17 +399,18 @@ public class Robot extends TimedRobot {
     currRotatePos = rotateMotor.getSelectedSensorPosition();
     currExtendPos = extendEncoder.getPosition();
     // balancePID.setPID(balP.getDouble(0.00019), balI.getDouble(0.000002),balD.getDouble(0.00001));
-    ArmTelePID.setPID(0.00008, 0.0001, 0.00000001);
+    ArmTelePID.setPID(0.00008, 0.0001, 0.00000001); // tinker this PID if arm is too fast or oscillating
+                                                              // make sure its the same as in teleopInit(), line 390
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //  CLAW CODE
     // Claw Solenoids using X and Y to open and close
     if (m_xbox.getYButtonPressed()) { // grabber
-      sol1.set(DoubleSolenoid.Value.kForward);
+      sol1.set(DoubleSolenoid.Value.kForward); // open claw
       // sol2.set(DoubleSolenoid.Value.kForward);
     }
     else if (m_xbox.getXButtonPressed()){
-      sol1.set(DoubleSolenoid.Value.kReverse);
+      sol1.set(DoubleSolenoid.Value.kReverse); // close claw
       // sol2.set(DoubleSolenoid.Value.kReverse);
     }
 
@@ -422,7 +423,7 @@ public class Robot extends TimedRobot {
       clawRight.set(VictorSPXControlMode.PercentOutput, -0.5); 
       clawLeft.set(VictorSPXControlMode.PercentOutput, -0.5);
     }
-    else{
+    else{ // otherwise, input means claw rollers should not spin
       clawRight.set(VictorSPXControlMode.PercentOutput, 0);
       clawLeft.set(VictorSPXControlMode.PercentOutput, 0);
     }
@@ -432,13 +433,15 @@ public class Robot extends TimedRobot {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //    ROTATION CODE
-      if (m_xbox.getRightTriggerAxis() > 0.07 && m_xbox.getLeftTriggerAxis() < 0.07){ // rotate up
+// all the if statements just set rotateSpeed to a value. look at the bottom of this set of Rotation Code where rotateSpeed is
+// actually sent to the falcon motor using PercentOutput as the ControlMode
+      if (m_xbox.getRightTriggerAxis() > 0.07 && m_xbox.getLeftTriggerAxis() < 0.07){ // manual rotate up using right trigger
         sol2.set(DoubleSolenoid.Value.kForward);
-        rotateSpeed = 0.1 * 2; 
+        rotateSpeed = 0.4; 
       }
-      else if (m_xbox.getRightTriggerAxis() < 0.07 && m_xbox.getLeftTriggerAxis() > 0.07){ // rotate down
+      else if (m_xbox.getRightTriggerAxis() < 0.07 && m_xbox.getLeftTriggerAxis() > 0.07){ // manual rotate down using left trigger
         sol2.set(DoubleSolenoid.Value.kForward);
-        rotateSpeed = -0.07 * 2; 
+        rotateSpeed = -0.14; 
       }
       else if (m_xbox.getPOV(0) == 0){ // high cube and mid cone preset using up on the d-pad
         if (currRotatePos < startRotatePos + 53371.9){
