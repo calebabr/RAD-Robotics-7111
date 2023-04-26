@@ -441,7 +441,7 @@ public class Robot extends TimedRobot {
       }
       else if (m_xbox.getRightTriggerAxis() < 0.07 && m_xbox.getLeftTriggerAxis() > 0.07){ // manual rotate down using left trigger
         sol2.set(DoubleSolenoid.Value.kForward);
-        rotateSpeed = -0.14; 
+        rotateSpeed = -0.24; 
       }
       else if (m_xbox.getPOV(0) == 0){ // high cube and mid cone preset using up on the d-pad
         if (currRotatePos < startRotatePos + 53371.9){
