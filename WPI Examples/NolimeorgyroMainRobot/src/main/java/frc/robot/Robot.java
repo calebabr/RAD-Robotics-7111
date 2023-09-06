@@ -493,7 +493,6 @@ public class Robot extends TimedRobot {
 //    EXTENSION CODE
       if (m_xbox.getRightBumper()){ // extend using right bumper
         extendSpeed = 0.7;
-        
       }
       else if (m_xbox.getLeftBumper()){ // retract using left bumper
         extendSpeed = -0.7;
