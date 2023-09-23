@@ -10,16 +10,15 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 
 public class DriveSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
-  private final CANSparkMax motorFrontLeft = new CANSparkMax(1, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private final CANSparkMax motorBackLeft = new CANSparkMax(2, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private final CANSparkMax motorFrontRight = new CANSparkMax(3, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private final CANSparkMax motorBackRight = new CANSparkMax(4, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private final MotorControllerGroup left = new MotorControllerGroup(motorBackLeft, motorFrontLeft);
-  private final MotorControllerGroup right = new MotorControllerGroup(motorBackRight, motorFrontRight);
-  DifferentialDrive m_drive = new DifferentialDrive(left, right);
+  private final VictorSPX motorFrontLeft  = new VictorSPX(0);
+  private final VictorSPX motorBackLeft   = new VictorSPX(1);
+  private final VictorSPX motorFrontRight = new VictorSPX(2);
+  private final VictorSPX motorBackRight  = new VictorSPX(3);
   public DriveSubsystem() {}
 
   /**
@@ -51,7 +50,10 @@ public class DriveSubsystem extends SubsystemBase {
   }
     // This method will be called once per scheduler run
     public void setMotors(double speed, double rotation) {
-      m_drive.arcadeDrive(speed, rotation);
+      motorFrontLeft.set(VictorSPXControlMode.PercentOutput, speed + rotation / 2);
+      motorBackLeft.set(VictorSPXControlMode.PercentOutput, speed + rotation / 2);
+      motorFrontRight.set(VictorSPXControlMode.PercentOutput, speed - rotation / 2);
+      motorBackRight.set(VictorSPXControlMode.PercentOutput, speed - rotation / 2);
     }
   
 

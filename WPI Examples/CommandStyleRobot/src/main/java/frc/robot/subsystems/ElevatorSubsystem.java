@@ -10,17 +10,16 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel;
 import com.revrobotics.SparkMaxRelativeEncoder;
 import com.revrobotics.RelativeEncoder;
-
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
 public class ElevatorSubsystem extends SubsystemBase {
-  private final CANSparkMax motor = new CANSparkMax(5, CANSparkMaxLowLevel.MotorType.kBrushless);
-  private RelativeEncoder encoder = motor.getEncoder();
+  private final TalonFX motor = new TalonFX(11);
   private double measure;
   /** Creates a new ExampleSubsystem. */
 
   
   public ElevatorSubsystem() {
-    encoder.setPosition(0);
   }
   /**
    * An example method querying a boolean state of the subsystem (for example, a digital sensor).
@@ -37,10 +36,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
   }
     public void MoveElevator(double speed) {
-      motor.set(speed);
+      motor.set(TalonFXControlMode.PercentOutput, speed);
     }
     public double Encoder() {
-      measure = encoder.getPosition();
+      measure = motor.getSelectedSensorPosition();
       return measure;
     }
 
