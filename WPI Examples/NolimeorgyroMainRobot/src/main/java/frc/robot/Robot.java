@@ -69,7 +69,7 @@ public class Robot extends TimedRobot {
   private GenericEntry armI;
   private GenericEntry armD;
   // private GenericEntry balP;
-  // private GenericEntry balI;
+  // private GenericEnstry balI;
   // private GenericEntry balD;
 
   private XboxController m_xbox = new XboxController(2);
@@ -110,9 +110,9 @@ public class Robot extends TimedRobot {
   public DifferentialDrive robotDrive;
   
   // Cone/Cube Grabber 
-  public static final Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
-  public static final DoubleSolenoid sol1 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 0);
-  public static final DoubleSolenoid sol2 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3);
+  public final Compressor compressor = new Compressor(PneumaticsModuleType.CTREPCM);
+  public final DoubleSolenoid sol1 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 0);
+  public final DoubleSolenoid sol2 = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 2, 3);
 
   // private AHRS ahrs;
 
@@ -150,6 +150,13 @@ public class Robot extends TimedRobot {
   double startFRPos = 0;
   double startBLPos = 0;
   double startFLPos = 0;
+
+  private static final int ArmUpState = 0;
+  private static final int SpinClaw = 1;
+  private static final int RotateArmDown = 2;
+  private static final int BackOut = 3;
+  private static final int Balance = 4;
+  private static final int EndState = 5;
 
   @Override
   public void robotInit() {
@@ -231,7 +238,6 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during autonomous. */
 
-
   @Override
   public void autonomousPeriodic() {
     currRotatePos = rotateMotor.getSelectedSensorPosition();
@@ -243,130 +249,32 @@ public class Robot extends TimedRobot {
     currFLPos = frontLeftEncoder.getPosition();
 
     switch (AutoState) {
-
       // Rotate Arm Up
-      case 0:
-      /** 
-      robotDrive.arcadeDrive(0, 0);
-      if (currRotatePos < startRotatePos + 53371.9){ // rotate up to score mid
-        rotateSpeed = 0.1 * ArmAutoPID.calculate(currRotatePos, startRotatePos + 53371.9);
-        sol2.set(DoubleSolenoid.Value.kForward);
-      }
-      */
-      if (currRotatePos < startRotatePos + 44000){ // rotate up to score mid
-        rotateSpeed = 0.1 * ArmAutoPID.calculate(currRotatePos, startRotatePos + 44000);
-        sol2.set(DoubleSolenoid.Value.kForward);
-        extendMotor.set(0);
-      }
-      else{
-        rotateSpeed = 0;
-        sol2.set(DoubleSolenoid.Value.kReverse);
-        autoTime.reset();
-        autoTime.start();
-        AutoState = 1;
-      }
-      rotateMotor.set(ControlMode.PercentOutput, rotateSpeed);
-      SmartDashboard.putNumber("AutoCase", AutoState);
-
-      break;
+      case ArmUpState:
+        AutoRotateArmUp();
+        break;
         
       // Spin Claw  
-      case 1:
-      ySpeed = 0;   
-      // HIGH SCORE: 
-      /** 
-      if (autoTime.hasElapsed(3.6)){
-        clawRight.set(VictorSPXControlMode.PercentOutput,0); 
-        clawLeft.set(VictorSPXControlMode.PercentOutput,0);
-        extendMotor.set(0);
-        ArmAutoPID.setPID(0.00008, 0.0001, 0.00000001);
-        AutoState = 2;
-      }
-      else if (autoTime.hasElapsed(2.1)){ // retract for 1.5
-        clawRight.set(VictorSPXControlMode.PercentOutput, 0); 
-        clawLeft.set(VictorSPXControlMode.PercentOutput, 0);
-        extendMotor.set(-0.5);
-      }
-      else if (autoTime.hasElapsed(1.5)){ // outtake for 0.6
-        extendMotor.set(0);
-        clawRight.set(VictorSPXControlMode.PercentOutput, 0.45); 
-        clawLeft.set(VictorSPXControlMode.PercentOutput, 0.45);
-      }
-      else{ // extend OUT  for 1.5
-        extendMotor.set(0.5);
-      }
-      */
-
-      // MID SCORE:
-      if (autoTime.hasElapsed(0.6)){
-        clawRight.set(VictorSPXControlMode.PercentOutput,0); 
-        clawLeft.set(VictorSPXControlMode.PercentOutput,0);
-        ArmAutoPID.setPID(0.00008, 0.0001, 0.00000001);
-        AutoState = 2;
-      }
-      else{ // outtake for 0.6
-        clawRight.set(VictorSPXControlMode.PercentOutput, 0.45); 
-        clawLeft.set(VictorSPXControlMode.PercentOutput, 0.45);
-        extendMotor.set(0);
-      }
-      SmartDashboard.putNumber("AutoCase", AutoState);
-      break;
+      case SpinClaw:
+        // AutoSimultExtendRotateHigh();
+        AutoSpinClawMid();
+        break;
       
       // Rotate arm down
-      case 2:
-      ySpeed = 0;
-      if (currRotatePos > startRotatePos + 100){ // rotate down
-        rotateSpeed = 0.1 * ArmAutoPID.calculate(currRotatePos, startRotatePos + 100);
-        sol2.set(DoubleSolenoid.Value.kForward);
-        extendMotor.set(0);
-
-      }
-      else{
-        rotateSpeed = 0;
-        sol2.set(DoubleSolenoid.Value.kReverse);
-        autoTime.reset();
-        autoTime.start();
-        AutoState = 3;
-      }
-      rotateMotor.set(ControlMode.PercentOutput, rotateSpeed);
-      break;
+      case RotateArmDown:
+        AutoRotateArmDown();
+        break;
       
-      // /** 
       // Back up out of community
-      case 3:
-      if (autoTime.hasElapsed(3.5)){
-        ySpeed = 0;
-      }
-      else{
-        ySpeed = 0.5;
-        extendMotor.set(0);
-      }      
-      break;
-      // */
-
-      // CODE TO DRIVE UP AND BALANCE
-      /** 
-      case 3: 
-      if (autoTime.hasElapsed(1.5)){
-        ySpeed = 0;
-        AutoState = 4;
-      }
-      else{
-        ySpeed = 0.4;
-      }
-      break;
-      */
+      case BackOut:
+        AutoBackOut();
+        // AutoBackOutToBalance();
+        break;
 
       // BALANCE
-      case 4: 
-      if (Math.abs(ahrsPitch) < 2){
-        ySpeed = 0;
-        AutoState = 5;
+      case Balance: 
+        AutoBalance();
       }
-      else{
-        ySpeed = balancePID.calculate(ahrsPitch, 0);
-      }
-  }
 
   SmartDashboard.putNumber("AutoCase", AutoState);
   SmartDashboard.putNumber("rotate curr pos", currRotatePos);
@@ -377,12 +285,8 @@ public class Robot extends TimedRobot {
   robotDrive.arcadeDrive(ySpeed, 0);
 }
 
-
-
   @Override
   public void teleopInit() {
-    
-
     // arm_encoder.setPosition(0);
     startExtendPos = extendEncoder.getPosition();
     startRotatePos = rotateMotor.getSelectedSensorPosition();
@@ -404,37 +308,198 @@ public class Robot extends TimedRobot {
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //  CLAW CODE
-    // Claw Solenoids using X and Y to open and close
-    if (m_xbox.getYButtonPressed()) { // grabber
-      sol1.set(DoubleSolenoid.Value.kForward); // open claw
-      // sol2.set(DoubleSolenoid.Value.kForward);
-    }
-    else if (m_xbox.getXButtonPressed()){
-      sol1.set(DoubleSolenoid.Value.kReverse); // close claw
-      // sol2.set(DoubleSolenoid.Value.kReverse);
-    }
-
-    // Claw Motors using A and B to intake and outtake
-    if (m_xbox.getBButton()){ // outtake game piece
-      clawRight.set(VictorSPXControlMode.PercentOutput, 0.5); 
-      clawLeft.set(VictorSPXControlMode.PercentOutput, 0.5);
-    }
-    else if (m_xbox.getAButton()){ // intake game piece
-      clawRight.set(VictorSPXControlMode.PercentOutput, -0.5); 
-      clawLeft.set(VictorSPXControlMode.PercentOutput, -0.5);
-    }
-    else{ // otherwise, input means claw rollers should not spin
-      clawRight.set(VictorSPXControlMode.PercentOutput, 0);
-      clawLeft.set(VictorSPXControlMode.PercentOutput, 0);
-    }
-    
-    // end solenoid code.
+  TeleRunClaw();
     
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //    ROTATION CODE
-// all the if statements just set rotateSpeed to a value. look at the bottom of this set of Rotation Code where rotateSpeed is
-// actually sent to the falcon motor using PercentOutput as the ControlMode
+
+    TeleRotateArm();
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//    EXTENSION CODE
+      TeleExtendArm();
+  
+/////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // DRIVE CODE
+  // if (rightStick.getTrigger()){ // if holding right stick trigger, balance in teleop
+    // ySpeed = balancePID.calculate(ahrsPitch, range); // PID controller, ahrsPitch is current, range is target
+  // }
+  // else{
+    ySpeed = leftJLimiter.calculate(rightStick.getY()) * 0.85;
+  // }
+  rSpeed = rightJLimiter.calculate(leftStick.getX()) * 0.75;
+  robotDrive.arcadeDrive(ySpeed, rSpeed);
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+  // Dashboard Values
+  SmartDashboard.putNumber("Left J", ySpeed);
+  SmartDashboard.putNumber("Right J", rSpeed);
+  SmartDashboard.putNumber("CurrPitch", currAngle);
+  SmartDashboard.putNumber("rotate curr pos", currRotatePos);
+  SmartDashboard.putNumber("rotate start pos", startRotatePos);
+  SmartDashboard.putNumber("xbox dpad", m_xbox.getPOV(0));
+  // SmartDashboard.putNumber("AHRS Pitch", ahrsPitch);
+}
+
+    // END ROBOT OPERATION CODE
+    //////////////////////////////////////////////////////////////////////////////
+    public double remap_range(double val, double old_min, double old_max, double new_min, double new_max){ // Basically just math to convert a value from an old range to 
+      // new range (slope, line formula)
+    return (new_min + (val - old_min)*((new_max - new_min)/(old_max - old_min)));
+    }
+
+    private boolean AutoRotateArmUp(){
+      /*
+      robotDrive.arcadeDrive(0, 0);
+      if (currRotatePos < startRotatePos + 53371.9){ // rotate up to score mid
+        rotateSpeed = 0.1 * ArmAutoPID.calculate(currRotatePos, startRotatePos + 53371.9);
+        sol2.set(DoubleSolenoid.Value.kForward);
+      }
+      */
+      if (currRotatePos < startRotatePos + 44000){ // rotate up to score mid
+        rotateSpeed = 0.1 * ArmAutoPID.calculate(currRotatePos, startRotatePos + 44000);
+        sol2.set(DoubleSolenoid.Value.kForward);
+        extendMotor.set(0);
+      }
+      else{
+        rotateSpeed = 0;
+        sol2.set(DoubleSolenoid.Value.kReverse);
+        autoTime.reset();
+        autoTime.start();
+        return true;
+      }
+      rotateMotor.set(ControlMode.PercentOutput, rotateSpeed);
+      return false; 
+    }
+
+    private void AutoSpinClawMid(){
+      ySpeed = 0;
+      // MID SCORE:
+      if (autoTime.hasElapsed(0.6)){
+        clawRight.set(VictorSPXControlMode.PercentOutput,0); 
+        clawLeft.set(VictorSPXControlMode.PercentOutput,0);
+        ArmAutoPID.setPID(0.00008, 0.0001, 0.00000001);
+        AutoState = RotateArmDown;
+      }
+      else{ // outtake for 0.6
+        clawRight.set(VictorSPXControlMode.PercentOutput, 0.45); 
+        clawLeft.set(VictorSPXControlMode.PercentOutput, 0.45);
+        extendMotor.set(0);
+      }
+    }
+
+    private boolean AutoSpinClawHigh(){
+      ySpeed = 0;   
+      // HIGH SCORE: 
+      if (autoTime.hasElapsed(3.6)){
+        clawRight.set(VictorSPXControlMode.PercentOutput,0); 
+        clawLeft.set(VictorSPXControlMode.PercentOutput,0);
+        extendMotor.set(0);
+        ArmAutoPID.setPID(0.00008, 0.0001, 0.00000001);
+        return true; 
+      }
+      else if (autoTime.hasElapsed(2.1)){ // retract for 1.5
+        clawRight.set(VictorSPXControlMode.PercentOutput, 0); 
+        clawLeft.set(VictorSPXControlMode.PercentOutput, 0);
+        extendMotor.set(-0.5);
+      }
+      else if (autoTime.hasElapsed(1.5)){ // outtake for 0.6
+        extendMotor.set(0);
+        clawRight.set(VictorSPXControlMode.PercentOutput, 0.45); 
+        clawLeft.set(VictorSPXControlMode.PercentOutput, 0.45);
+      }
+      else{ // extend OUT  for 1.5
+        extendMotor.set(0.5);
+      }
+      return false;
+    }
+    private void AutoSimultExtendRotateHigh(){
+      if (AutoRotateArmUp() && AutoSpinClawHigh()){
+        AutoState = RotateArmDown;
+      }
+    }
+    private void AutoRotateArmDown(){
+      ySpeed = 0;
+      if (currRotatePos > startRotatePos + 100){ // rotate down
+        rotateSpeed = 0.1 * ArmAutoPID.calculate(currRotatePos, startRotatePos + 100);
+        sol2.set(DoubleSolenoid.Value.kForward);
+        extendMotor.set(0);
+
+      }
+      else{
+        rotateSpeed = 0;
+        sol2.set(DoubleSolenoid.Value.kReverse);
+        autoTime.reset();
+        autoTime.start();
+        AutoState = BackOut;
+      }
+      rotateMotor.set(ControlMode.PercentOutput, rotateSpeed);
+    }
+
+    private void AutoBackOut(){
+      if (autoTime.hasElapsed(3.5)){
+        ySpeed = 0;
+      }
+      else{
+        ySpeed = 0.5;
+        extendMotor.set(0);
+      }      
+    }
+
+    private void AutoBackOutToBalance(){
+      if (autoTime.hasElapsed(1.5)){
+        ySpeed = 0;
+        AutoState = Balance;
+      }
+      else{
+        ySpeed = 0.4;
+      }
+    }
+
+    private void AutoBalance(){
+      if (Math.abs(ahrsPitch) < 2){
+        ySpeed = 0;
+        AutoState = EndState;
+      }
+      else{
+        ySpeed = balancePID.calculate(ahrsPitch, 0);
+      }
+    }
+
+    private void TeleRunClaw(){
+      // all the if statements just set rotateSpeed to a value. look at the bottom of this set of Rotation Code where rotateSpeed is
+      // actually sent to the falcon motor using PercentOutput as the ControlMode
+      // Claw Solenoids using X and Y to open and close
+      if (m_xbox.getYButtonPressed()) { // grabber
+        sol1.set(DoubleSolenoid.Value.kForward); // open claw
+        // sol2.set(DoubleSolenoid.Value.kForward);
+      }
+      else if (m_xbox.getXButtonPressed()){
+        sol1.set(DoubleSolenoid.Value.kReverse); // close claw
+        // sol2.set(DoubleSolenoid.Value.kReverse);
+      }
+
+      // Claw Motors using A and B to intake and outtake
+      if (m_xbox.getBButton()){ // outtake game piece
+        clawRight.set(VictorSPXControlMode.PercentOutput, 0.5); 
+        clawLeft.set(VictorSPXControlMode.PercentOutput, 0.5);
+        }
+      else if (m_xbox.getAButton()){ // intake game piece
+        clawRight.set(VictorSPXControlMode.PercentOutput, -0.5); 
+        clawLeft.set(VictorSPXControlMode.PercentOutput, -0.5);
+      }
+      else{ // otherwise, input means claw rollers should not spin
+        clawRight.set(VictorSPXControlMode.PercentOutput, 0);
+        clawLeft.set(VictorSPXControlMode.PercentOutput, 0);
+      }
+      // end solenoid code.
+    }
+
+    private void TeleRotateArm(){
       if (m_xbox.getRightTriggerAxis() > 0.07 && m_xbox.getLeftTriggerAxis() < 0.07){ // manual rotate up using right trigger
         sol2.set(DoubleSolenoid.Value.kForward);
         rotateSpeed = 0.4; 
@@ -488,12 +553,11 @@ public class Robot extends TimedRobot {
         rotateSpeed = 0;
       }
       rotateMotor.set(ControlMode.PercentOutput, rotateSpeed);
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    }
 
-//    EXTENSION CODE
+    private void TeleExtendArm(){
       if (m_xbox.getRightBumper()){ // extend using right bumper
-        extendSpeed = 0.7;
-        
+        extendSpeed = 0.7; 
       }
       else if (m_xbox.getLeftBumper()){ // retract using left bumper
         extendSpeed = -0.7;
@@ -501,37 +565,6 @@ public class Robot extends TimedRobot {
       else{
         extendSpeed = 0;
       }
-      extendMotor.set(extendSpeed); 
-  
-/////////////////////////////////////////////////////////////////////////////////////////////////
-
-  // DRIVE CODE
-  // if (rightStick.getTrigger()){ // if holding right stick trigger, balance in teleop
-    // ySpeed = balancePID.calculate(ahrsPitch, range); // PID controller, ahrsPitch is current, range is target
-  // }
-  // else{
-    ySpeed = leftJLimiter.calculate(rightStick.getY()) * 0.85;
-  // }
-  rSpeed = rightJLimiter.calculate(leftStick.getX()) * 0.75;
-  robotDrive.arcadeDrive(ySpeed, rSpeed);
-
-
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-  // Dashboard Values
-  SmartDashboard.putNumber("Left J", ySpeed);
-  SmartDashboard.putNumber("Right J", rSpeed);
-  SmartDashboard.putNumber("CurrPitch", currAngle);
-  SmartDashboard.putNumber("rotate curr pos", currRotatePos);
-  SmartDashboard.putNumber("rotate start pos", startRotatePos);
-  SmartDashboard.putNumber("xbox dpad", m_xbox.getPOV(0));
-  // SmartDashboard.putNumber("AHRS Pitch", ahrsPitch);
-}
-
-    // END ROBOT OPERATION CODE
-    //////////////////////////////////////////////////////////////////////////////
-    public double remap_range(double val, double old_min, double old_max, double new_min, double new_max){ // Basically just math to convert a value from an old range to 
-      // new range (slope, line formula)
-    return (new_min + (val - old_min)*((new_max - new_min)/(old_max - old_min)));
+      extendMotor.set(extendSpeed);
     }
   }
