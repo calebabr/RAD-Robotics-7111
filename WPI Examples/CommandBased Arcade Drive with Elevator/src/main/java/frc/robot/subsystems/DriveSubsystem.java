@@ -8,28 +8,32 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 public class DriveSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
-  private final CANSparkMax backLeft = new CANSparkMax(0, MotorType.kBrushless);
-  private final CANSparkMax backRight = new CANSparkMax(1, MotorType.kBrushless);
-  private final CANSparkMax frontRight = new CANSparkMax(2, MotorType.kBrushless);
-  private final CANSparkMax frontLeft = new CANSparkMax(3, MotorType.kBrushless);
+  private final VictorSPX backLeft = new VictorSPX(0);
+  private final VictorSPX backRight = new VictorSPX(1);
+  private final VictorSPX frontRight = new VictorSPX(2);
+  private final VictorSPX frontLeft = new VictorSPX(3);
 
-  private final MotorControllerGroup left = new MotorControllerGroup(backLeft, frontLeft);
-  private final MotorControllerGroup right = new MotorControllerGroup(backRight, frontRight);
-  private final DifferentialDrive roboDrive = new DifferentialDrive(left, right);
+
 
   public DriveSubsystem() {
     backLeft.setInverted(true);
     frontLeft.setInverted(true);
   }
 
-  public void setSpeeds(double speed, double rot){
-   roboDrive.arcadeDrive(speed, rot);
+  public void setSpeeds(double left, double right){
+    backLeft.set(VictorSPXControlMode.PercentOutput, left);
+    frontLeft.set(VictorSPXControlMode.PercentOutput, left);
+    backRight.set(VictorSPXControlMode.PercentOutput, right);
+    frontRight.set(VictorSPXControlMode.PercentOutput, right);
+
   }
   
   @Override

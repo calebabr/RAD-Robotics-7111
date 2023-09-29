@@ -6,20 +6,17 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ElevatorSubsystem;
-import edu.wpi.first.math.controller.PIDController;
 
-public class ElevatorPID extends CommandBase {
-
+public class ElevatorJoy extends CommandBase {
+  /** Creates a new ElevatorJoy. */
   private final ElevatorSubsystem elevatorSubsystem;
-  private final PIDController elevPID;
+  private final double speed;
 
-  /** Creates a new ElevatorPID. */
-  public ElevatorPID(ElevatorSubsystem elevSubsystem, double setPoint) {
+  public ElevatorJoy(ElevatorSubsystem elevatorSubsystem, double speed) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.elevatorSubsystem = elevSubsystem;
-    this.elevPID = new PIDController(0, 0, 0);
-    elevPID.setSetpoint(setPoint);
-    addRequirements(elevSubsystem);
+    this.elevatorSubsystem = elevatorSubsystem;
+    this.speed = speed;
+    addRequirements(elevatorSubsystem);
   }
 
   // Called when the command is initially scheduled.
@@ -29,7 +26,7 @@ public class ElevatorPID extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevatorSubsystem.setSpeeds(elevatorSubsystem.getEncoderMeters());
+    elevatorSubsystem.setSpeeds(speed);
   }
 
   // Called once the command ends or is interrupted.
