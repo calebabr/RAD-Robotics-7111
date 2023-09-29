@@ -4,7 +4,6 @@
 
 package frc.robot.commands;
 import frc.robot.Constants.ElevatorConstants;
-import frc.robot.Constants.ElevatorConstantsPid;
 import frc.robot.subsystems.ElevatorSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
