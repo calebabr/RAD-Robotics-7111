@@ -31,6 +31,7 @@ public class DriveForward extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    System.out.println("Driving");
     if (Math.abs(rotation) < DrivingConstants.DeadZone) {
         rotation = 0;
     }

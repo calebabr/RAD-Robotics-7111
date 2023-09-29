@@ -30,9 +30,9 @@ public class RobotContainer {
   private final ElevatorSubsystem m_ElevatorSubsystem = new ElevatorSubsystem();
 
   // Replace with CommandPS4Controller or CommandJoystick if needed
-  private final CommandXboxController m_driverController = new CommandXboxController(0);
-  private final CommandJoystick joystick1 = new CommandJoystick(1);
-  private final CommandJoystick joystick2 = new CommandJoystick(2);
+  private final CommandXboxController m_driverController = new CommandXboxController(2);
+  private final CommandJoystick joystick1 = new CommandJoystick(0);
+  private final CommandJoystick joystick2 = new CommandJoystick(1);
 
   public RobotContainer() {
 

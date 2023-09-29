@@ -27,6 +27,7 @@ public class ElevatorMoveUp extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    System.out.println("Elevator Moving Up");
     Elevator_subsystem.MoveElevator(ElevatorConstants.up);
   }
 

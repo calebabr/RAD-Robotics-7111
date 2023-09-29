@@ -32,6 +32,7 @@ public class ElevatorMovePid extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
+    System.out.println("ElevatorPID");
     measure = Elevator_subsystem.Encoder();
     movement = pid.calculate(measure, setpoint);
     Elevator_subsystem.MoveElevator(movement);
