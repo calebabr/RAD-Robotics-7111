@@ -7,9 +7,14 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import edu.wpi.first.wpilibj.Encoder;
+
+import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
+import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 public class ElevatorSubsystem extends SubsystemBase {
-  private final CANSparkMax elevMotor = new CANSparkMax(4, MotorType.kBrushless);
+  private final TalonFX elevMotor = new TalonFX(4);
+  private final Encoder elevEncoder = new Encoder(0, 1);
 
   /** Creates a new ElevatorSubsystem. */
   public ElevatorSubsystem() {}
@@ -20,6 +25,10 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void setSpeeds(double speeds){
-    elevMotor.set(speeds);
+    elevMotor.set(TalonFXControlMode.PercentOutput,speeds);
   }
+
+  public double getEncoderMeters() {
+    return elevMotor.getSelectedSensorPosition() * 19; // constant that needs to be calculated to get tick to meters
+}
 }
