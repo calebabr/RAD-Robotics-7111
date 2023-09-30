@@ -13,7 +13,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 public class ElevatorSubsystem extends SubsystemBase {
-  private final TalonFX elevMotor = new TalonFX(4);
+  private final TalonFX elevMotor = new TalonFX(11);
   private final Encoder elevEncoder = new Encoder(0, 1);
 
   /** Creates a new ElevatorSubsystem. */
