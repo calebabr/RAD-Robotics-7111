@@ -9,8 +9,9 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 
 public class ElevatorSubsystem extends SubsystemBase {
-  private final TalonFX motor = new TalonFX(11);
+  private TalonFX motor = new TalonFX(11);
   private double measure;
+  
   /** Creates a new ExampleSubsystem. */
 
   
@@ -36,6 +37,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public double Encoder() {
+    motor.setNeutralMode(NeutralMode.Brake);
     measure = motor.getSelectedSensorPosition();
     return measure;
   }
