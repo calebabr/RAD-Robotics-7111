@@ -30,13 +30,15 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void periodic() {
     // This method will be called once per scheduler run
   }
-    public void MoveElevator(double speed) {
-      motor.set(TalonFXControlMode.PercentOutput, speed);
-    }
-    public double Encoder() {
-      measure = motor.getSelectedSensorPosition();
-      return measure;
-    }
+
+  public void MoveElevator(double speed) {
+    motor.set(TalonFXControlMode.PercentOutput, speed);
+  }
+
+  public double Encoder() {
+    measure = motor.getSelectedSensorPosition();
+    return measure;
+  }
 
   @Override
   public void simulationPeriodic() {
