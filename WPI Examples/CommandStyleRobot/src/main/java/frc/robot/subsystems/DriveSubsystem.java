@@ -11,10 +11,10 @@ import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 
 public class DriveSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
-  private final VictorSPX motorFrontLeft  = new VictorSPX(0);
-  private final VictorSPX motorBackLeft   = new VictorSPX(1);
-  private final VictorSPX motorFrontRight = new VictorSPX(2);
-  private final VictorSPX motorBackRight  = new VictorSPX(3);
+  private final VictorSPX motorFrontLeft  = new VictorSPX(1);
+  private final VictorSPX motorBackLeft   = new VictorSPX(2);
+  private final VictorSPX motorFrontRight = new VictorSPX(3);
+  private final VictorSPX motorBackRight  = new VictorSPX(4);
   public DriveSubsystem() {}
 
   /**
