@@ -16,10 +16,10 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 
 public class DriveSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
-  private final VictorSPX backLeft = new VictorSPX(0);
-  private final VictorSPX backRight = new VictorSPX(1);
-  private final VictorSPX frontRight = new VictorSPX(2);
-  private final VictorSPX frontLeft = new VictorSPX(3);
+  private final VictorSPX backLeft = new VictorSPX(1);
+  private final VictorSPX backRight = new VictorSPX(2);
+  private final VictorSPX frontRight = new VictorSPX(3);
+  private final VictorSPX frontLeft = new VictorSPX(4);
 
 
 
