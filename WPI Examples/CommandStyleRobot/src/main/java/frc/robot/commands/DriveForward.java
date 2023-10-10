@@ -7,6 +7,8 @@ import frc.robot.Constants.DrivingConstants;
 import frc.robot.subsystems.DriveSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
+import java.util.function.Supplier;
+
 /** An example command that uses an example subsystem. */
 public class DriveForward extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
