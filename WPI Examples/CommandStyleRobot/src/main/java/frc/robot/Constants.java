@@ -24,7 +24,7 @@ public final class Constants {
     public static double kp = 0.5;
     public static double ki = 0.003;
     public static double kd = 0.03;
-    public static double SetPoint = 50;
+    public static double SetPoint = 0;
   }
   public static class DrivingConstants {
     // Muliplies by Joystick Input
