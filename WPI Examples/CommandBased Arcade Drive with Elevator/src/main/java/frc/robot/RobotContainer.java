@@ -16,6 +16,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.XboxController;
+
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
  * "declarative" paradigm, very little robot logic should actually be handled in the {@link Robot}
@@ -37,7 +38,7 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
 
-    driveSub.setDefaultCommand(new DriveCommand(driveSub, () -> xbox.getLeftY(), () -> xbox.getRightX()));
+    driveSub.setDefaultCommand(new DriveCommand(driveSub, () -> leftJoy.getY(), () -> rightJoy.getX()));
     elevatorSub.setDefaultCommand(new ElevatorJoy(elevatorSub, 0));
   }
 

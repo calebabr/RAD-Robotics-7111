@@ -21,8 +21,6 @@ public class DriveSubsystem extends SubsystemBase {
   private final VictorSPX frontRight = new VictorSPX(3);
   private final VictorSPX frontLeft = new VictorSPX(4);
 
-
-
   public DriveSubsystem() {
     backLeft.setInverted(true);
     frontLeft.setInverted(true);
@@ -33,7 +31,6 @@ public class DriveSubsystem extends SubsystemBase {
     frontLeft.set(VictorSPXControlMode.PercentOutput, left);
     backRight.set(VictorSPXControlMode.PercentOutput, right);
     frontRight.set(VictorSPXControlMode.PercentOutput, right);
-
   }
   
   @Override
