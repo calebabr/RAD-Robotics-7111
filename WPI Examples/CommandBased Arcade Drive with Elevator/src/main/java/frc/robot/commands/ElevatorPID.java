@@ -17,7 +17,7 @@ public class ElevatorPID extends CommandBase {
   public ElevatorPID(ElevatorSubsystem elevSubsystem, double setPoint) {
     // Use addRequirements() here to declare subsystem dependencies.
     this.elevatorSubsystem = elevSubsystem;
-    this.elevPID = new PIDController(0, 0, 0);
+    this.elevPID = new PIDController(1, 0, 0);
     elevPID.setSetpoint(setPoint);
     addRequirements(elevSubsystem);
   }
@@ -29,7 +29,7 @@ public class ElevatorPID extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    elevatorSubsystem.setSpeeds(elevatorSubsystem.getEncoderMeters());
+    elevatorSubsystem.setSpeeds(elevPID.calculate(elevatorSubsystem.getEncoderMeters()));
   }
 
   // Called once the command ends or is interrupted.

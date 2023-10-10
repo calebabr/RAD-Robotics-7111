@@ -24,6 +24,8 @@ public class DriveSubsystem extends SubsystemBase {
   public DriveSubsystem() {
     backLeft.setInverted(true);
     frontLeft.setInverted(true);
+    backRight.setInverted(false);
+    frontRight.setInverted(false);
   }
 
   public void setSpeeds(double left, double right){

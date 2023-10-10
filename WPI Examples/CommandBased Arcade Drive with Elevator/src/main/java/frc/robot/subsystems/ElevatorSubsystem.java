@@ -14,7 +14,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 public class ElevatorSubsystem extends SubsystemBase {
   private final TalonFX elevMotor = new TalonFX(11);
-  private final Encoder elevEncoder = new Encoder(0, 1);
+  // private final Encoder elevEncoder = new Encoder(0, 1);
 
   /** Creates a new ElevatorSubsystem. */
   public ElevatorSubsystem() {}
@@ -29,6 +29,6 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public double getEncoderMeters() {
-    return elevMotor.getSelectedSensorPosition() * 19; // constant that needs to be calculated to get tick to meters
+    return elevMotor.getSelectedSensorPosition() * 4; // constant that needs to be calculated to get tick to meters
 }
 }
