@@ -37,9 +37,6 @@ public class RobotContainer {
   public RobotContainer() {
 
     configureBindings();
-
-    
-    m_DriveSubsystem.setDefaultCommand(new DriveForward(m_DriveSubsystem, joystick1.getY() * DrivingConstants.SpeedTuning, joystick2.getX() * DrivingConstants.TurnTuning));
     m_ElevatorSubsystem.setDefaultCommand(new ElevatorMovePid(m_ElevatorSubsystem, ElevatorConstantsPid.SetPoint));
   }
 
@@ -48,5 +45,6 @@ public class RobotContainer {
     m_driverController.b().whileTrue(new ElevatorMoveUp(m_ElevatorSubsystem));
     m_driverController.a().whileTrue(new ElevatorMoveDown(m_ElevatorSubsystem));
     m_driverController.y().whileTrue(new ElevatorMovePid(m_ElevatorSubsystem, ElevatorConstantsPid.SetPoint));
+    new DriveForward(m_DriveSubsystem, joystick1.getY() * DrivingConstants.SpeedTuning, joystick2.getX() * DrivingConstants.TurnTuning);
   }
 }
