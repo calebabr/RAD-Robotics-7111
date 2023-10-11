@@ -11,6 +11,7 @@ import edu.wpi.first.wpilibj.Encoder;
 
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ElevatorSubsystem extends SubsystemBase {
   // private final TalonFX elevMotor = new TalonFX(11);
@@ -22,6 +23,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putBoolean("Elev Manual", false);
+    SmartDashboard.putBoolean("Elev PID", false);
   }
 
   // public void setSpeeds(double speeds){
