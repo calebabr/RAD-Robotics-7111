@@ -53,10 +53,10 @@ public class RobotContainer {
    */
   private void configureBindings() {
     // Schedule `ExampleCommand` when `exampleCondition` changes to `true`
-    xboxController.rightBumper().onTrue(new ElevatorPID(elevatorSub, 1000));
-    xboxController.leftBumper().onTrue(new ElevatorPID(elevatorSub, 0));
-    xboxController.a().onTrue(new ElevatorJoy(elevatorSub, 0.5));
-    xboxController.b().onTrue(new ElevatorJoy(elevatorSub, -0.5));
+    xboxController.rightBumper().whileTrue(new ElevatorPID(elevatorSub, 100000));
+    xboxController.leftBumper().whileTrue(new ElevatorPID(elevatorSub, 0));
+    xboxController.a().whileTrue(new ElevatorJoy(elevatorSub, 0.5));
+    xboxController.b().whileTrue(new ElevatorJoy(elevatorSub, -0.5));
   }
 
   /**

@@ -11,10 +11,11 @@ import edu.wpi.first.wpilibj.Encoder;
 
 import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class ElevatorSubsystem extends SubsystemBase {
-  private final TalonFX elevMotor = new TalonFX(11);
-  private final Encoder elevEncoder = new Encoder(0, 1);
+  // private final TalonFX elevMotor = new TalonFX(11);
+  // private final Encoder elevEncoder = new Encoder(0, 1);
 
   /** Creates a new ElevatorSubsystem. */
   public ElevatorSubsystem() {}
@@ -22,13 +23,15 @@ public class ElevatorSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    SmartDashboard.putBoolean("Elev Manual", false);
+    SmartDashboard.putBoolean("Elev PID", false);
   }
 
-  public void setSpeeds(double speeds){
-    elevMotor.set(TalonFXControlMode.PercentOutput,speeds);
-  }
+  // public void setSpeeds(double speeds){
+  //   elevMotor.set(TalonFXControlMode.PercentOutput,speeds);
+  // }
 
-  public double getEncoderMeters() {
-    return elevMotor.getSelectedSensorPosition() * 19; // constant that needs to be calculated to get tick to meters
-}
+  // public double getEncoderMeters() {
+  //   return elevMotor.getSelectedSensorPosition() * 4; // constant that needs to be calculated to get tick to meters
+  // }
 }
