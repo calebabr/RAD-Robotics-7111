@@ -13,11 +13,13 @@ import java.util.function.Supplier;
 public class DriveForward extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
   private final DriveSubsystem Drive_subsystem;
-  private double speed;
-  private double rotation;
+  private Supplier<Double> speed;
+  private Supplier<Double> rotation;
+  private double new_speed;
+  private double new_rotation;
 
 
-  public DriveForward(DriveSubsystem subsystem, double speed, double rotation) {
+  public DriveForward(DriveSubsystem subsystem, Supplier<Double> speed, Supplier<Double> rotation) {
     this.Drive_subsystem = subsystem;
     this.speed = speed;
     this.rotation = rotation;
@@ -34,13 +36,13 @@ public class DriveForward extends CommandBase {
   @Override
   public void execute() {
     System.out.println("Driving");
-    if (Math.abs(rotation) < DrivingConstants.DeadZone) {
-        rotation = 0;
+    if (Math.abs(rotation.get()) < DrivingConstants.DeadZone) {
+        new_rotation = 0;
     }
-    if (Math.abs(speed) < DrivingConstants.DeadZone) {
-      speed = 0;
+    if (Math.abs(speed.get()) < DrivingConstants.DeadZone) {
+      new_speed = 0;
     }
-    Drive_subsystem.setMotors(speed, rotation);
+    Drive_subsystem.setMotors(new_speed, new_rotation);
   }
 
   // Called once the command ends or is interrupted.
