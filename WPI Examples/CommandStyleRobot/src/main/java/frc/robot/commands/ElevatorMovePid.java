@@ -33,9 +33,9 @@ public class ElevatorMovePid extends CommandBase {
   @Override
   public void execute() {
     System.out.println("ElevatorPID");
-    measure = Elevator_subsystem.Encoder();
-    movement = pid.calculate(measure, setpoint);
-    Elevator_subsystem.MoveElevator(movement);
+    // measure = Elevator_subsystem.Encoder();
+    //movement = pid.calculate(measure, setpoint);
+    //Elevator_subsystem.MoveElevator(movement);
   }
 
   // Called once the command ends or is interrupted.

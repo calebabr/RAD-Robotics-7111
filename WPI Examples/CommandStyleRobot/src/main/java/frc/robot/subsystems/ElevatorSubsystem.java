@@ -10,7 +10,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 public class ElevatorSubsystem extends SubsystemBase {
-  private TalonFX motor = new TalonFX(11);
+  //private TalonFX motor = new TalonFX(11);
   
   /** Creates a new ExampleSubsystem. */
 
@@ -36,10 +36,10 @@ public class ElevatorSubsystem extends SubsystemBase {
     //motor.set(TalonFXControlMode.PercentOutput, speed);
   }
 
-  public double Encoder() {
+  // public double Encoder() {
     //motor.setNeutralMode(NeutralMode.Brake);
-    return motor.getSelectedSensorPosition() * 9;
-  }
+    //return motor.getSelectedSensorPosition() * 9;
+  //}
 
   @Override
   public void simulationPeriodic() {
