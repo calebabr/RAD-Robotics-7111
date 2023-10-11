@@ -24,7 +24,6 @@ public class ElevatorJoy extends CommandBase {
   @Override
   public void initialize() {
     SmartDashboard.putBoolean("Elev Manual", false);
-
   }
 
   // Called every time the scheduler runs while the command is scheduled.
