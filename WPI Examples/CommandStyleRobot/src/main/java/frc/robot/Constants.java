@@ -28,8 +28,8 @@ public final class Constants {
   }
   public static class DrivingConstants {
     // Muliplies by Joystick Input
-    public static double TurnTuning = 0.3;
-    public static double SpeedTuning = 0.6;
-    public static double DeadZone = 0.06;
+    public static double TurnTuning = 1;
+    public static double SpeedTuning = 1;
+    public static double DeadZone = 0;
   }
 }

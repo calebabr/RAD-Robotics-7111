@@ -46,10 +46,10 @@ public class DriveSubsystem extends SubsystemBase {
   }
     // This method will be called once per scheduler run
     public void setMotors(double speed, double rotation) {
-      motorFrontLeft.set(VictorSPXControlMode.PercentOutput, speed + rotation / 2);
-      motorBackLeft.set(VictorSPXControlMode.PercentOutput, speed + rotation / 2);
-      motorFrontRight.set(VictorSPXControlMode.PercentOutput, speed - rotation / 2);
-      motorBackRight.set(VictorSPXControlMode.PercentOutput, speed - rotation / 2);
+      motorFrontLeft.set(VictorSPXControlMode.PercentOutput, speed + (rotation / 2));
+      motorBackLeft.set(VictorSPXControlMode.PercentOutput, speed + (rotation / 2));
+      motorFrontRight.set(VictorSPXControlMode.PercentOutput, speed - (rotation / 2));
+      motorBackRight.set(VictorSPXControlMode.PercentOutput, speed - (rotation / 2));
     }
   
 
