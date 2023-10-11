@@ -13,7 +13,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXControlMode;
 import com.ctre.phoenix.motorcontrol.can.TalonFX;
 
 public class ElevatorSubsystem extends SubsystemBase {
-  private final TalonFX elevMotor = new TalonFX(11);
+  // private final TalonFX elevMotor = new TalonFX(11);
   // private final Encoder elevEncoder = new Encoder(0, 1);
 
   /** Creates a new ElevatorSubsystem. */
@@ -24,11 +24,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     // This method will be called once per scheduler run
   }
 
-  public void setSpeeds(double speeds){
-    elevMotor.set(TalonFXControlMode.PercentOutput,speeds);
-  }
+  // public void setSpeeds(double speeds){
+  //   elevMotor.set(TalonFXControlMode.PercentOutput,speeds);
+  // }
 
-  public double getEncoderMeters() {
-    return elevMotor.getSelectedSensorPosition() * 4; // constant that needs to be calculated to get tick to meters
-}
+  // public double getEncoderMeters() {
+  //   return elevMotor.getSelectedSensorPosition() * 4; // constant that needs to be calculated to get tick to meters
+  // }
 }
