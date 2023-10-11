@@ -39,7 +39,7 @@ public class RobotContainer {
     configureBindings();
 
     driveSub.setDefaultCommand(new DriveCommand(driveSub, () -> leftJoy.getY(), () -> rightJoy.getX()));
-    elevatorSub.setDefaultCommand(new ElevatorJoy(elevatorSub, 0));
+    // elevatorSub.setDefaultCommand(new ElevatorJoy(elevatorSub, 0));
   }
 
   /**
