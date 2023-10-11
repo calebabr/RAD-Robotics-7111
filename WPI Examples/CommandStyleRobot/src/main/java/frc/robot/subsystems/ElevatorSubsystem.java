@@ -11,7 +11,6 @@ import com.ctre.phoenix.motorcontrol.NeutralMode;
 
 public class ElevatorSubsystem extends SubsystemBase {
   private TalonFX motor = new TalonFX(11);
-  private double measure;
   
   /** Creates a new ExampleSubsystem. */
 
@@ -34,13 +33,12 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public void MoveElevator(double speed) {
-    motor.set(TalonFXControlMode.PercentOutput, speed);
+    //motor.set(TalonFXControlMode.PercentOutput, speed);
   }
 
   public double Encoder() {
-    motor.setNeutralMode(NeutralMode.Brake);
-    measure = motor.getSelectedSensorPosition();
-    return measure;
+    //motor.setNeutralMode(NeutralMode.Brake);
+    return motor.getSelectedSensorPosition() * 9;
   }
 
   @Override
