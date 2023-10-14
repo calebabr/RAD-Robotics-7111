@@ -12,6 +12,7 @@ public class AutoRoutine2 extends CommandBase {
   private final double timeRun;
   private final double leftSpeed;
   private final double rightSpeed;
+
   /** Creates a new AutoRoutine2. */
   public AutoRoutine2(DriveSubsystem driveSubsystem, double timer, double LSpeed, double RSpeed) {
     // Use addRequirements() here to declare subsystem dependencies.
@@ -19,27 +20,32 @@ public class AutoRoutine2 extends CommandBase {
     this.timeRun = timer;
     this.leftSpeed = LSpeed;
     this.rightSpeed = RSpeed;
+    addRequirements(driveSubsystem);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    driveSub.startTime();
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    if (driveSub.getAutoTime() < timeRun){
+    if (driveSub.getTime() < timeRun){
       driveSub.setSpeeds(leftSpeed, rightSpeed);
     }
     else{
       driveSub.setSpeeds(0, 0);
     }
-    driveSub.addAutoTime();
   }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    driveSub.resetTime();
+    driveSub.stopTime();
+  }
 
   // Returns true when the command should end.
   @Override
