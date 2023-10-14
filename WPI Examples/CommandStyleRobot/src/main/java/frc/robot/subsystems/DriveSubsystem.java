@@ -8,6 +8,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
 import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
+import edu.wpi.first.wpilibj.Timer;
+
 
 public class DriveSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
@@ -15,6 +17,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final VictorSPX motorBackLeft   = new VictorSPX(2);
   private final VictorSPX motorFrontRight = new VictorSPX(3);
   private final VictorSPX motorBackRight  = new VictorSPX(4);
+  private Timer timer = new Timer();
   public DriveSubsystem() {}
 
   /**
@@ -40,6 +43,26 @@ public class DriveSubsystem extends SubsystemBase {
     // Query some boolean state, such as a digital sensor.
     return false;
   }
+
+  public double GetTimer()
+  {
+    return timer.get();
+  }
+
+  public void StartTimer()
+  {
+    timer.start();
+  }
+
+  public void StopTimer()
+  {
+    timer.stop();
+  }
+  public void ResetTimer()
+  {
+    timer.reset();
+  }
+
 
   @Override
   public void periodic() {
