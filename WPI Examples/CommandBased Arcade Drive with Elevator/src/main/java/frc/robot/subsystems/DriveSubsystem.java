@@ -16,7 +16,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final VictorSPX backRight = new VictorSPX(2);
   private final VictorSPX frontRight = new VictorSPX(3);
   private final VictorSPX frontLeft = new VictorSPX(4);
-  private Timer autoTime;
+  private Timer autoTime = new Timer();
 
   public DriveSubsystem() {
     backLeft.setInverted(true);
@@ -48,7 +48,6 @@ public class DriveSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
-    autoTime.reset();
   }
 
 }

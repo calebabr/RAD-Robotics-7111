@@ -50,7 +50,7 @@ public class RobotContainer {
     driveSub.setDefaultCommand(new DriveCommand(driveSub, () -> leftJoy.getY(), () -> rightJoy.getY()));
     chooser.setDefaultOption("Straight Auto", straightAuto);
     chooser.addOption("Spin Auto", spinAuto);
-    SmartDashboard.putData(chooser);
+    SmartDashboard.putData("Auto Choose", chooser);
     // elevatorSub.setDefaultCommand(new ElevatorJoy(elevatorSub, 0));
   }
 
