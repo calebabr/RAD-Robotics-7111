@@ -37,7 +37,7 @@ public class RobotContainer {
   private Joystick rightJoy = new Joystick(1);
   private XboxController xbox = new XboxController(2);
   private CommandXboxController xboxController = new CommandXboxController(2);
-
+  
   private final AutoRoutine1 straightAuto = new AutoRoutine1(driveSub, 5, 0.2);
   private final AutoRoutine2 spinAuto = new AutoRoutine2(driveSub, 10, 0.2, -0.2);
   SendableChooser<Command> chooser = new SendableChooser<>();

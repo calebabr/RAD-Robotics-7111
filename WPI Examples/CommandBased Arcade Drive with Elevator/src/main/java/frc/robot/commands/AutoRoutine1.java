@@ -6,16 +6,18 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.DriveSubsystem;
-import edu.wpi.first.wpilibj.Timer;
 
 public class AutoRoutine1 extends CommandBase {
   private final DriveSubsystem driveSub;
   private final double timeRun;
+  private final double speed;
 
   /** Creates a new AutoRoutine1. */
-  public AutoRoutine1(DriveSubsystem driveSubsystem, double timer) {
+  public AutoRoutine1(DriveSubsystem driveSubsystem, double timer, double speed) { 
+    // timer is max time auto will be run for
     this.driveSub = driveSubsystem; 
     this.timeRun = timer;
+    this.speed = speed;
     addRequirements(driveSubsystem);
     // Use addRequirements() here to declare subsystem dependencies.
   }
@@ -23,16 +25,26 @@ public class AutoRoutine1 extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-  
+    driveSub.startTime();
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    if (driveSub.getTime() < timeRun){
+      driveSub.setSpeeds(speed, speed);
+    }
+    else{
+      driveSub.setSpeeds(0, 0);
+    }
+  }
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    driveSub.resetTime();
+    driveSub.stopTime();
+  }
 
   // Returns true when the command should end.
   @Override

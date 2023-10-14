@@ -13,10 +13,10 @@ public class ElevatorJoy extends CommandBase {
   private final ElevatorSubsystem elevatorSubsystem;
   private final double speed;
 
-  public ElevatorJoy(ElevatorSubsystem elevatorSubsystem, double speed) {
+  public ElevatorJoy(ElevatorSubsystem elevatorSubsys, double driveSpeed) {
     // Use addRequirements() here to declare subsystem dependencies.
-    this.elevatorSubsystem = elevatorSubsystem;
-    this.speed = speed;
+    this.elevatorSubsystem = elevatorSubsys;
+    this.speed = driveSpeed;
     addRequirements(elevatorSubsystem);
   }
 

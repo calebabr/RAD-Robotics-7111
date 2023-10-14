@@ -4,15 +4,11 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
 import com.ctre.phoenix.motorcontrol.can.VictorSPX;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+
+import edu.wpi.first.wpilibj.Timer;
 
 public class DriveSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
@@ -20,7 +16,7 @@ public class DriveSubsystem extends SubsystemBase {
   private final VictorSPX backRight = new VictorSPX(2);
   private final VictorSPX frontRight = new VictorSPX(3);
   private final VictorSPX frontLeft = new VictorSPX(4);
-  private double autoStart = 0;
+  private Timer autoTime;
 
   public DriveSubsystem() {
     backLeft.setInverted(true);
@@ -35,22 +31,24 @@ public class DriveSubsystem extends SubsystemBase {
     backRight.set(VictorSPXControlMode.PercentOutput, right);
     frontRight.set(VictorSPXControlMode.PercentOutput, right);
   }
-  
-  public double getAutoTime(){
-    return autoStart; 
-  }
 
-  public void addAutoTime(){
-    autoStart++;
+  public void startTime(){
+    autoTime.start();
+  }
+  public void resetTime(){
+    autoTime.reset();
+  }
+  public void stopTime(){
+    autoTime.stop();
+  }
+  public double getTime(){
+    return autoTime.get();
   }
 
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
+    autoTime.reset();
   }
 
-  @Override
-  public void simulationPeriodic() {
-    // This method will be called once per scheduler run during simulation
-  }
 }
