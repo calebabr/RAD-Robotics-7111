@@ -19,10 +19,10 @@ public class Drivetrain {
   public static final double kMaxAngularSpeed = Math.PI; // 1/2 rotation per second
 
   // Change for our robot
-  private final Translation2d m_frontLeftLocation = new Translation2d(0.381, 0.381);
-  private final Translation2d m_frontRightLocation = new Translation2d(0.381, -0.381);
-  private final Translation2d m_backLeftLocation = new Translation2d(-0.381, 0.381);
-  private final Translation2d m_backRightLocation = new Translation2d(-0.381, -0.381);
+  private final Translation2d m_frontLeftLocation = new Translation2d(-0.288925, 0.288925);
+  private final Translation2d m_frontRightLocation = new Translation2d(0.288925, 0.288925);
+  private final Translation2d m_backLeftLocation = new Translation2d(-0.288925, -0.288925);
+  private final Translation2d m_backRightLocation = new Translation2d(0.288925, -0.288925);
 
   // Change ID Numbers of each Speed Controller and Encoder channels
   private final SwerveModule m_frontLeft = new SwerveModule(3, 4, 3, 4);
