@@ -15,7 +15,7 @@ import edu.wpi.first.wpilibj.SerialPort.Port;
 
 /** Represents a swerve drive style drivetrain. */
 public class Drivetrain {
-  public static final double kMaxSpeed = 5.0; // 3 meters per second
+  public static final double kMaxSpeed = 2; // 3 meters per second
   public static final double kMaxAngularSpeed = Math.PI; // 1/2 rotation per second
 
   // Change for our robot
@@ -25,10 +25,10 @@ public class Drivetrain {
   private final Translation2d m_backRightLocation = new Translation2d(0.288925, -0.288925);
 
   // Change ID Numbers of each Speed Controller and Encoder channels
-  private final SwerveModule m_frontLeft = new SwerveModule(3, 4, 3, 4);
-  private final SwerveModule m_frontRight = new SwerveModule(5, 6, 5, 6);
-  private final SwerveModule m_backLeft = new SwerveModule(1, 2, 1, 2);
-  private final SwerveModule m_backRight = new SwerveModule(7, 8, 7, 8);
+  private final SwerveModule m_frontLeft = new SwerveModule(3, 4, 2);
+  private final SwerveModule m_frontRight = new SwerveModule(5, 6, 3);
+  private final SwerveModule m_backLeft = new SwerveModule(1, 2, 1);
+  private final SwerveModule m_backRight = new SwerveModule(7, 8, 4);
 
   // Test if AHRS gyro can use generic FRC AnalogGyro class
   private final AnalogGyro m_gyro = new AnalogGyro(0); // arbitrary port, check on RoboRio
