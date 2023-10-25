@@ -8,6 +8,7 @@ import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class Robot extends TimedRobot {
@@ -30,20 +31,31 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     driveWithJoystick(true);
+    SmartDashboard.putNumber("FL Turn Pos", m_swerve.m_frontLeft.getTurn());
+    SmartDashboard.putNumber("FL Abs Turn Pos", m_swerve.m_frontLeft.getAbsTurn());
+
+    SmartDashboard.putNumber("FR Turn Pos", m_swerve.m_frontRight.getTurn());
+    SmartDashboard.putNumber("FR Abs Turn Pos", m_swerve.m_frontRight.getAbsTurn());
+
+    SmartDashboard.putNumber("BL Turn Pos", m_swerve.m_backLeft.getTurn());
+    SmartDashboard.putNumber("BL Abs Turn Pos", m_swerve.m_backLeft.getAbsTurn());
+
+    SmartDashboard.putNumber("BR Turn Pos", m_swerve.m_backRight.getTurn());
+    SmartDashboard.putNumber("BR Abs Turn Pos", m_swerve.m_backRight.getAbsTurn());
   }
 
   private void driveWithJoystick(boolean fieldRelative) {
     // Get the x speed. We are inverting this because Xbox controllers return
     // negative values when we push forward.
     final var xSpeed =
-        -m_xspeedLimiter.calculate(MathUtil.applyDeadband(joyLeft.getX(), 0.02))
+        -m_xspeedLimiter.calculate(MathUtil.applyDeadband(joyLeft.getX(), 0.1))
             * Drivetrain.kMaxSpeed;
 
     // Get the y speed or sideways/strafe speed. We are inverting this because
     // we want a positive value when we pull to the left. Xbox controllers
     // return positive values when you pull to the right by default.
     final var ySpeed =
-        -m_yspeedLimiter.calculate(MathUtil.applyDeadband(joyLeft.getX(), 0.02))
+        -m_yspeedLimiter.calculate(MathUtil.applyDeadband(joyLeft.getY(), 0.1))
             * Drivetrain.kMaxSpeed;
 
     // Get the rate of angular rotation. We are inverting this because we want a
@@ -51,7 +63,7 @@ public class Robot extends TimedRobot {
     // mathematics). Xbox controllers return positive values when you pull to
     // the right by default.
     final var rot =
-        -m_rotLimiter.calculate(MathUtil.applyDeadband(joyRight.getX(), 0.02))
+        -m_rotLimiter.calculate(MathUtil.applyDeadband(joyRight.getX(), 0.1))
             * Drivetrain.kMaxAngularSpeed;
 
     m_swerve.drive(xSpeed, ySpeed, rot, fieldRelative);

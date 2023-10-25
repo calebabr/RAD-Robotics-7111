@@ -37,12 +37,12 @@ public class SwerveModule {
   private final CANCoder m_turningEncoder;
 
   // Gains are for example purposes only - must be determined for your own robot!
-  private final PIDController m_drivePIDController = new PIDController(1, 0, 0);
+  private final PIDController m_drivePIDController = new PIDController(0.05, 0, 0);
 
   // Gains are for example purposes only - must be determined for your own robot!
   private final ProfiledPIDController m_turningPIDController =
       new ProfiledPIDController(
-          1,
+          0.05,
           0,
           0,
           new TrapezoidProfile.Constraints(
@@ -85,7 +85,7 @@ public class SwerveModule {
 
   public SwerveModulePosition getPosition() {
     return new SwerveModulePosition(
-        m_driveEncoder.getPosition(), new Rotation2d(m_turningEncoder.getPosition());
+        m_driveEncoder.getPosition(), new Rotation2d(m_turningEncoder.getPosition()));
   }
 
   /**
@@ -97,6 +97,13 @@ public class SwerveModule {
     return new SwerveModuleState(m_driveEncoder.getVelocity(), new Rotation2d(m_turningEncoder.getPosition()));
   }
 
+  public double getTurn(){
+    return m_turningEncoder.getPosition();
+  }
+
+  public double getAbsTurn(){
+    return m_turningEncoder.getAbsolutePosition();
+  }
   /**
    * Sets the desired state for the module.
    *
