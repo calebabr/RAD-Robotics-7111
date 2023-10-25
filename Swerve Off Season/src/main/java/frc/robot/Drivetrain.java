@@ -25,10 +25,10 @@ public class Drivetrain {
   private final Translation2d m_backRightLocation = new Translation2d(0.288925, -0.288925);
 
   // Change ID Numbers of each Speed Controller and Encoder channels
-  private final SwerveModule m_frontLeft = new SwerveModule(3, 4, 2);
-  private final SwerveModule m_frontRight = new SwerveModule(5, 6, 3);
-  private final SwerveModule m_backLeft = new SwerveModule(1, 2, 1);
-  private final SwerveModule m_backRight = new SwerveModule(7, 8, 4);
+  public final SwerveModule m_frontLeft = new SwerveModule(3, 4, 2);
+  public final SwerveModule m_frontRight = new SwerveModule(5, 6, 3);
+  public final SwerveModule m_backLeft = new SwerveModule(1, 2, 1);
+  public final SwerveModule m_backRight = new SwerveModule(7, 8, 4);
 
   // Test if AHRS gyro can use generic FRC AnalogGyro class
   private final AnalogGyro m_gyro = new AnalogGyro(0); // arbitrary port, check on RoboRio
@@ -42,9 +42,13 @@ public class Drivetrain {
       new SwerveDriveOdometry(m_kinematics, ahrsGyro.getRotation2d(), new SwerveModulePosition[] { 
         m_frontLeft.getPosition(), m_frontRight.getPosition(), m_backLeft.getPosition(), m_backRight.getPosition()
       });
-
+  
   public Drivetrain() {
     m_gyro.reset();
+    // m_frontLeft.zeroWheel();
+    // m_frontRight.zeroWheel();
+    // m_backLeft.zeroWheel();
+    // m_backRight.zeroWheel();
   }
 
   /**
