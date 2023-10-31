@@ -23,14 +23,12 @@ public class Robot extends TimedRobot {
   private final SlewRateLimiter m_rotLimiter = new SlewRateLimiter(3);
 
   @Override
-  public void autonomousPeriodic() {
-    driveWithJoystick(false);
-    m_swerve.updateOdometry();
+  public void robotInit(){
+    m_swerve.zeroTrain();
   }
 
   @Override
-  public void teleopPeriodic() {
-    driveWithJoystick(true);
+  public void robotPeriodic(){
     SmartDashboard.putNumber("FL Turn Pos", m_swerve.m_frontLeft.getTurn());
     SmartDashboard.putNumber("FL Abs Turn Pos", m_swerve.m_frontLeft.getAbsTurn());
 
@@ -42,6 +40,20 @@ public class Robot extends TimedRobot {
 
     SmartDashboard.putNumber("BR Turn Pos", m_swerve.m_backRight.getTurn());
     SmartDashboard.putNumber("BR Abs Turn Pos", m_swerve.m_backRight.getAbsTurn());
+
+    SmartDashboard.putNumber("Gyro Degrees", m_swerve.ahrsGyro.getRotation2d().getDegrees());
+    SmartDashboard.putNumber("Gyro Rotations", m_swerve.ahrsGyro.getRotation2d().getRotations());
+  }
+
+  @Override
+  public void autonomousPeriodic() {
+    driveWithJoystick(false);
+    m_swerve.updateOdometry();
+  }
+
+  @Override
+  public void teleopPeriodic() {
+    driveWithJoystick(true);
   }
 
   private void driveWithJoystick(boolean fieldRelative) {

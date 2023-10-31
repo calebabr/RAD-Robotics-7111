@@ -32,7 +32,7 @@ public class Drivetrain {
 
   // Test if AHRS gyro can use generic FRC AnalogGyro class
   private final AnalogGyro m_gyro = new AnalogGyro(0); // arbitrary port, check on RoboRio
-  private final AHRS ahrsGyro = new AHRS(Port.kMXP);
+  public final AHRS ahrsGyro = new AHRS(Port.kMXP);
   
   private final SwerveDriveKinematics m_kinematics =
       new SwerveDriveKinematics(
@@ -80,5 +80,12 @@ public class Drivetrain {
         new SwerveModulePosition[] { 
           m_frontLeft.getPosition(), m_frontRight.getPosition(), m_backLeft.getPosition(), m_backRight.getPosition()
         });
+  }
+
+  public void zeroTrain(){
+    m_frontLeft.zeroWheel();
+    m_frontRight.zeroWheel();
+    m_backLeft.zeroWheel();
+    m_backRight.zeroWheel();
   }
 }
