@@ -29,19 +29,19 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotPeriodic(){
-    SmartDashboard.putNumber("FL Turn Pos", m_swerve.m_frontLeft.getTurn());
+    // SmartDashboard.putNumber("FL Turn Pos", m_swerve.m_frontLeft.getTurn());
     SmartDashboard.putNumber("FL Abs Turn Pos", m_swerve.m_frontLeft.getAbsTurn());
 
-    SmartDashboard.putNumber("FR Turn Pos", m_swerve.m_frontRight.getTurn());
+    // SmartDashboard.putNumber("FR Turn Pos", m_swerve.m_frontRight.getTurn());
     SmartDashboard.putNumber("FR Abs Turn Pos", m_swerve.m_frontRight.getAbsTurn());
 
-    SmartDashboard.putNumber("BL Turn Pos", m_swerve.m_backLeft.getTurn());
+    // SmartDashboard.putNumber("BL Turn Pos", m_swerve.m_backLeft.getTurn());
     SmartDashboard.putNumber("BL Abs Turn Pos", m_swerve.m_backLeft.getAbsTurn());
 
-    SmartDashboard.putNumber("BR Turn Pos", m_swerve.m_backRight.getTurn());
+    // SmartDashboard.putNumber("BR Turn Pos", m_swerve.m_backRight.getTurn());
     SmartDashboard.putNumber("BR Abs Turn Pos", m_swerve.m_backRight.getAbsTurn());
 
-    SmartDashboard.putNumber("Gyro Degrees", m_swerve.ahrsGyro.getRotation2d().getDegrees());
+    // SmartDashboard.putNumber("Gyro Degrees", m_swerve.ahrsGyro.getRotation2d().getDegrees());
     SmartDashboard.putNumber("Gyro Rotations", m_swerve.ahrsGyro.getRotation2d().getRotations());
   }
 

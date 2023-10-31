@@ -69,7 +69,6 @@ public class SwerveModule {
     m_driveMotor = new CANSparkMax(driveMotorID, MotorType.kBrushless);
     m_turningMotor = new CANSparkMax(turningMotorID, MotorType.kBrushless);
     
-    // Test if CTR Electronics CAN Encoder can use generic FRC Encoder class
     m_turningEncoder = new CANCoder(encoderID);
     
     m_driveEncoder = m_driveMotor.getAlternateEncoder(42);
