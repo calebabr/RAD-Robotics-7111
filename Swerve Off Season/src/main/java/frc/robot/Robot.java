@@ -55,9 +55,9 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     driveWithJoystick(true);
 
-    if (m_controller.getAButtonPressed()){
-      m_swerve.zeroTrain();
-    }
+    // if (m_controller.getAButtonPressed()){
+      // m_swerve.zeroTrain();
+    // }
   }
 
   private void driveWithJoystick(boolean fieldRelative) {
