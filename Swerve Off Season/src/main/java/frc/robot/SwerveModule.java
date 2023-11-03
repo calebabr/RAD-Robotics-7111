@@ -87,10 +87,10 @@ public class SwerveModule {
         m_driveEncoder.getPosition(), new Rotation2d(m_turningEncoder.getPosition()));
   }
 
-  public void zeroWheel(){
-    double TurnEncoder = m_turningPIDController.calculate(m_turningEncoder.getAbsolutePosition(),0);
-    m_turningMotor.set(TurnEncoder / 6.75);
-  }
+  // public void zeroWheel(){
+   //  double TurnEncoder = m_turningPIDController.calculate(m_turningEncoder.getAbsolutePosition(),0);
+  //   m_turningMotor.set(TurnEncoder / 6.75);
+  // }
   /**
    * Returns the current state of the module.
    *

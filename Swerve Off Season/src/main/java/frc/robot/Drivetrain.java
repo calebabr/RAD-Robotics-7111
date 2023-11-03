@@ -82,10 +82,10 @@ public class Drivetrain {
         });
   }
 
-  public void zeroTrain(){
-    m_frontLeft.zeroWheel();
-    m_frontRight.zeroWheel();
-    m_backLeft.zeroWheel();
-    m_backRight.zeroWheel();
-  }
+  // public void zeroTrain(){
+  //   m_frontLeft.zeroWheel();
+  //   m_frontRight.zeroWheel();
+  //   m_backLeft.zeroWheel();
+  //   m_backRight.zeroWheel();
+  // }
 }
