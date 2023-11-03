@@ -42,7 +42,7 @@ public class SwerveModule {
   // Gains are for example purposes only - must be determined for your own robot!
   private final ProfiledPIDController m_turningPIDController =
       new ProfiledPIDController(
-          0.0005,
+          0.1,
           0,
           0,
           new TrapezoidProfile.Constraints(
@@ -131,7 +131,7 @@ public class SwerveModule {
     final double turnFeedforward =
         m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
 
-    m_driveMotor.setVoltage(driveOutput + driveFeedforward);
-    m_turningMotor.setVoltage(turnOutput + turnFeedforward);
+    m_driveMotor.setVoltage(0);//driveOutput  + driveFeedforward);
+    m_turningMotor.setVoltage(0);//turnOutput  + turnFeedforward);
   }
 }
