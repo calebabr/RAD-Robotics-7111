@@ -19,7 +19,7 @@ public class Drivetrain {
   public static final double kMaxAngularSpeed = Math.PI; // 1/2 rotation per second
 
   // Change for our robot
-  private final Translation2d m_frontLeftLocation = new Translation2d(-0.4025, 0.4025);
+  private final Translation2d m_frontLeftLocation = new Translation2d(-0.4025, 0.4025); // change 11.375 inches to meters
   private final Translation2d m_frontRightLocation = new Translation2d(0.4025, 0.4025);
   private final Translation2d m_backLeftLocation = new Translation2d(-0.4025, -0.4025);
   private final Translation2d m_backRightLocation = new Translation2d(0.4025, -0.4025);
