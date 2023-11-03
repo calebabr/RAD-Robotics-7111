@@ -131,7 +131,7 @@ public class SwerveModule {
     final double turnFeedforward =
         m_turnFeedforward.calculate(m_turningPIDController.getSetpoint().velocity);
 
-    m_driveMotor.setVoltage(0.2);//driveOutput  + driveFeedforward);
-    m_turningMotor.setVoltage(0.2);//turnOutput  + turnFeedforward);
-  }
+    m_driveMotor.set(driveOutput  + driveFeedforward);
+    m_turningMotor.set(turnOutput  + turnFeedforward);
+}
 }
