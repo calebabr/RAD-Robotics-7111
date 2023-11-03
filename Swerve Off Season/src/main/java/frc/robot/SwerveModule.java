@@ -42,9 +42,9 @@ public class SwerveModule {
   // Gains are for example purposes only - must be determined for your own robot!
   private final ProfiledPIDController m_turningPIDController =
       new ProfiledPIDController(
-          0.05,
-          0,
-          0,
+          0.005,
+          0.001,
+          0.001,
           new TrapezoidProfile.Constraints(
               kModuleMaxAngularVelocity, kModuleMaxAngularAcceleration));
 
@@ -88,7 +88,7 @@ public class SwerveModule {
   }
 
   public void zeroWheel(){
-    m_turningMotor.setVoltage(m_turningPIDController.calculate(m_turningEncoder.getAbsolutePosition(), 0));
+    m_turningMotor.set(m_turningPIDController.calculate(m_turningEncoder.getAbsolutePosition(), 0));
   }
   /**
    * Returns the current state of the module.

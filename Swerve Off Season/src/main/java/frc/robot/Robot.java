@@ -12,7 +12,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
 
 public class Robot extends TimedRobot {
-  // private final XboxController m_controller = new XboxController(0);
+  private final XboxController m_controller = new XboxController(0);
   private final Joystick joyLeft = new Joystick(0);
   private final Joystick joyRight = new Joystick(1);
   private final Drivetrain m_swerve = new Drivetrain();
@@ -24,7 +24,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit(){
-    m_swerve.zeroTrain();
+    // m_swerve.zeroTrain();
   }
 
   @Override
@@ -54,6 +54,10 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopPeriodic() {
     driveWithJoystick(true);
+
+    if (m_controller.getAButtonPressed()){
+      m_swerve.zeroTrain();
+    }
   }
 
   private void driveWithJoystick(boolean fieldRelative) {
