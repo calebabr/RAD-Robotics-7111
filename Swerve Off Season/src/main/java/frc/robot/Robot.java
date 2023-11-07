@@ -82,6 +82,6 @@ public class Robot extends TimedRobot {
         -m_rotLimiter.calculate(MathUtil.applyDeadband(joyRight.getX(), 0.2))
             * Drivetrain.kMaxAngularSpeed;
 
-    m_swerve.drive(0, 0, 0, fieldRelative); // xSpeed, ySpeed, rot, fieldRelative);
+    m_swerve.drive(xSpeed, ySpeed, rot, fieldRelative);
   }
 }
