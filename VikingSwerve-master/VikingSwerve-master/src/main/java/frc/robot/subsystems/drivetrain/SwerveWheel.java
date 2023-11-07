@@ -7,6 +7,7 @@ import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj2.command.PIDSubsystem;
 import viking.controllers.SwerveWheelDrive;
+import com.revrobotics.CANSparkMax;
 
 public class SwerveWheel extends PIDSubsystem implements SwerveDrivetrainConstants {
 
@@ -14,11 +15,11 @@ public class SwerveWheel extends PIDSubsystem implements SwerveDrivetrainConstan
 
 	private TalonSRX steerMotor;
 	private AnalogInput absEnc;
-	private SwerveWheelDrive drive;
+	private CANSparkMax drive;
 
 	private int countsWhenFrwd;
 
-	public SwerveWheel(SwerveWheelDrive drive, int m_steer, int analogEnc, int zeroOffset,
+	public SwerveWheel(CANSparkMax drive, int m_steer, int analogEnc, int zeroOffset,
 					   String name) {
 		super(new PIDController(kP, kI, kD));
 

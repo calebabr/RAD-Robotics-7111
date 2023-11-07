@@ -3,35 +3,35 @@ package frc.robot.subsystems.drivetrain;
 public interface SwerveDrivetrainConstants {
 
 	// Length and Width of robot in inches
-	public final double L = 25;
-	public final double W = 23;
+	public final double L = 28;
+	public final double W = 28; // already correct
 
 	// PIDF Variables
 	public final double kP = 0.02;
 	public final double kI = 0.0;
 	public final double kD = 0.0;
-	public final double kF = 0.0;
+	public final double kF = 0.0; // need to tune
 	
 	// Quadrature Encoder Ticks per Rotation
-	public final int QUAD_COUNTS_PER_ROT = 1658;
+	public final int QUAD_COUNTS_PER_ROT = 1658; // need to figure out
 
-	// Talon SRX Turn Motor CAN ID
-	public final int frontLeftTurnTalonID = 31;
-	public final int frontRightTurnTalonID = 41;
-	public final int backLeftTurnTalonID = 11;
-	public final int backRightTurnTalonID = 21;
+	// Talon SRX Turn Motor CAN ID (change to sparkmax)
+	public final int frontLeftTurnID = 4;
+	public final int frontRightTurnID = 6;
+	public final int backLeftTurnID = 2;
+	public final int backRightTurnID = 8;
 
-	// IDs for Drive Motors
-	public final int frontLeftDriveID = 32;
-	public final int frontRightDriveID = 42;
-	public final int backLeftDriveID = 0;
-	public final int backRightDriveID = 22;
+	// IDs for Drive Motors (change to sparkmax)
+	public final int frontLeftDriveID = 3;
+	public final int frontRightDriveID = 5;
+	public final int backLeftDriveID = 1;
+	public final int backRightDriveID = 7;
 
-	// Analog Encoder ID
-	public final int frontLeftEncoderID = 0;
-	public final int frontRightEncoderID = 1;
-	public final int backLeftEncoderID = 2;
-	public final int backRightEncoderID = 3;
+	// Analog Encoder ID (change to CANcoder, not analog)
+	public final int frontLeftEncoderID = 2;
+	public final int frontRightEncoderID = 3;
+	public final int backLeftEncoderID = 1;
+	public final int backRightEncoderID = 4;
 
 	// Offset of analog to make encoders face forward
 	public final int frontLeftEncoderOffset = 1850;
