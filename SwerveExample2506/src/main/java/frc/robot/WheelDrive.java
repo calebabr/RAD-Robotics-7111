@@ -6,6 +6,7 @@ package frc.robot;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.ctre.phoenix.sensors.CANCoder;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import edu.wpi.first.math.controller.PIDController;
 /** Add your docs here. */
@@ -23,6 +24,7 @@ public class WheelDrive {
         pidController = new PIDController(0.2, 0, 0);
 
         pidController.enableContinuousInput(-180, 180);
+        pidController.setSetpoint(0);
     }
 
     public void drive (double speed, double angle) {
@@ -38,5 +40,6 @@ public class WheelDrive {
         }
     
         pidController.setSetpoint(setpoint);
+        SmartDashboard.putNumber("SetPoint", setpoint);
     }
 }
