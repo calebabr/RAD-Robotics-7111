@@ -3,12 +3,17 @@ package frc.robot.output.commands.drivetrain;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Robot;
 import frc.robot.subsystems.drivetrain.SwerveWheelController;
+import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 
 public class TeleopDrive extends CommandBase {
 
 	private SwerveWheelController swerve = null;
 
 	private boolean currentFOD = false;
+	private Joystick leftJoy = new Joystick(0);
+	private Joystick rightJoy = new Joystick(1);
+	private XboxController xbox = new XboxController(2);
 
 	public TeleopDrive() {
 		swerve = SwerveWheelController.getInstance();
@@ -25,16 +30,16 @@ public class TeleopDrive extends CommandBase {
 
 	@Override
 	public void execute() {
-		if (Robot.driver.getControllerAButtonPressed()) {
+		if (xbox.getAButtonPressed()) {
 			swerve.resetGyro();
 		}
 
-		if (Robot.driver.getControllerBButtonPressed()) {
+		if (xbox.getBButtonPressed()) {
 			currentFOD = !currentFOD;
 			swerve.setFOD(currentFOD);
 		}
 
-		swerve.drive(Robot.driver.getControllerLeftStickX(), Robot.driver.getControllerLeftStickY(),
-					 Robot.driver.getControllerRightStickX(), swerve.gyroAngle());
+		swerve.drive(leftJoy.getX(), leftJoy.getY(),
+					 rightJoy.getX(), swerve.gyroAngle());
 	}
 }

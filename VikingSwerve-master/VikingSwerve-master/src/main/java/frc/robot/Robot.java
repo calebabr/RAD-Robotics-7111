@@ -4,10 +4,13 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.drivetrain.SwerveWheelController;
 import viking.Controller;
+import edu.wpi.first.wpilibj.Joystick;
 
 public class Robot extends TimedRobot {
 
 	public static Controller driver = new Controller(0);
+	public Joystick leftJoy = new Joystick(0);
+	public Joystick rightJoy = new Joystick(1);
 
 	private static CommandScheduler scheduler = CommandScheduler.getInstance();
 
