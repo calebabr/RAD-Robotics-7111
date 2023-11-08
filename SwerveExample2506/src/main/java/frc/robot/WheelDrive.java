@@ -27,8 +27,8 @@ public class WheelDrive {
         pidController.setSetpoint(0);
     }
 
-    public void drive (double speed, double angle) {
-        driveMotor.set(speed);
+    public void drive (double drive, double angle) {
+        driveMotor.set(drive);
         steerMotor.set(angle);
     
         double setpoint = angle * (MAX_VOLTS * 0.25) + (MAX_VOLTS * 0.25); // Optimization offset can be calculated here.
@@ -41,5 +41,7 @@ public class WheelDrive {
     
         pidController.setSetpoint(setpoint);
         SmartDashboard.putNumber("SetPoint", setpoint);
+        SmartDashboard.putNumber("Speed", drive);
+        SmartDashboard.putNumber("Steer", angle);
     }
 }
