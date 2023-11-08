@@ -91,7 +91,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    swerveDrive.drive(leftJoy.getX(), leftJoy.getY(), rightJoy.getX());
+    swerveDrive.drive(MathUtil.applyDeadband(leftJoy.getX(), 0.2), MathUtil.applyDeadband(leftJoy.getY(), 0.2), MathUtil.applyDeadband(rightJoy.getX(), 0.2));
   }
 
   /** This function is called once when the robot is disabled. */
