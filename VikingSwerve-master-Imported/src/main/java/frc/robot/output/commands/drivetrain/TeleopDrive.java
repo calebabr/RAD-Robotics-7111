@@ -39,7 +39,7 @@ public class TeleopDrive extends CommandBase {
 			swerve.setFOD(currentFOD);
 		}
 
-		swerve.drive(leftJoy.getX(), leftJoy.getY(),
-					 rightJoy.getX(), swerve.gyroAngle());
+			swerve.drive(leftJoy.getX(), leftJoy.getY(),
+						rightJoy.getX(), swerve.gyroAngle());
 	}
 }
