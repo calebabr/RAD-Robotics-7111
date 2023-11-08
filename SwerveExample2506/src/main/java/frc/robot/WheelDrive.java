@@ -14,14 +14,13 @@ public class WheelDrive {
     private CANSparkMax driveMotor;
     private PIDController pidController;
     private CANCoder enc;
-    private final double MAX_VOLTS = 4.95;
+    private final double MAX_VOLTS = 1.95;
 
     public WheelDrive (int angleMotor, int speedMotor, int encoder) {
         this.steerMotor = new CANSparkMax(angleMotor, MotorType.kBrushless);
         this.driveMotor = new CANSparkMax(speedMotor, MotorType.kBrushless);
         this.enc = new CANCoder(encoder);
         pidController = new PIDController(0.2, 0, 0);
-
 
         pidController.enableContinuousInput(-180, 180);
     }
@@ -30,7 +29,7 @@ public class WheelDrive {
         driveMotor.set(speed);
         steerMotor.set(angle);
     
-        double setpoint = angle * (MAX_VOLTS * 0.5) + (MAX_VOLTS * 0.5); // Optimization offset can be calculated here.
+        double setpoint = angle * (MAX_VOLTS * 0.25) + (MAX_VOLTS * 0.25); // Optimization offset can be calculated here.
         if (setpoint < 0) {
             setpoint = MAX_VOLTS + setpoint;
         }
