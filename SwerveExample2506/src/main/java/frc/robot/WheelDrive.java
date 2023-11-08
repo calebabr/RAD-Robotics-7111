@@ -15,7 +15,7 @@ public class WheelDrive {
     private CANSparkMax driveMotor;
     private PIDController pidController;
     private CANCoder enc;
-    private final double MAX_VOLTS = 1.95;
+    private final double MAX_VOLTS = 0;
 
     public WheelDrive (int angleMotor, int speedMotor, int encoder) {
         this.steerMotor = new CANSparkMax(angleMotor, MotorType.kBrushless);
@@ -41,7 +41,7 @@ public class WheelDrive {
     
         pidController.setSetpoint(setpoint);
         SmartDashboard.putNumber("SetPoint", setpoint);
-        SmartDashboard.putNumber("Speed", drive);
+        SmartDashboard.putNumber("Drive", drive);
         SmartDashboard.putNumber("Steer", angle);
     }
 }
