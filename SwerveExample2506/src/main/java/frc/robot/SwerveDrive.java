@@ -23,7 +23,6 @@ public class SwerveDrive {
 
     public void drive (double x1, double y1, double x2) {
         double r = Math.sqrt ((L * L) + (W * W));
-        y1 *= -1;
     
         double a = x1 - x2 * (L / r);
         double b = x1 + x2 * (L / r);
@@ -40,9 +39,9 @@ public class SwerveDrive {
         double frontRightAngle = Math.atan2 (b, d) / Math.PI;
         double frontLeftAngle = Math.atan2 (b, c) / Math.PI;
 
-        backRight.drive (backRightSpeed, 0.1); // backRightAngle);
-        backLeft.drive (backLeftSpeed, 0); //backLeftAngle);
-        frontRight.drive (frontRightSpeed, 0.1); //frontRightAngle);
+        backRight.drive (backRightSpeed, 0); // backRightAngle);
+        backLeft.drive(backLeftSpeed, 0); //backLeftAngle);
+        frontRight.drive (frontRightSpeed, 0); //frontRightAngle);
         frontLeft.drive (frontLeftSpeed, 0);// frontLeftAngle);
     }
 }

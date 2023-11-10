@@ -32,6 +32,10 @@ public class Robot extends TimedRobot {
   private Joystick leftJoy = new Joystick(0);
   private Joystick rightJoy = new Joystick(1);
 
+  private double leftJoyY;
+  private double leftJoyX;
+  private double rightJoyX;
+
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -91,7 +95,14 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    swerveDrive.drive(MathUtil.applyDeadband(leftJoy.getX(), 0.2), MathUtil.applyDeadband(leftJoy.getY(), 0.2), MathUtil.applyDeadband(rightJoy.getX(), 0.2));
+    leftJoyY = MathUtil.applyDeadband(leftJoy.getX(), 0.2) * -1;
+    leftJoyX = MathUtil.applyDeadband(leftJoy.getY(), 0.2);
+    rightJoyX = MathUtil.applyDeadband(rightJoy.getX(), 0.2);
+    swerveDrive.drive(leftJoyX, leftJoyY, rightJoyX);
+    SmartDashboard.putNumber("leftJoy X", leftJoyX);
+    SmartDashboard.putNumber("leftJoy Y", leftJoyY);
+    SmartDashboard.putNumber("rightJoy X", rightJoyX);
+
   }
 
   /** This function is called once when the robot is disabled. */
