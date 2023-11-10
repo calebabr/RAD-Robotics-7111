@@ -133,5 +133,5 @@ public class SwerveModule {
 
     m_driveMotor.set(driveOutput  + driveFeedforward);
     m_turningMotor.set(turnOutput  + turnFeedforward);
-  }
+}
 }
