@@ -95,9 +95,9 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    leftJoyY = MathUtil.applyDeadband(leftJoy.getY(), 0.2) * -1;
-    leftJoyX = MathUtil.applyDeadband(leftJoy.getX(), 0.2);
-    rightJoyX = MathUtil.applyDeadband(rightJoy.getX(), 0.2);
+    leftJoyY = applyDeadband(leftJoy.getY(), 0.2) * -1;
+    leftJoyX = applyDeadband(leftJoy.getX(), 0.2);
+    rightJoyX = applyDeadband(rightJoy.getX(), 0.2);
     swerveDrive.drive(leftJoyX, leftJoyY, rightJoyX);
     SmartDashboard.putNumber("leftJoy X", leftJoyX);
     SmartDashboard.putNumber("leftJoy Y", leftJoyY);
@@ -130,6 +130,10 @@ public class Robot extends TimedRobot {
   public void simulationPeriodic() {}
 
   public double applyDeadband(double value, double band){
+    if(Math.abs(value) > Math.abs(band)){
+      return value;
+    }
     return 0;
+    
   }
 }
