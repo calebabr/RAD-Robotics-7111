@@ -3,6 +3,7 @@
 // the WPILib BSD license file in the root directory of this project.
 
 package frc.robot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /** Add your docs here. */
 public class SwerveDrive {
@@ -39,9 +40,24 @@ public class SwerveDrive {
         double frontRightAngle = Math.atan2 (b, d) / Math.PI;
         double frontLeftAngle = Math.atan2 (b, c) / Math.PI;
 
-        backRight.drive (backRightSpeed, 0); // backRightAngle);
-        backLeft.drive(backLeftSpeed, 0); //backLeftAngle);
-        frontRight.drive (frontRightSpeed, 0); //frontRightAngle);
-        frontLeft.drive (frontLeftSpeed, 0);// frontLeftAngle);
+        backRight.drive (0, 0); // backRightAngle);
+        backLeft.drive(0, 0); //backLeftAngle);
+        frontRight.drive (0, 0); //frontRightAngle);
+        frontLeft.drive (0, 0);// frontLeftAngle);
+
+        SmartDashboard.putNumber("a", a);
+        SmartDashboard.putNumber("b", b);
+        SmartDashboard.putNumber("c", c);
+        SmartDashboard.putNumber("d", d);
+
+        SmartDashboard.putNumber("backRightAngle", backRightAngle);
+        SmartDashboard.putNumber("backLeftAngle", backLeftAngle);
+        SmartDashboard.putNumber("frontRightAngle", frontRightAngle);
+        SmartDashboard.putNumber("frontLeftAngle", frontLeftAngle);
+
+        SmartDashboard.putNumber("backRightSpeed", backRightSpeed);
+        SmartDashboard.putNumber("backLeftSpeed", backLeftSpeed);
+        SmartDashboard.putNumber("frontRightSpeed", frontRightSpeed);
+        SmartDashboard.putNumber("frontLeftSpeed", frontLeftSpeed);
     }
 }
