@@ -8,7 +8,9 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -22,19 +24,22 @@ public class Robot extends TimedRobot {
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
-  private WheelDrive backRight = new WheelDrive (8, 7, 4);
-  private WheelDrive backLeft = new WheelDrive (2, 1, 1);
-  private WheelDrive frontRight = new WheelDrive (6, 5, 3);
-  private WheelDrive frontLeft = new WheelDrive (4, 3, 2);
+  private WheelDrive backRight = new WheelDrive (8, 7, 4, 4);
+  private WheelDrive backLeft = new WheelDrive (2, 1, 1, 3);
+  private WheelDrive frontRight = new WheelDrive (6, 5, 3, 1);
+  private WheelDrive frontLeft = new WheelDrive (4, 3, 2, 2);
 
   private SwerveDrive swerveDrive = new SwerveDrive (backRight, backLeft, frontRight, frontLeft);
 
   private Joystick leftJoy = new Joystick(0);
   private Joystick rightJoy = new Joystick(1);
+  private XboxController xbox = new XboxController(2);
 
   private double leftJoyY;
   private double leftJoyX;
   private double rightJoyX;
+
+  private PIDController zeroPID = new PIDController(0.01, 0, 0);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -90,18 +95,29 @@ public class Robot extends TimedRobot {
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {}
+  public void teleopInit() {
+
+  }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    leftJoyY = applyDeadband(leftJoy.getY(), 0.2) * -1;
+    leftJoyY = applyDeadband(leftJoy.getY(), 0.2);
     leftJoyX = applyDeadband(leftJoy.getX(), 0.2);
     rightJoyX = applyDeadband(rightJoy.getX(), 0.2);
     swerveDrive.drive(leftJoyX, leftJoyY, rightJoyX);
     SmartDashboard.putNumber("leftJoy X", leftJoyX);
     SmartDashboard.putNumber("leftJoy Y", leftJoyY);
     SmartDashboard.putNumber("rightJoy X", rightJoyX);
+
+    if (xbox.getXButton()){
+      swerveDrive.init();
+    }
+    if (xbox.getBButton()){
+      swerveDrive.drive(0.1,0,0);
+    }
+    
+    
 
   }
 
@@ -129,7 +145,7 @@ public class Robot extends TimedRobot {
   @Override
   public void simulationPeriodic() {}
 
-  public double applyDeadband(double value, double band){
+  public static double applyDeadband(double value, double band){
     if(Math.abs(value) > Math.abs(band)){
       return value;
     }

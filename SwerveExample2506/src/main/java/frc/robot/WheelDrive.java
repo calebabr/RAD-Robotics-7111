@@ -7,6 +7,9 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import com.ctre.phoenix.sensors.CANCoder;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import com.kauailabs.navx.frc.AHRS;
+import edu.wpi.first.wpilibj.SPI.Port;
+
 
 import edu.wpi.first.math.controller.PIDController;
 /** Add your docs here. */
@@ -14,14 +17,17 @@ public class WheelDrive {
     private CANSparkMax steerMotor;
     private CANSparkMax driveMotor;
     private PIDController pidController;
-    private CANCoder enc;
+    public CANCoder enc;
     private final double MAX_VOLTS = 0;
+    private int quad;
 
-    public WheelDrive (int angleMotor, int speedMotor, int encoder) {
+
+    public WheelDrive (int angleMotor, int speedMotor, int encoder, int quad) {
         this.steerMotor = new CANSparkMax(angleMotor, MotorType.kBrushless);
         this.driveMotor = new CANSparkMax(speedMotor, MotorType.kBrushless);
         this.enc = new CANCoder(encoder);
-        pidController = new PIDController(0.2, 0, 0);
+        this.quad = quad;
+        pidController = new PIDController(0.002, 0.0002, 0.00002);
 
         pidController.enableContinuousInput(-180, 180);
         pidController.setSetpoint(0);
@@ -43,5 +49,9 @@ public class WheelDrive {
         SmartDashboard.putNumber("SetPoint", setpoint);
         SmartDashboard.putNumber("Drive", drive);
         SmartDashboard.putNumber("Steer", angle);
+    }
+
+    public void zeroWheel(double goal){
+        steerMotor.set(pidController.calculate(enc.getAbsolutePosition(), goal));
     }
 }

@@ -41,7 +41,7 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("BR Turn Pos", m_swerve.m_backRight.getTurn());
     SmartDashboard.putNumber("BR Abs Turn Pos", m_swerve.m_backRight.getAbsTurn());
 
-    // SmartDashboard.putNumber("Gyro Degrees", m_swerve.ahrsGyro.getRotation2d().getDegrees());
+    SmartDashboard.putNumber("Gyro Degrees", m_swerve.ahrsGyro.getRotation2d().getDegrees());
     SmartDashboard.putNumber("Gyro Rotations", m_swerve.ahrsGyro.getRotation2d().getRotations());
   }
 
