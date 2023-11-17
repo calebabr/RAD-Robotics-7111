@@ -61,15 +61,15 @@ public class SwerveDrive {
             c = Robot.applyDeadband(y1 - x2 * (W / 2), 0.01);
             d = Robot.applyDeadband(y1 + x2 * (W / 2), 0.01);
     
-            frontRightSpeed = Math.sqrt ((b * b) + (c * c)); // 1
-            frontLeftSpeed = Math.sqrt ((b * b) + (d * d)); // 2
-            backRightSpeed = Math.sqrt ((a * a) + (c * c)); // 4 
-            backLeftSpeed = Math.sqrt ((a * a) + (d * d)); // 3
+            frontRightSpeed = 0.1; // Math.sqrt ((b * b) + (c * c)); // 1
+            frontLeftSpeed = 0.1; //Math.sqrt ((b * b) + (d * d)); // 2
+            backRightSpeed = 0.1; //Math.sqrt ((a * a) + (c * c)); // 4 
+            backLeftSpeed = 0.1; // Math.sqrt ((a * a) + (d * d)); // 3
     
-            frontRightAngle = Math.atan2 (b, c) / Math.PI; // 1
-            frontLeftAngle = Math.atan2 (b, d) / Math.PI; // 2 
-            backRightAngle = Math.atan2 (a, c) / Math.PI; // 4
-            backLeftAngle = Math.atan2 (a, d) / Math.PI; // 3
+            frontRightAngle = 0; // Math.atan2 (b, c) / Math.PI; // 1
+            frontLeftAngle = 0; // Math.atan2 (b, d) / Math.PI; // 2 
+            backRightAngle = 0; // Math.atan2 (a, c) / Math.PI; // 4
+            backLeftAngle = 0; // Math.atan2 (a, d) / Math.PI; // 3
         }
         else{
             a = 0;
